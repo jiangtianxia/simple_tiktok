@@ -1,0 +1,37 @@
+
+uplaodBase: "./upload/"
+
+logger: 
+  path: "/log"
+
+
+mysql:
+    username: "root"
+    password: "124578"
+    addr: "127.0.0.1"
+    port: "3306"
+    database: "tiktok"
+    base: "?charset=utf8mb4&parseTime=True&loc=Local"
+
+redis:
+    addr: "127.0.0.1:6379"
+    password: "124578"
+    DB: 0
+    poolSize: 1000
+    minIdleConn: 100
+    
+
+md5:
+    salt: "treeholeGi0I0R1tC#%"
+
+snowflake:
+    machineID: "2345576453432980"
+
+jwt:
+    key: "h2wnknlsd"
+    expire: 120
+
+currentLimit:
+    tokenBucket:
+        rate:   1000
+        capacity: 5000
