@@ -43,6 +43,12 @@ func main() {
 	utils.InitCurrentLimit()
 	logger.SugarLogger.Info("初始化配置完成")
 
+	// 初始化布隆过滤器
+	utils.InitBloomFilter()
+	// utils.Filter.Add("123")
+	// fmt.Println(utils.Filter.Check("12"))
+	// fmt.Println(utils.Filter.Check("123"))
+
 	// 配置路由
 	r := routers.Router()
 	logger.SugarLogger.Info("配置路由完成")
