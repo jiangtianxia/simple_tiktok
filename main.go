@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"simple_tiktok/logger"
-	"simple_tiktok/routers"
+	"simple_tiktok/router"
 	"simple_tiktok/utils"
 
 	"github.com/spf13/viper"
@@ -50,7 +50,7 @@ func main() {
 	// fmt.Println(utils.Filter.Check("123"))
 
 	// 配置路由
-	r := routers.Router()
+	r := router.Router()
 	logger.SugarLogger.Info("配置路由完成")
 	r.Run("127.0.0.1:8080")
 }
