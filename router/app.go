@@ -2,8 +2,8 @@ package router
 
 import (
 	"net/http"
-	"simple_tiktok/controller"
 
+	"simple_tiktok/controller"
 	docs "simple_tiktok/docs"
 
 	"github.com/gin-gonic/gin"
@@ -30,7 +30,10 @@ func Router() *gin.Engine {
 		 */
 		v1.GET("/hello", controller.Hello)
 		v1.GET("/user", controller.UserInfo)
+
 	}
+
+	r.GET("/test", controller.Test)
 
 	return r
 }

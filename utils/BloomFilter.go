@@ -75,7 +75,7 @@ func (b *BloomFilter) Check(value string) bool {
 // 初始化布隆过滤器
 func InitBloomFilter() {
 	Filter = NewBloomFilter()
-	fmt.Println("BloomFilter inited")
+	fmt.Println("BloomFilter inited ...... ")
 }
 
 // func main() {
