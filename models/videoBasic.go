@@ -1,13 +1,14 @@
 package models
 
 import (
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type VideoBasic struct {
 	gorm.Model
-	Identity     uint64    `gorm:"column:identity;type:int;"`           // 视频唯一表示
+	Identity     uint64    `gorm:"column:identity;type:int;"`           // 视频唯一标识
 	UserIdentity uint64    `gorm:"column:user_identity;type:int;"`      // 作者ID
 	PlayUrl      string    `gorm:"column:play_url;type:varchar(100);"`  // 视频路径
 	CoverUrl     string    `gorm:"column:cover_url;type:varchar(100);"` // 封面路径

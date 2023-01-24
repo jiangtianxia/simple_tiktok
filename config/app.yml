@@ -22,7 +22,7 @@ redis:
     
 
 md5:
-    salt: "treeholeGi0I0R1tC#%"
+    salt: "tiktokGi0I0R1tC#%"
 
 snowflake:
     machineID: "2345576453432980"
