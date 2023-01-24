@@ -29,6 +29,7 @@ func Router() *gin.Engine {
 		* 公共接口
 		 */
 		v1.GET("/hello", controller.Hello)
+		v1.GET("/user", controller.UserInfo)
 	}
 
 	return r

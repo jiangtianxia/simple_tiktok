@@ -32,7 +32,7 @@ func GenerateToken(identity, username, usericon string) (string, error) {
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(
 				time.Duration(viper.GetInt("jwt.expire")) * time.Hour).Unix(), // 过期时间
-			Issuer: "treehole", // 签发人
+			Issuer: "simple_tiktok", // 签发人
 		},
 	}
 
