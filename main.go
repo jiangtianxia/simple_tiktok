@@ -16,13 +16,6 @@ func main() {
 	// 初始化配置
 	utils.InitConfig()
 
-	// 初始化翻译器
-	if err := utils.InitTrans("zh"); err != nil {
-		fmt.Println("init trans failed, err:", err)
-		return
-	}
-	fmt.Println("trans inited ......")
-
 	// 初始化雪花算法
 	if err := utils.SnowflakeInit(viper.GetUint16("snowflake.machineID")); err != nil {
 		fmt.Println("init Snowflake failed, err:", err)
@@ -41,13 +34,16 @@ func main() {
 
 	// 初始化令牌桶
 	utils.InitCurrentLimit()
-	logger.SugarLogger.Info("初始化配置完成")
 
 	// 初始化布隆过滤器
 	utils.InitBloomFilter()
 	// utils.Filter.Add("123")
 	// fmt.Println(utils.Filter.Check("12"))
 	// fmt.Println(utils.Filter.Check("123"))
+
+	// 初始化rocketmq
+	// rocket.InitRocketmq()
+	// logger.SugarLogger.Info("初始化配置完成")
 
 	// 配置路由
 	r := router.Router()

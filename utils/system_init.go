@@ -117,5 +117,5 @@ func InitCurrentLimit() {
 
 	Bucket.Set(rate, capacity)
 
-	fmt.Println("TokenBucket inited")
+	fmt.Println("TokenBucket inited ...... ")
 }

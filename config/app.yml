@@ -22,7 +22,7 @@ redis:
     
 
 md5:
-    salt: "treeholeGi0I0R1tC#%"
+    salt: "Gi0I0R1tC#%"
 
 snowflake:
     machineID: "2345576453432980"
@@ -35,4 +35,17 @@ currentLimit:
     tokenBucket:
         rate:   1000
         capacity: 5000
+
+
+rocketmq:
+    addr:  "127.0.0.1:9876"
+    serverProducer: "ServerProducer"
+    serverTopic:  "ServerTopic"
+    serverGroupName:  "ServerGroup"
+    serverTags: "test||login"
+    redisProducer: "RedisProducer"
+    redisTopic:  "RedisTopic"
+    redisGroupName:  "RedisGroup"
+    redisTags: "test||login"
+    retrySize:   2
         
