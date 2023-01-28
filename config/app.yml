@@ -52,7 +52,7 @@ rocketmq:
 
 cos:
     addr: "https://tiktok-1310814941.cos.ap-guangzhou.myqcloud.com"
-    SecretId: "AKID2vc5LM9h03sZ0Nn3cO6rcATXNzNXSDjx"
-    SecretKey: "NZcS5WgaFivrVuNbYjzANfrra4KXZNG1"
+    SecretId: ""
+    SecretKey: ""
     
         
