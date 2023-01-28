@@ -14,3 +14,12 @@
 2023-01-17T13:27:00.745+0800	INFO	simple_tiktok/main.go:54	配置路由完成
 2023-01-17T16:39:40.833+0800	INFO	simple_tiktok/main.go:44	初始化配置完成
 2023-01-17T16:39:40.835+0800	INFO	simple_tiktok/main.go:54	配置路由完成
+2023-01-28T15:41:34.519+0800	INFO	build/main.go:50	配置路由完成
+2023-01-28T16:27:04.198+0800	INFO	simple_tiktok/main.go:50	配置路由完成
+2023-01-28T16:27:30.410+0800	ERROR	controller/publishActionController.go:46	Get FormFile Error:http: no such file
+2023-01-28T16:28:41.551+0800	INFO	simple_tiktok/main.go:50	配置路由完成
+2023-01-28T16:29:07.367+0800	ERROR	controller/publishActionController.go:46	Get FormFile Error:http: no such file
+2023-01-28T16:30:37.727+0800	INFO	simple_tiktok/main.go:50	配置路由完成
+2023-01-28T20:11:18.207+0800	INFO	simple_tiktok/main.go:50	配置路由完成
+2023-01-28T21:17:28.217+0800	INFO	simple_tiktok/main.go:50	配置路由完成
+2023-01-28T21:20:22.835+0800	INFO	simple_tiktok/main.go:50	配置路由完成

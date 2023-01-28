@@ -19,7 +19,6 @@ var myKey = []byte(viper.GetString("jwt.key"))
 type UserClaims struct {
 	Identity string `json:"identity"`
 	Username string `json:"username"`
-	Usericon string `json:"usericon"`
 	jwt.StandardClaims
 }
 
@@ -28,7 +27,6 @@ func GenerateToken(identity, username, usericon string) (string, error) {
 	userClaim := &UserClaims{
 		Identity: identity,
 		Username: username,
-		Usericon: usericon,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(
 				time.Duration(viper.GetInt("jwt.expire")) * time.Hour).Unix(), // 过期时间

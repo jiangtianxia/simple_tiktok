@@ -11,4 +11,30 @@ paths:
       summary: 首页
       tags:
       - 公共接口
+  /publish/action/:
+    post:
+      parameters:
+      - description: token
+        in: formData
+        name: token
+        required: true
+        type: string
+      - description: 文件
+        in: formData
+        name: data
+        required: true
+        type: file
+      - description: 标题
+        in: formData
+        name: title
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 视频投稿
+      tags:
+      - 基础接口
 swagger: "2.0"
