@@ -13,6 +13,9 @@ import (
 func Router() *gin.Engine {
 	r := gin.Default()
 
+	// 设置成发布模式
+	// gin.SetMode(gin.ReleaseMode)
+
 	// swagger 配置
 	docs.SwaggerInfo.BasePath = "/douyin"
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
@@ -27,8 +30,14 @@ func Router() *gin.Engine {
 		* 公共接口
 		 */
 		v1.GET("/hello", controller.Hello)
+
+		/*
+		* 基础接口
+		 */
 		v1.GET("/user", controller.UserInfo)
 
+		// 视频投稿
+		v1.POST("/publish/action/", controller.Publish)
 	}
 
 	r.GET("/test", controller.Test)

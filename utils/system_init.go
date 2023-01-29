@@ -19,6 +19,17 @@ import (
  * @Date 11:00 2023/1/15
  **/
 func InitConfig() {
+	/*
+	* 发布模式
+	 */
+	// // 设置文件名，文件后缀默认为yml
+	// // app为config下的名字
+	// viper.SetConfigName("app")
+
+	// // // 配置文件所在的文件夹
+	// // viper.AddConfigPath(work + "/config")
+	// viper.AddConfigPath("/build/config")
+
 	// 获取当前工作目录
 	work, _ := os.Getwd()
 
@@ -48,6 +59,19 @@ var DB *gorm.DB
 
 // 初始化数据库
 func InitMysql() {
+
+	/*
+	* 发布模式
+	 */
+	// dns := viper.GetString("mysql.username") + ":" +
+	// 	viper.GetString("mysql.password") + "@tcp(" + viper.GetString("mysql.addr") + ":" +
+	// 	viper.GetString("mysql.port") + ")/" +
+	// 	viper.GetString("mysql.database") + viper.GetString("mysql.base")
+	// // 先休眠20秒，等数据库启动完成再连接
+	// time.Sleep(time.Second * 20)
+	// DB, _ = gorm.Open(mysql.Open(dns),
+	// 	&gorm.Config{})
+
 	// 自定义日志模板，打印SQL语句
 	// os.Stdout 标准输出，控制台打印
 	// 以\r\n来作为打印间隔

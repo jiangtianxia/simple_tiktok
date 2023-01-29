@@ -50,7 +50,7 @@ func Test(c *gin.Context) {
 	fmt.Println(res.Status == 1)
 	if res.Status == 0 {
 		for i := 0; i < 30; i++ {
-
+			// hash msgid req
 			// 根据msgid，查询redis缓存中是否存在数据，如果存在则将结果返回
 			c.JSON(http.StatusOK, gin.H{
 				"message": "成功",
