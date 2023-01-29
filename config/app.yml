@@ -1,5 +1,6 @@
 
 uplaodBase: "./upload/"
+uploadAddr: "http://101.43.157.116"
 
 logger: 
   path: "/log"
@@ -52,7 +53,9 @@ rocketmq:
 
 cos:
     addr: "https://tiktok-1310814941.cos.ap-guangzhou.myqcloud.com"
-    SecretId: "AKID2vc5LM9h03sZ0Nn3cO6rcATXNzNXSDjx"
-    SecretKey: "NZcS5WgaFivrVuNbYjzANfrra4KXZNG1"
+    # SecretId: "AKID2vc5LM9h03sZ0Nn3cO6rcATXNzNXSDjx"
+    # SecretKey: "NZcS5WgaFivrVuNbYjzANfrra4KXZNG1"
+    SecretId: "AKIDVr1xf9QTKwpiVAf3IWbU9h4IKBqKfsse"
+    SecretKey: "e3KSP9j8LL9l9tQjsoVzFH4e3JOHwOdf"
     
         

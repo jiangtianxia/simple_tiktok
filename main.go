@@ -43,10 +43,14 @@ func main() {
 
 	// 初始化rocketmq
 	// rocket.InitRocketmq()
-	// logger.SugarLogger.Info("初始化配置完成")
+
+	// 初始化COS客户端
+	utils.InitCos()
+
+	logger.SugarLogger.Info("初始化配置完成")
 
 	// 配置路由
 	r := router.Router()
 	logger.SugarLogger.Info("配置路由完成")
-	r.Run("127.0.0.1:8080")
+	r.Run("127.0.0.1:8081")
 }
