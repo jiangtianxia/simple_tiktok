@@ -17,9 +17,15 @@ mysql:
 redis:
     addr: "101.43.157.116:6379"
     password: "579021"
-    DB: 0
     poolSize: 1000
     minIdleConn: 100
+    RedisExpireTime: 120 # 单位h
+    KeyVideoList: "list:video"
+    KeyUserHashPrefix: "userinfo:"
+    KeyPublishListPrefix: "list:publish:"
+    KeyVideoInfoHashPrefix: "videoinfo:"
+    KetFavoriteSetPrefix: "favorite:"
+
     
 
 md5:
@@ -42,20 +48,21 @@ rocketmq:
     addr:  "101.43.157.116:9876"
     serverProducer: "ServerProducer"
     serverTopic:  "ServerTopic"
-    serverGroupName:  "ServerGroup"
     serverTags: "test||login"
+
     redisProducer: "RedisProducer"
     redisTopic:  "RedisTopic"
     redisGroupName:  "RedisGroup"
-    redisTags: "test||login"
+    redisTags: "publishAction||login||loginredis"
+    publishActionTag: "publishAction"
+    ReidsloginTag: "loginredis"
     retrySize:   2
 
 
 cos:
     addr: "https://tiktok-1310814941.cos.ap-guangzhou.myqcloud.com"
-    # SecretId: "AKID2vc5LM9h03sZ0Nn3cO6rcATXNzNXSDjx"
-    # SecretKey: "NZcS5WgaFivrVuNbYjzANfrra4KXZNG1"
-    SecretId: "AKIDVr1xf9QTKwpiVAf3IWbU9h4IKBqKfsse"
-    SecretKey: "e3KSP9j8LL9l9tQjsoVzFH4e3JOHwOdf"
+    SecretId: "AKID2vc5LM9h03sZ0Nn3cO6rcATXNzNXSDjx"
+    SecretKey: "NZcS5WgaFivrVuNbYjzANfrra4KXZNG1"
+
     
         

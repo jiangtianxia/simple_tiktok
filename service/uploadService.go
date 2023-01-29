@@ -1,13 +1,16 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"mime/multipart"
 	"os"
 	"path"
+	"simple_tiktok/dao/mysql"
 	"simple_tiktok/logger"
 	"simple_tiktok/models"
+	rocket "simple_tiktok/rocketmq"
 	"simple_tiktok/utils"
 	"strconv"
 	"time"
@@ -96,12 +99,26 @@ func UploadCOS(c *gin.Context, srcFile multipart.File, head *multipart.FileHeade
 	videoInfo := models.VideoBasic{
 		Identity:     identity,
 		UserIdentity: userid,
-		PlayUrl:      key,
+		PlayUrl:      "/" + key,
 		CoverUrl:     coveurl,
 		Title:        title,
 		PublishTime:  time.Now(),
 	}
 
 	fmt.Println(videoInfo)
+	err = mysql.CreateVideoBasic(videoInfo)
+	if err != nil {
+		logger.SugarLogger.Error("CreateVideoBasic Error：" + err.Error())
+		fmt.Println("CreateVideoBasic Error：" + err.Error())
+		return -1, "投稿失败"
+	}
+
+	// 5、将数据发送到消息队列
+	redisTopic := viper.GetString("rocketmq.redisTopic")
+	Producer := viper.GetString("rocketmq.redisProducer")
+	tag := viper.GetString("rocketmq.publishActionTag")
+	data, _ := json.Marshal(videoInfo)
+	rocket.SendMsg(c, Producer, redisTopic, tag, data)
+
 	return 0, "投稿成功"
 }

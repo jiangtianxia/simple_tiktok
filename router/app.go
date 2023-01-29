@@ -1,12 +1,10 @@
 package router
 
 import (
+	"github.com/gin-gonic/gin"
 	"net/http"
-
 	"simple_tiktok/controller"
 	docs "simple_tiktok/docs"
-
-	"github.com/gin-gonic/gin"
 
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"

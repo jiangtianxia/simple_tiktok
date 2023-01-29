@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"simple_tiktok/logger"
+	rocket "simple_tiktok/rocketmq"
 	"simple_tiktok/router"
 	"simple_tiktok/utils"
 
@@ -42,7 +43,7 @@ func main() {
 	// fmt.Println(utils.Filter.Check("123"))
 
 	// 初始化rocketmq
-	// rocket.InitRocketmq()
+	rocket.InitRocketmq()
 
 	// 初始化COS客户端
 	utils.InitCos()
@@ -52,5 +53,5 @@ func main() {
 	// 配置路由
 	r := router.Router()
 	logger.SugarLogger.Info("配置路由完成")
-	r.Run("127.0.0.1:8081")
+	r.Run("127.0.0.1:8080")
 }
