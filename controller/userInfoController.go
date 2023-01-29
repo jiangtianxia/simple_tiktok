@@ -11,8 +11,8 @@ import (
 func UserInfo(c *gin.Context) {
 	tmp, _ := utils.GenerateToken(1, "merry")
 	// 接受参数
-	userId := c.Query("user_id")
-	//token := c.Query("token")
+	userId := c.DefaultQuery("user_id", "0")
+	//token := c.DefaultQuery("token", "")
 
 	// 验证token
 	_, err := middlewares.AuthUserCheck(tmp)
