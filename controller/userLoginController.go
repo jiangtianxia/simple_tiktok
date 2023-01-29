@@ -7,11 +7,11 @@ import (
 )
 
 type LoginRespStruct struct {
-	Code uint64
+	Code string
 	Msg  string
 }
 
-func LoginResp(c *gin.Context, code uint64, msg string) {
+func LoginResp(c *gin.Context, code string, msg string) {
 	h := &LoginRespStruct{
 		Code: code,
 		Msg:  msg,
