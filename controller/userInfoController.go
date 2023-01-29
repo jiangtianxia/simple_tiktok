@@ -15,7 +15,7 @@ func UserInfo(c *gin.Context) {
 	//token := c.Query("token")
 
 	// 验证token
-	err := middlewares.AuthUserCheck(tmp)
+	_, err := middlewares.AuthUserCheck(tmp)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status_code": -1,
