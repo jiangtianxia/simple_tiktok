@@ -1,0 +1,138 @@
+version: "3.7"
+
+# 自定义网络（默认桥接），不使用links通信
+networks: 
+  db_network:
+    driver: bridge
+  redis_network:
+    driver: bridge
+  go_network:
+    driver: bridge
+  nginx_network:
+    driver: bridge
+
+
+services:
+  tiktok_db:
+    container_name: tiktok_db   # 容器名字
+    image: mysql:latest         # 拉取mysql最新的容器
+    restart: always             # 设定docker运行时自动启动，发生错误时一直重启
+    networks:                   # 使用网络
+      - db_network  
+    volumes:                    # 文件挂载
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro  # 时区配置
+      - ./docker/mysql/data/:/var/lib/mysql/                 # 映射mysql的数据目录到宿主机，保存数据
+      - ./docker/mysql/conf.d/my.cnf:/etc/mysql/my.cnf       # 把mysql的配置文件映射到容器的相应目录
+      - ./docker/mysql/mysql-files/:/var/lib/mysql-files/
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d/
+    ports:
+      - "3306:3306"             # 端口映射,宿主机使用3306端口
+    environment:                # 设定容器中的环境变量
+      MYSQL_ROOT_PASSWORD: "tiktokadmin"
+      MYSQL_USER: "test"
+      MYSQL_DATABASE: "tiktok"
+      MYSQL_PASSWORD: "674092"
+      LANG: C.UTF-8
+  
+  tiktok_redis:
+    container_name: tiktok_redis
+    image: redis:latest
+    command: redis-server /etc/redis/redis.conf              # 容器启动后启动redis服务器
+    networks:
+      - redis_network
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro  # 时区配置
+      - ./docker/redis/data:/data
+      - ./docker/redis/conf.d/redis.conf:/etc/redis/redis.conf
+  
+  tiktok_app:
+    container_name: tiktok_app
+    build: .
+    restart: always
+    networks:
+      - go_network
+    ports:
+      - "8080:8080"
+    links:
+      - tiktok_db
+      - tiktok_redis
+    depends_on:
+      - tiktok_db
+      - tiktok_redis
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+      - ./log:/dist/log
+      - ./upload:/dist/upload
+    tty: true
+
+  tiktok_nginx:
+    build: ./docker/nginx/
+    container_name: tiktok_nginx
+    restart: always
+    networks:
+      - nginx_network
+    ports:
+      - "80:80"
+    links:
+      - tiktok_app
+    depends_on:
+      - tiktok_app
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+      - ./docker/nginx/html/:/usr/share/nginx/html/
+      - ./upload/:/usr/share/nginx/html/upload
+      - ./docker/nginx/tmp/logs:/tmp
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    environment:
+      - NGINX_PORT=80
+
+  rocketmqNameServer:
+    image: rocketmqinc/rocketmq
+    container_name: rocketmqNameServer
+    restart: always
+    volumes:
+      - ./docker/rocketmq/nameServer/logs:/root/logs
+      - ./docker/rocketmq/nameServer/store:/root/store
+    environment:
+      MAX_POSSIBLE_HEAP: 100000000
+    command:
+      # 服务启动
+      sh mqnamesrv 
+    ports: 
+      - "9876:9876"
+ 
+  rocketmqBroker:
+    image: rocketmqinc/rocketmq
+    container_name: rocketmqBroker
+    restart: always
+    volumes:
+      # 挂载路径，冒号左边为服务器本地路径，冒号右边为容器内部路径
+      - ./docker/rocketmq/broker/logs:/root/logs
+      - ./docker/rocketmq/broker/store:/root/store
+      - ./docker/rocketmq/broker.conf:/opt/rocketmq-4.4.0/conf/broker.conf
+    links:
+      - rocketmqNameServer:namesrv    
+    environment:
+      NAMESRV_ADDR: namesrv:9876
+      MAX_POSSIBLE_HEAP: 200000000
+    command:
+      # 服务启动
+      sh mqbroker -c /opt/rocketmq-4.4.0/conf/broker.conf
+    ports: 
+      - "10911:10911"
+      - "10909:10909"
+            
+  rocketmqConsole:
+    image: pangliang/rocketmq-console-ng
+    container_name: rocketmqConsole
+    restart: always
+    links:
+      - rocketmqNameServer:namesrv
+    environment:
+      JAVA_OPTS: "-Drocketmq.namesrv.addr=namesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false"
+    ports: 
+      - "9999:8080"
+ 

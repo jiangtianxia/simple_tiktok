@@ -8,8 +8,8 @@ import (
 
 type VideoBasic struct {
 	gorm.Model
-	Identity     uint64    `gorm:"column:identity;type:int;"`           // 视频唯一标识
-	UserIdentity uint64    `gorm:"column:user_identity;type:int;"`      // 作者ID
+	Identity     uint64    `gorm:"column:identity;type:int(64);"`       // 视频唯一标识
+	UserIdentity uint64    `gorm:"column:user_identity;type:int(64);"`  // 作者ID
 	PlayUrl      string    `gorm:"column:play_url;type:varchar(100);"`  // 视频路径
 	CoverUrl     string    `gorm:"column:cover_url;type:varchar(100);"` // 封面路径
 	Title        string    `gorm:"column:title;type:varchar(100);"`     // 视频标题

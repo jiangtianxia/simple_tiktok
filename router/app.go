@@ -1,11 +1,10 @@
 package router
 
 import (
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"simple_tiktok/controller"
 	docs "simple_tiktok/docs"
-
-	"github.com/gin-gonic/gin"
 
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -13,6 +12,9 @@ import (
 
 func Router() *gin.Engine {
 	r := gin.Default()
+
+	// 设置成发布模式
+	// gin.SetMode(gin.ReleaseMode)
 
 	// swagger 配置
 	docs.SwaggerInfo.BasePath = "/douyin"
@@ -28,10 +30,16 @@ func Router() *gin.Engine {
 		* 公共接口
 		 */
 		v1.GET("/hello", controller.Hello)
+
+		/*
+		* 基础接口
+		 */
 		v1.GET("/user", controller.UserInfo)
 		//用户操作
 		v1.GET("user/login", controller.Userlogin)
 
+		// 视频投稿
+		v1.POST("/publish/action/", controller.Publish)
 	}
 
 	r.GET("/test", controller.Test)
