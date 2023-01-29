@@ -27,10 +27,11 @@ func main() {
 	logger.InitLogger()
 	defer logger.SugarLogger.Sync() // 刷新流，写日志到文件中
 
-	// 初始化Mysql和Redis
-	//utils.InitMysql()
-	//utils.InitRedis()
-	//defer utils.ReidsClose()
+	//初始化Mysql和Redis
+	utils.InitMysql()
+	utils.InitRedis()
+
+	defer utils.ReidsClose()
 
 	// 初始化令牌桶
 	utils.InitCurrentLimit()

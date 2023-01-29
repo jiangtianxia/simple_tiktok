@@ -17,18 +17,16 @@ import (
 var myKey = []byte(viper.GetString("jwt.key"))
 
 type UserClaims struct {
-	Identity string `json:"identity"`
+	Identity uint64 `json:"identity"`
 	Username string `json:"username"`
-	Usericon string `json:"usericon"`
 	jwt.StandardClaims
 }
 
 // 生成token
-func GenerateToken(identity, username, usericon string) (string, error) {
+func GenerateToken(identity uint64, username string) (string, error) {
 	userClaim := &UserClaims{
 		Identity: identity,
 		Username: username,
-		Usericon: usericon,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(
 				time.Duration(viper.GetInt("jwt.expire")) * time.Hour).Unix(), // 过期时间
