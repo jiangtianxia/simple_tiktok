@@ -39,9 +39,6 @@ func main() {
 
 	// 初始化布隆过滤器
 	utils.InitBloomFilter()
-	utils.BloomFilterAdd("123")
-	fmt.Println(utils.BloomFilterCheck("12"))
-	fmt.Println(utils.BloomFilterCheck("123"))
 
 	// 初始化rocketmq
 	rocket.InitRocketmq()
