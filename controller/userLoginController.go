@@ -8,11 +8,11 @@ import (
 )
 
 type LoginRespStruct struct {
-	Code string
+	Code int64
 	Msg  string
 }
 
-func LoginResp(c *gin.Context, code string, msg string) {
+func LoginResp(c *gin.Context, code int64, msg string) {
 	h := &LoginRespStruct{
 		Code: code,
 		Msg:  msg,

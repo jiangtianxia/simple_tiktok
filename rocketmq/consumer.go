@@ -76,8 +76,8 @@ func ReceiveMsg(newPushConsumer rocketmq.PushConsumer, topic string, tags string
 						Msgid: msg.MsgId,
 						Data:  msg.Body,
 					}
-				case "loginredis":
-					LoginChan <- ChanMsg{
+				case "userLogin":
+					loginChan <- ChanMsg{
 						Msgid: msg.MsgId,
 						Data:  msg.Body,
 					}

@@ -39,7 +39,7 @@ type ChanMsg struct {
 }
 
 var publishChan chan ChanMsg = make(chan ChanMsg, 100)
-var LoginChan chan ChanMsg = make(chan ChanMsg, 100)
+var loginChan chan ChanMsg = make(chan ChanMsg, 100)
 
 func ReceiveChan() {
 	for {
@@ -50,6 +50,13 @@ func ReceiveChan() {
 			json.Unmarshal(data.Data, videoinfo)
 			fmt.Println(videoinfo)
 			PublishAction(*videoinfo)
+
+		case data := <-loginChan:
+			userLogin := &models.UserBasic{}
+			json.Unmarshal(data.Data, userLogin)
+			fmt.Println(userLogin)
+			UserLogin(*userLogin)
+
 		}
 	}
 }
