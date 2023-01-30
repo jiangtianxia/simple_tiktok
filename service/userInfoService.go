@@ -26,7 +26,7 @@ func UserInfo(c *gin.Context, userId string) (interface{}, error) {
 		if err != nil {
 			// 防止缓存击穿
 			redisErr := myRedis.RedisAddUserInfo(c, hashKey, map[string]interface{}{
-				"identity": -1,
+				"identity": viper.GetInt("redis.defaultErrorIdentity"),
 			})
 			if redisErr != nil {
 				logger.SugarLogger.Error(err)

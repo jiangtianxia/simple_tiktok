@@ -19,6 +19,7 @@ redis:
     DB: 0
     poolSize: 1000
     minIdleConn: 100
+    defaultErrorIdentity: -1
     KeyUserHashPrefix: "userinfo:"
     
 
