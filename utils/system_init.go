@@ -118,6 +118,7 @@ var RDB5 *redis.Client
 var RDB6 *redis.Client
 var RDB7 *redis.Client
 var RDB8 *redis.Client
+var RDB9 *redis.Client
 
 // 初始化Redis连接
 func InitRedis() {
@@ -202,6 +203,15 @@ func InitRedis() {
 		MinIdleConns: viper.GetInt("redis.minIdleConn"),
 	})
 
+	// RDB9存储布隆过滤器
+	RDB9 = redis.NewClient(&redis.Options{
+		Addr:         viper.GetString("redis.addr"),
+		Password:     viper.GetString("redis.password"),
+		DB:           9,
+		PoolSize:     viper.GetInt("redis.poolSize"),
+		MinIdleConns: viper.GetInt("redis.minIdleConn"),
+	})
+
 	fmt.Println("redis inited ......")
 }
 
@@ -215,6 +225,7 @@ func ReidsClose() {
 	RDB6.Close()
 	RDB7.Close()
 	RDB8.Close()
+	RDB9.Close()
 }
 
 /**
