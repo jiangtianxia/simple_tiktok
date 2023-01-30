@@ -19,6 +19,6 @@ func QueryPassword(username string) string {
 	return DB.Select("password").Where("username=?", username).First(&userLogin)
 }
 
-func QueryIdentity(username string) string {
+func QueryIdentity(username string) uint64 {
 	return DB.Select("identity").Where("username=?", username).First(&userLogin)
 }

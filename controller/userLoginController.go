@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"simple_tiktok/service"
+	"simple_tiktok/utils"
 )
 
 type LoginRespStruct struct {
@@ -31,6 +32,16 @@ func Userlogin(c *gin.Context) {
 		return
 	}
 	code, msg := service.Login(c, username, password)
+
+	//布隆过滤器
+	if !utils.Filter.Check(username) {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status_code": -1,
+			"status_msg":  "no such user",
+		})
+		return
+	}
+
 	LoginResp(c, code, msg)
 
 }
