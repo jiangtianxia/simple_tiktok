@@ -70,7 +70,3 @@ func SendMsg(c *gin.Context, groupname string, topic string, tag string, data []
 	fmt.Printf("%s: 消息: %s发送成功 \n", nowStr, res.String())
 	return res, nil
 }
-
-/**
- * 发送事务消息，用于将消息发送到缓存的消息队列
- **/

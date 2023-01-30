@@ -57,10 +57,16 @@ func Publish(c *gin.Context) {
 		UploadResp(c, -1, "无效的Token")
 		return
 	}
+
+	// userClaim, err := middlewares.AuthUserCheck(token)
+	// if err != nil {
+	// 	UploadResp(c, -1, err.Error())
+	// 	return
+	// }
 	fmt.Println("token：", token)
 	fmt.Println("title：", title)
 
 	// 3、将数据传到service层
-	code, msg := service.UploadCOS(c, srcFile, head, title, 1, "")
+	code, msg := service.UploadCOS(c, srcFile, head, title, 1)
 	UploadResp(c, code, msg)
 }

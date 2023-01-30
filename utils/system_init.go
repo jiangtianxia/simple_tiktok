@@ -109,14 +109,95 @@ func InitMysql() {
  * @Description redis初始化
  * @Date 11:00 2023/1/15
  **/
-var RDB *redis.Client
+var RDB0 *redis.Client
+var RDB1 *redis.Client
+var RDB2 *redis.Client
+var RDB3 *redis.Client
+var RDB4 *redis.Client
+var RDB5 *redis.Client
+var RDB6 *redis.Client
+var RDB7 *redis.Client
+var RDB8 *redis.Client
 
 // 初始化Redis连接
 func InitRedis() {
-	RDB = redis.NewClient(&redis.Options{
+	// RDB0存储其他key
+	RDB0 = redis.NewClient(&redis.Options{
 		Addr:         viper.GetString("redis.addr"),
 		Password:     viper.GetString("redis.password"),
-		DB:           viper.GetInt("redis.DB"),
+		DB:           0,
+		PoolSize:     viper.GetInt("redis.poolSize"),
+		MinIdleConns: viper.GetInt("redis.minIdleConn"),
+	})
+
+	// RDB1存储用户信息hash集合
+	RDB1 = redis.NewClient(&redis.Options{
+		Addr:         viper.GetString("redis.addr"),
+		Password:     viper.GetString("redis.password"),
+		DB:           1,
+		PoolSize:     viper.GetInt("redis.poolSize"),
+		MinIdleConns: viper.GetInt("redis.minIdleConn"),
+	})
+
+	// RDB2存储上传视频列表
+	RDB2 = redis.NewClient(&redis.Options{
+		Addr:         viper.GetString("redis.addr"),
+		Password:     viper.GetString("redis.password"),
+		DB:           2,
+		PoolSize:     viper.GetInt("redis.poolSize"),
+		MinIdleConns: viper.GetInt("redis.minIdleConn"),
+	})
+
+	// RDB3存储视频信息hash集合
+	RDB3 = redis.NewClient(&redis.Options{
+		Addr:         viper.GetString("redis.addr"),
+		Password:     viper.GetString("redis.password"),
+		DB:           3,
+		PoolSize:     viper.GetInt("redis.poolSize"),
+		MinIdleConns: viper.GetInt("redis.minIdleConn"),
+	})
+
+	// RDB4存储用户发布视频列表
+	RDB4 = redis.NewClient(&redis.Options{
+		Addr:         viper.GetString("redis.addr"),
+		Password:     viper.GetString("redis.password"),
+		DB:           4,
+		PoolSize:     viper.GetInt("redis.poolSize"),
+		MinIdleConns: viper.GetInt("redis.minIdleConn"),
+	})
+
+	// RDB5存储视频的点赞用户sorted set
+	RDB5 = redis.NewClient(&redis.Options{
+		Addr:         viper.GetString("redis.addr"),
+		Password:     viper.GetString("redis.password"),
+		DB:           5,
+		PoolSize:     viper.GetInt("redis.poolSize"),
+		MinIdleConns: viper.GetInt("redis.minIdleConn"),
+	})
+
+	// RDB6存储用户点赞的视频列表
+	RDB6 = redis.NewClient(&redis.Options{
+		Addr:         viper.GetString("redis.addr"),
+		Password:     viper.GetString("redis.password"),
+		DB:           6,
+		PoolSize:     viper.GetInt("redis.poolSize"),
+		MinIdleConns: viper.GetInt("redis.minIdleConn"),
+	})
+
+	// RDB7存储评论信息hash集合
+	RDB7 = redis.NewClient(&redis.Options{
+		Addr:         viper.GetString("redis.addr"),
+		Password:     viper.GetString("redis.password"),
+		DB:           7,
+		PoolSize:     viper.GetInt("redis.poolSize"),
+		MinIdleConns: viper.GetInt("redis.minIdleConn"),
+	})
+
+	// RDB8存储视频的评论列表
+	RDB8 = redis.NewClient(&redis.Options{
+		Addr:         viper.GetString("redis.addr"),
+		Password:     viper.GetString("redis.password"),
+		DB:           8,
 		PoolSize:     viper.GetInt("redis.poolSize"),
 		MinIdleConns: viper.GetInt("redis.minIdleConn"),
 	})
@@ -125,7 +206,15 @@ func InitRedis() {
 }
 
 func ReidsClose() {
-	RDB.Close()
+	RDB0.Close()
+	RDB1.Close()
+	RDB2.Close()
+	RDB3.Close()
+	RDB4.Close()
+	RDB5.Close()
+	RDB6.Close()
+	RDB7.Close()
+	RDB8.Close()
 }
 
 /**

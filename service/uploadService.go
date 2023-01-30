@@ -1,12 +1,16 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"mime/multipart"
-	"net/http"
-	"net/url"
+	"os"
 	"path"
+	"simple_tiktok/dao/mysql"
 	"simple_tiktok/logger"
+	"simple_tiktok/models"
+	rocket "simple_tiktok/rocketmq"
 	"simple_tiktok/utils"
 	"strconv"
 	"time"
@@ -21,7 +25,7 @@ import (
  * @Description 上传视频到腾讯云COS
  * @Date 16:00 2023/1/28
  **/
-func UploadCOS(c *gin.Context, srcFile multipart.File, head *multipart.FileHeader, title string, userid int, username string) (int, string) {
+func UploadCOS(c *gin.Context, srcFile multipart.File, head *multipart.FileHeader, title string, userid uint64) (int, string) {
 	// 1、判断文件是否为视频
 	// 读取后缀名以及相关信息
 	suffix := path.Ext(head.Filename)
@@ -31,23 +35,6 @@ func UploadCOS(c *gin.Context, srcFile multipart.File, head *multipart.FileHeade
 	}
 
 	// 2、将视频存到腾讯云COS
-	// 存储桶名称，由 bucketname-appid 组成，appid 必须填入，可以在 COS 控制台查看存储桶名称。 https://console.cloud.tencent.com/cos5/bucket
-	// 替换为用户的 region，存储桶 region 可以在 COS 控制台“存储桶概览”查看 https://console.cloud.tencent.com/ ，关于地域的详情见 https://cloud.tencent.com/document/product/436/6224 。
-	u, _ := url.Parse(viper.GetString("cos.addr"))
-	b := &cos.BaseURL{BucketURL: u}
-	client := cos.NewClient(b, &http.Client{
-		Transport: &cos.AuthorizationTransport{
-			// 通过环境变量获取密钥
-			// 环境变量 SECRETID 表示用户的 SecretId，登录访问管理控制台查看密钥，https://console.cloud.tencent.com/cam/capi
-			// SecretID: os.Getenv("SECRETID"), // 用户的 SecretId，建议使用子账号密钥，授权遵循最小权限指引，降低使用风险。子账号密钥获取可参见 https://cloud.tencent.com/document/product/598/37140
-			SecretID: viper.GetString("cos.SecretID"),
-			// 环境变量 SECRETKEY 表示用户的 SecretKey，登录访问管理控制台查看密钥，https://console.cloud.tencent.com/cam/capi
-			// SecretKey: os.Getenv("SECRETKEY"), // 用户的 SecretKey，建议使用子账号密钥，授权遵循最小权限指引，降低使用风险。子账号密钥获取可参见 https://cloud.tencent.com/document/product/598/37140
-			SecretKey: viper.GetString("cos.SecretKey"),
-		},
-	})
-
-	// 视频保存名
 	// 生成identity
 	identity, err := utils.GetID()
 	if err != nil {
@@ -56,16 +43,82 @@ func UploadCOS(c *gin.Context, srcFile multipart.File, head *multipart.FileHeade
 		return -1, "投稿失败"
 	}
 
-	filename := strconv.Itoa(int(time.Now().Unix()) + int(identity))
+	// 视频保存名
+	filename := strconv.Itoa(int(time.Now().Unix())) + strconv.Itoa(int(identity))
 	key := filename + suffix
+	fmt.Println(identity)
+	fmt.Println(filename)
 
-	res, err := client.Object.Put(c, key, srcFile, nil)
+	_, err = utils.COSClient.Object.Put(c, key, srcFile, nil)
 	if err != nil {
 		logger.SugarLogger.Error("Put Video Error：" + err.Error())
 		fmt.Println("Put Video Error：" + err.Error())
 		return -1, "投稿失败"
 	}
 
-	fmt.Println(res.Request.URL)
+	// 3、使用腾讯云COS接口截取视频封面，保存到本地服务器下
+	// 1）在本地文件夹下创建文件
+	dir := viper.GetString("uplaodBase") + strconv.Itoa(int(userid))
+	err = os.MkdirAll(dir, 0777)
+	if err != nil {
+		logger.SugarLogger.Error("MkdirAll Error：" + err.Error())
+		fmt.Println("MkdirAll Error：" + err.Error())
+		return -1, "投稿失败"
+	}
+
+	path := dir + "/" + "cover" + filename + ".png"
+	fd, err := os.Create(path)
+	if err != nil {
+		logger.SugarLogger.Error("File Create Error：" + err.Error())
+		fmt.Println("File Create Error：" + err.Error())
+		return -1, "投稿失败"
+	}
+
+	// 2）读取COS的封面信息，保存到本地
+	opt := &cos.GetSnapshotOptions{
+		Time:   1,
+		Format: "png",
+	}
+
+	resp, err := utils.COSClient.CI.GetSnapshot(c, key, opt)
+	if err != nil {
+		logger.SugarLogger.Error("GetSnapshot Error：" + err.Error())
+		fmt.Println("GetSnapshot Error：" + err.Error())
+		return -1, "投稿失败"
+	}
+	_, err = io.Copy(fd, resp.Body)
+	if err != nil {
+		logger.SugarLogger.Error("io.Copy Error：" + err.Error())
+		fmt.Println("io.Copy Error：" + err.Error())
+		return -1, "投稿失败"
+	}
+	fd.Close()
+
+	// 4、保存数据到数据库
+	coveurl := path[1:]
+	videoInfo := models.VideoBasic{
+		Identity:     identity,
+		UserIdentity: userid,
+		PlayUrl:      "/" + key,
+		CoverUrl:     coveurl,
+		Title:        title,
+		PublishTime:  time.Now(),
+	}
+
+	fmt.Println(videoInfo)
+	err = mysql.CreateVideoBasic(videoInfo)
+	if err != nil {
+		logger.SugarLogger.Error("CreateVideoBasic Error：" + err.Error())
+		fmt.Println("CreateVideoBasic Error：" + err.Error())
+		return -1, "投稿失败"
+	}
+
+	// 5、将数据发送到消息队列
+	redisTopic := viper.GetString("rocketmq.redisTopic")
+	Producer := viper.GetString("rocketmq.redisProducer")
+	tag := viper.GetString("rocketmq.publishActionTag")
+	data, _ := json.Marshal(videoInfo)
+	rocket.SendMsg(c, Producer, redisTopic, tag, data)
+
 	return 0, "投稿成功"
 }

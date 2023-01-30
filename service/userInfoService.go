@@ -2,19 +2,20 @@ package service
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"simple_tiktok/dao/mysql"
 	myRedis "simple_tiktok/dao/redis"
 	"simple_tiktok/logger"
 	"simple_tiktok/utils"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 func UserInfo(c *gin.Context, userId string) (interface{}, error) {
 	hashKey := viper.GetString("redis.KeyUserHashPrefix") + userId
 	// 判断是否有缓存
-	if utils.RDB.Exists(c, hashKey).Val() == 0 {
+	if utils.RDB0.Exists(c, hashKey).Val() == 0 {
 		// 查询数据库
 		idNum, err := strconv.Atoi(userId)
 		identityUint64 := uint64(idNum)
@@ -54,7 +55,7 @@ func UserInfo(c *gin.Context, userId string) (interface{}, error) {
 
 	}
 	// 使用缓存
-	cathe := utils.RDB.HGetAll(c, hashKey).Val()
+	cathe := utils.RDB0.HGetAll(c, hashKey).Val()
 	identity, _ := strconv.Atoi(cathe["identity"])
 	followCount, _ := strconv.Atoi(cathe["follow_count"])
 	followerCount, _ := strconv.Atoi(cathe["follower_count"])
