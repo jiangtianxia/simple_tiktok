@@ -1,14 +1,15 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"simple_tiktok/middlewares"
 	"simple_tiktok/service"
 	"simple_tiktok/utils"
+
+	"github.com/gin-gonic/gin"
 )
 
-func UserInfo(c *gin.Context) {
+func UserInfo1(c *gin.Context) {
 	tmp, _ := utils.GenerateToken(1, "merry")
 	// 接受参数
 	userId := c.DefaultQuery("user_id", "0")

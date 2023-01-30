@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"simple_tiktok/logger"
+	"simple_tiktok/middlewares"
 	"simple_tiktok/service"
 
 	"github.com/gin-gonic/gin"
@@ -57,10 +58,16 @@ func Publish(c *gin.Context) {
 		UploadResp(c, -1, "无效的Token")
 		return
 	}
-	fmt.Println("token：", token)
-	fmt.Println("title：", title)
+
+	userClaim, err := middlewares.AuthUserCheck(token)
+	if err != nil {
+		UploadResp(c, -1, err.Error())
+		return
+	}
+	// fmt.Println("token：", token)
+	// fmt.Println("title：", title)
 
 	// 3、将数据传到service层
-	code, msg := service.UploadCOS(c, srcFile, head, title, 1, "")
+	code, msg := service.UploadCOS(c, srcFile, head, title, userClaim.Identity)
 	UploadResp(c, code, msg)
 }

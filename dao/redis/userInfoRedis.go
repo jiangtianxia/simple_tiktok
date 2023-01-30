@@ -1,14 +1,15 @@
 package redis
 
 import (
-	"github.com/gin-gonic/gin"
 	"simple_tiktok/utils"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 func RedisAddUserInfo(c *gin.Context, key string, value map[string]interface{}) error {
 	// 开启事务
-	pipeline := utils.RDB.TxPipeline()
+	pipeline := utils.RDB1.TxPipeline()
 	pipeline.HSet(c, key, value)
 	pipeline.Expire(c, key, time.Hour*24*5)
 
