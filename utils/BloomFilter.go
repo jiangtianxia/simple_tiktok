@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 	"fmt"
+	"reflect"
 )
 
 /**
@@ -18,7 +19,7 @@ const (
 )
 
 // 设置种子，保证不同哈希函数有不同的计算方式
-var seeds = []uint{97, 112, 1390, 31342, 3237, 631}
+var seeds = []uint{77, 112, 1390, 31342}
 
 var ctx = context.Background()
 
@@ -51,27 +52,35 @@ func CreateHash(seed uint, value string) uint {
 
 // 将值添加到布隆过滤器
 func BloomFilterAdd(value string) error {
-	result := [6]uint{}
+	result := [4]uint{}
 	for i, seed := range seeds {
 		result[i] = CreateHash(seed, value)
 	}
 
 	// 向key指定的Bloom中添加多个元素
 	// BF.MADD {key} {item} [item…]
-	_, err := RDB9.Do(ctx, "BF.MADD", KeyBloomFilter, result[0], result[1], result[2], result[3], result[4], result[5]).Result()
+	_, err := RDB9.Do(ctx, "BF.MADD", KeyBloomFilter, result[0], result[1], result[2], result[3]).Result()
 	return err
 }
 
 // 判断该值是否存在布隆过滤器
 func BloomFilterCheck(value string) (bool, error) {
-	for _, seed := range seeds {
-		v := CreateHash(seed, value)
+	result := [4]uint{}
+	for i, seed := range seeds {
+		result[i] = CreateHash(seed, value)
+	}
 
-		// 同时检查元素是否可能存在于key指定的Bloom中
-		// BF.EXISTS {key} {item} [item…]
-		res, err := RDB9.Do(ctx, "BF.EXISTS", KeyBloomFilter, v).Result()
-		if err != nil || fmt.Sprintf("%d", res) == "0" {
-			return false, err
+	// 同时检查元素是否可能存在于key指定的Bloom中
+	// BF.MEXISTS {key} {item} [item…]
+	res, err := RDB9.Do(ctx, "BF.MEXISTS", KeyBloomFilter, result[0], result[1], result[2], result[3]).Result()
+	if err != nil {
+		return false, err
+	}
+
+	valueS := reflect.ValueOf(res)
+	for i := 0; i < valueS.Len(); i++ {
+		if fmt.Sprintf("%v", valueS.Index(i)) == "0" {
+			return false, nil
 		}
 	}
 
