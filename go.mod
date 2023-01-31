@@ -22,6 +22,12 @@ require (
 )
 
 require (
+	github.com/fwhezfwhez/cmap v1.3.0 // indirect
+	github.com/fwhezfwhez/errorx v0.0.0-20201127140441-9d82b2c2216f // indirect
+	github.com/gofrs/uuid v4.0.0+incompatible // indirect
+)
+
+require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/apache/rocketmq-client-go/v2 v2.1.1 // indirect

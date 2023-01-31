@@ -48,7 +48,7 @@ func ReceiveChan() {
 			// 用户上传视频时，发送videobasic到消息队列，将信息缓存到redis
 			videoinfo := &models.VideoBasic{}
 			json.Unmarshal(data.Data, videoinfo)
-			fmt.Println(videoinfo)
+			// fmt.Println(videoinfo)
 			PublishAction(*videoinfo)
 		}
 	}
