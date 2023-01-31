@@ -47,6 +47,9 @@ func main() {
 	// 初始化COS客户端
 	utils.InitCos()
 
+	// 初始化熔断器
+	utils.InitCircuitBreaker()
+
 	logger.SugarLogger.Info("初始化配置完成")
 
 	// 配置路由
