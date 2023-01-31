@@ -43,6 +43,14 @@ func UploadCOS(c *gin.Context, srcFile multipart.File, head *multipart.FileHeade
 		return -1, "投稿失败"
 	}
 
+	// 将identity添加到布隆过滤器
+	err = utils.BloomFilterAdd(strconv.Itoa(int(identity)))
+	if err != nil {
+		logger.SugarLogger.Error("BloomFilterAdd Error:" + err.Error())
+		fmt.Println("BloomFilterAdd Error:" + err.Error())
+		return -1, "投稿失败"
+	}
+
 	// 视频保存名
 	filename := strconv.Itoa(int(time.Now().Unix())) + strconv.Itoa(int(identity))
 	key := filename + suffix

@@ -7,6 +7,7 @@ import (
 	"simple_tiktok/router"
 	"simple_tiktok/utils"
 
+	"github.com/apache/rocketmq-client-go/v2/rlog"
 	"github.com/spf13/viper"
 )
 
@@ -38,12 +39,10 @@ func main() {
 
 	// 初始化布隆过滤器
 	utils.InitBloomFilter()
-	// utils.Filter.Add("123")
-	// fmt.Println(utils.Filter.Check("12"))
-	// fmt.Println(utils.Filter.Check("123"))
 
 	// 初始化rocketmq
 	rocket.InitRocketmq()
+	rlog.SetLogLevel("error") // 控制台只打印rocketmq的error日志
 
 	// 初始化COS客户端
 	utils.InitCos()
