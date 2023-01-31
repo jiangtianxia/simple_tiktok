@@ -26,7 +26,7 @@ func UserRegister(c *gin.Context) {
 		})
 		return
 	}
-	registerResponse, err := service.PostUserRegister(username, password)
+	registerResponse, err := service.PostUserRegister(c, username, password)
 
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
