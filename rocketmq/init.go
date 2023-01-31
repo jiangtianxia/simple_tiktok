@@ -3,6 +3,7 @@ package rocket
 import (
 	"encoding/json"
 	"fmt"
+	"simple_tiktok/models"
 
 	"github.com/spf13/viper"
 )
@@ -18,18 +19,11 @@ func InitRocketmq() {
 	go ReceiveChan()
 
 	// 创建消费者组
-	serverTopic := viper.GetString("rocketmq.serverTopic")
-	serverGroupName := viper.GetString("rocketmq.serverGroupName")
-	serverTags := viper.GetString("rocketmq.serverTags")
 	redisTopic := viper.GetString("rocketmq.redisTopic")
 	redisGroupName := viper.GetString("rocketmq.redisGroupName")
 	redisTags := viper.GetString("rocketmq.redisTags")
 
-	go CreateConsumer(serverGroupName, serverTopic, serverTags)
 	go CreateConsumer(redisGroupName, redisTopic, redisTags)
-	go CreateConsumer("Test", "SimpleTopic", "test||login")
-	go CreateConsumer("test", "SimpleTopic", "test||login")
-	go CreateConsumer("test1", "SimpleTopic", "test||login")
 	fmt.Println("rocketmq inited ...... ")
 }
 
@@ -44,27 +38,18 @@ type ChanMsg struct {
 	Data  []byte
 }
 
-var sendChan chan ChanMsg = make(chan ChanMsg, 100)
+var publishChan chan ChanMsg = make(chan ChanMsg, 100)
 var LoginChan chan ChanMsg = make(chan ChanMsg, 100)
 
 func ReceiveChan() {
 	for {
 		select {
-		case data := <-sendChan:
-			info := &Name{}
-			json.Unmarshal(data.Data, info)
-			fmt.Println(info)
-			fmt.Println("sendChan")
-		case data := <-LoginChan:
-			info := &Name{}
-			json.Unmarshal(data.Data, info)
-			fmt.Println(info)
-			fmt.Println("LoginChan")
+		case data := <-publishChan:
+			// 用户上传视频时，发送videobasic到消息队列，将信息缓存到redis
+			videoinfo := &models.VideoBasic{}
+			json.Unmarshal(data.Data, videoinfo)
+			fmt.Println(videoinfo)
+			PublishAction(*videoinfo)
 		}
 	}
-}
-
-type Name struct {
-	Userid   string `json:"userid"`
-	Username string `json:"username"`
 }

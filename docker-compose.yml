@@ -38,6 +38,7 @@ services:
     container_name: tiktok_redis
     image: redis:latest
     command: redis-server /etc/redis/redis.conf              # 容器启动后启动redis服务器
+    privileged: true                                         # 让redis有root权限
     networks:
       - redis_network
     restart: always
@@ -47,7 +48,8 @@ services:
       - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro  # 时区配置
       - ./docker/redis/data:/data
       - ./docker/redis/conf.d/redis.conf:/etc/redis/redis.conf
-  
+      - ./docker/redis/rebloom/rebloom.so:/etc/redis/rebloom.so:rw
+      
   tiktok_app:
     container_name: tiktok_app
     build: .

@@ -1,5 +1,6 @@
 
 uplaodBase: "./upload/"
+uploadAddr: "http://101.43.157.116"
 
 logger: 
   path: "/log"
@@ -16,9 +17,16 @@ mysql:
 redis:
     addr: "101.43.157.116:6379"
     password: "579021"
-    DB: 0
     poolSize: 1000
     minIdleConn: 100
+    RedisExpireTime: 120 # 单位h
+    KeyVideoList: "list:video"
+    KeyUserHashPrefix: "userinfo:"
+    KeyPublishListPrefix: "list:publish:"
+    KeyVideoInfoHashPrefix: "videoinfo:"
+    KetFavoriteSetPrefix: "favorite:"
+
+
     
 
 md5:
@@ -41,12 +49,14 @@ rocketmq:
     addr:  "101.43.157.116:9876"
     serverProducer: "ServerProducer"
     serverTopic:  "ServerTopic"
-    serverGroupName:  "ServerGroup"
     serverTags: "test||login"
+
     redisProducer: "RedisProducer"
     redisTopic:  "RedisTopic"
     redisGroupName:  "RedisGroup"
-    redisTags: "test||login"
+    redisTags: "publishAction||login||loginredis"
+    publishActionTag: "publishAction"
+    ReidsloginTag: "loginredis"
     retrySize:   2
 
 

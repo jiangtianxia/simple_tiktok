@@ -2,7 +2,6 @@ package router
 
 import (
 	"net/http"
-
 	"simple_tiktok/controller"
 	docs "simple_tiktok/docs"
 
