@@ -2,32 +2,25 @@ package mysql
 
 import (
 	//"gorm.io/gorm"
+	"simple_tiktok/models"
 )
 
-// 视频参数
-type Video struct {
-	Id int `json:"id"`
-	Author Author `json:"author"`
-	PlayUrl string `json:"play_url"`
-	CoverUrl string `json:"cover_url"`
-	FavoriteCount int `json:"favorite_count"`
-	CommentCount int `json:"comment_count"`
-	IsFavorite bool `json:"is_favorite"`
-	Title string `json:"title"`
-}
-// 作者参数
-type Author struct {
-	Id int `json:"id"`
-	Name string `json:"name"`
-	FollowCount int `json:"follow_count"` // default
-	FollowerCount int `json:"follower_count"` // default
-	IsFollow bool `json:"is_follow"` // defalut
-}
-
-func QueryVideoList(userName *string) (*[]Video, error) {
+func QueryVideoList(userId *uint64) (*[]models.VideoBasic, error) {
 	return nil, nil
 }
 
-func QueryAuthorInfo(userName *string) (*int, error) {
+func QueryAuthorName(userId *uint64) (*string, error) {
+	return nil, nil
+}
+
+func QueryVideoFavoriteCount (videoId *uint64) (*int, error) {
+	return nil, nil
+}
+
+func QueryCommentFavoriteCount (videoId *uint64) (*int, error) {
+	return nil, nil
+}
+
+func QueryIsFavorite(videoId *uint64, userId *uint64) (*bool, error) {
 	return nil, nil
 }
