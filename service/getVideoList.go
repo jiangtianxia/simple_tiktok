@@ -32,7 +32,7 @@ func GetVideoListByUserId(authorId *uint64, loginUserId *uint64) (*[]Video, erro
 			return nil, err
 		}
 		// 获取评论数
-		commentCount, err := mysql.QueryCommentFavoriteCount(&(*videoListFromDao)[i].Identity)
+		commentCount, err := mysql.QueryCommentCount(&(*videoListFromDao)[i].Identity)
 		if err != nil {
 			return nil, err
 		}
@@ -49,7 +49,7 @@ func GetVideoListByUserId(authorId *uint64, loginUserId *uint64) (*[]Video, erro
 			CoverUrl: (*videoListFromDao)[i].CoverUrl,
 			FavoriteCount: *favoriteCount,
 			CommentCount: *commentCount,
-			IsFavorite: *isFavorite,
+			IsFavorite: isFavorite,
 		})
 	}
 
@@ -61,8 +61,8 @@ type Video struct {
 	Author Author `json:"author"`
 	PlayUrl string `json:"play_url"`
 	CoverUrl string `json:"cover_url"`
-	FavoriteCount int `json:"favorite_count"`
-	CommentCount int `json:"comment_count"`
+	FavoriteCount int64 `json:"favorite_count"`
+	CommentCount int64 `json:"comment_count"`
 	IsFavorite bool `json:"is_favorite"`
 	Title string `json:"title"`
 }
@@ -70,7 +70,7 @@ type Video struct {
 type Author struct {
 	Id uint64 `json:"id"`
 	Name string `json:"name"`
-	FollowCount int `json:"follow_count"` // default
-	FollowerCount int `json:"follower_count"` // default
+	FollowCount int64 `json:"follow_count"` // default
+	FollowerCount int64 `json:"follower_count"` // default
 	IsFollow bool `json:"is_follow"` // defalut
 }
