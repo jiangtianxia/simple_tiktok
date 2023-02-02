@@ -1,10 +1,13 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
 	"simple_tiktok/dao/mysql"
 	myRedis "simple_tiktok/dao/redis"
 	"simple_tiktok/logger"
+	"simple_tiktok/models"
+	rocket "simple_tiktok/rocketmq"
 	"simple_tiktok/utils"
 	"strconv"
 
@@ -31,7 +34,7 @@ func UserInfo(c *gin.Context, userId string) (map[string]interface{}, error) {
 		user, err := mysql.FindUserByIdentity(identityUint64)
 		if err != nil {
 			// 防止缓存击穿
-			redisErr := myRedis.RedisAddUserInfo(c, hashKey, map[string]interface{}{
+			redisErr := myRedis.RedisAddUserInfo(hashKey, map[string]interface{}{
 				"identity": viper.GetInt("redis.defaultErrorIdentity"),
 			})
 			if redisErr != nil {
@@ -41,18 +44,32 @@ func UserInfo(c *gin.Context, userId string) (map[string]interface{}, error) {
 			return nil, err
 		}
 
-		// 新增缓存
-		var newCathe = map[string]interface{}{
-			"identity": user.Identity,
-			"username": user.Username,
+		// 使用时间队列新增缓存
+		var userInfo = models.UserBasic{
+			Identity: user.Identity,
+			Username: user.Username,
 		}
-
-		err = myRedis.RedisAddUserInfo(c, hashKey, newCathe)
+		data, _ := json.Marshal(userInfo)
+		redisTopic := viper.GetString("rocketmq.redisTopic")
+		Producer := viper.GetString("rocketmq.redisProducer")
+		tag := viper.GetString("rocketmq.userInfoTag")
+		msg, err := rocket.SendMsg(c, Producer, redisTopic, tag, data)
 		if err != nil {
-			logger.SugarLogger.Error(err)
 			return nil, err
 		}
-		fmt.Println("新增缓存：", newCathe)
+		fmt.Println(msg)
+		fmt.Println("新增缓存：", userInfo)
+		//// 新增缓存
+		//var newCathe = map[string]interface{}{
+		//	"identity": user.Identity,
+		//	"username": user.Username,
+		//}
+		//
+		//err = myRedis.RedisAddUserInfo(hashKey, newCathe)
+		//if err != nil {
+		//	logger.SugarLogger.Error(err)
+		//	return nil, err
+		//}
 
 		// 返回结果
 		var res = map[string]interface{}{
@@ -75,23 +92,6 @@ func UserInfo(c *gin.Context, userId string) (map[string]interface{}, error) {
 		"is_follow":      false,
 	}
 	fmt.Println("已有缓存", cathe)
-
-	//// 使用时间队列
-	//var userInfo = models.UserBasic{
-	//	Identity: 1,
-	//	Username: "merry",
-	//	Password: "123456",
-	//}
-	//fmt.Println(userInfo)
-	//redisTopic := viper.GetString("rocketmq.redisTopic")
-	//Producer := viper.GetString("rocketmq.redisProducer")
-	//tag := viper.GetString("rocketmq.userInfoTag")
-	//data, _ := json.Marshal(userInfo)
-	//msg, err := rocket.SendMsg(c, Producer, redisTopic, tag, data)
-	//fmt.Println(msg)
-	//if err != nil {
-	//	return nil, err
-	//}
 
 	return res, nil
 }
