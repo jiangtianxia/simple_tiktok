@@ -2,6 +2,8 @@
 uplaodBase: "./upload/"
 uploadAddr: "http://101.43.157.116"
 
+feedVideoCnt: 30
+
 logger: 
   path: "/log"
 

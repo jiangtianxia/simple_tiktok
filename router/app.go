@@ -35,10 +35,13 @@ func Router() *gin.Engine {
 		/*
 		* 基础接口
 		 */
-		v1.GET("/user", controller.UserInfo)
+		v1.GET("/user", controller.UserInfo1)
 
 		// 视频投稿
 		v1.POST("/publish/action/", controller.Publish)
+
+		// 视频流接口
+		v1.GET("/feed", controller.FeedVideo)
 	}
 
 	r.GET("/test", controller.Test)
