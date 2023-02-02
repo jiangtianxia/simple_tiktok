@@ -21,7 +21,7 @@ func QueryVideoList(userId *uint64) (*[]models.VideoBasic, error) {
 // 查询id对应的用户名
 func QueryAuthorName(userId *uint64) (*string, error) {
 	var author models.UserBasic
-	utils.DB.Table("user_basic").Where("user_identity = ?", userId).Find(&author)
+	utils.DB.Table("user_basic").Where("identity = ?", userId).Find(&author)
 	return &author.Username, nil
 }
 // 查询视频喜欢数
