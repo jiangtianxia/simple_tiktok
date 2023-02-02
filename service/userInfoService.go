@@ -17,7 +17,7 @@ import (
  * @Description 获取用户信息
  * @Date 14:00 2023/1/31
  **/
-func UserInfo(c *gin.Context, userId string) (interface{}, error) {
+func UserInfo(c *gin.Context, userId string) (map[string]interface{}, error) {
 	hashKey := viper.GetString("redis.KeyUserHashPrefix") + userId
 	// 判断是否有缓存
 	if utils.RDB1.Exists(c, hashKey).Val() == 0 {
