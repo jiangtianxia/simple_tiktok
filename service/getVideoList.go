@@ -21,8 +21,9 @@ import (
 func GetVideoListByUserId(authorId *uint64, loginUserId *uint64) (*[]Video, error){
 	ctx := context.Background()
 	// 1. 获取作者用户名
-	var authorName *string
-	key := fmt.Sprintf("%s%d",viper.GetString("redis.KeyUserHashPrefix"), authorId)
+	authorName := new(string)
+	key := fmt.Sprintf("%s%d",viper.GetString("redis.KeyUserHashPrefix"), *authorId)
+	fmt.Println(key)
 	n, err := utils.RDB1.Exists(ctx, key).Result()
 	if err != nil {
 		return nil, err
@@ -73,7 +74,7 @@ func GetVideoListByUserId(authorId *uint64, loginUserId *uint64) (*[]Video, erro
 	for i := range *videoListFromDao {
 		videoId := (*videoListFromDao)[i].Identity 
 		// 5. 获取赞数
-		var favoriteCount *int64
+		favoriteCount := new(int64)
 		key := fmt.Sprintf("%s%d",viper.GetString("redis.KeyVideoFavoriteCountStringPrefix"), videoId)
 		// 先从RDB0中查看键值对是否存在
 		n, err := utils.RDB0.Exists(ctx, key).Result()
@@ -103,7 +104,7 @@ func GetVideoListByUserId(authorId *uint64, loginUserId *uint64) (*[]Video, erro
 			*favoriteCount = int64(iFavoriteCount)
 		}
 		// 6. 获取评论数
-		var commentCount *int64
+		commentCount := new(int64)
 		key = fmt.Sprintf("%s%d",viper.GetString("redis.KeyVideoCommentCountStringPrefix"), videoId)
 		// 先从RDB0中查看键值对是否存在
 		n, err = utils.RDB0.Exists(ctx, key).Result()
