@@ -16,17 +16,12 @@ import (
 
 func UserRegister(c *gin.Context) {
 	username := c.Query("username")
-	getpassword, _ := c.Get("password")
-	password, ok := getpassword.(string)
-	if !ok {
-		c.JSON(http.StatusOK, gin.H{
-			"message":     "密码格式错误",
-			"status_code": -1,
-			"status_msg":  ok,
-		})
-		return
-	}
-	registerResponse, err := service.PostUserRegister(c, username, password)
+	password := c.Query("password")
+	
+	req := service.RegisterRequire{}
+	req.Username = username
+	req.Password = password
+	registerResponse, err := service.PostUserRegister(c, &req)
 
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{

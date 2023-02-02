@@ -31,12 +31,11 @@ func Router() *gin.Engine {
 		* 公共接口
 		 */
 		v1.GET("/hello", controller.Hello)
-		v1.GET("/hello", controller.UserRegister)
 		/*
 		* 基础接口
 		 */
 		v1.GET("/user", controller.UserInfo)
-
+		v1.GET("/register", controller.UserRegister)
 		// 视频投稿
 		v1.POST("/publish/action/", controller.Publish)
 
