@@ -52,7 +52,9 @@ func GetPublishListReturn(c *gin.Context, status_code int, status_msg string, vi
 	var response GetPublishListResponse
 	response.StatusCode = status_code
 	response.StatusMsg = status_msg
-	response.VideoList = *video_list
+	if video_list != nil {
+		response.VideoList = *video_list
+	}
 
 	c.JSON(200,  response)
 }
