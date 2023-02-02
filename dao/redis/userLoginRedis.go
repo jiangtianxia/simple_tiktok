@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"fmt"
 	"github.com/spf13/viper"
 	"simple_tiktok/models"
 	"simple_tiktok/utils"
@@ -31,6 +32,7 @@ func RedisLogin(userLogin models.UserBasic) error {
 		"username": userLogin.Username,
 		"password": userLogin.Password,
 	}
+	fmt.Printf("进入")
 	// 开启事务
 	pipeline := utils.RDB3.Pipeline()
 	pipeline.HSet(ctx, key, value)

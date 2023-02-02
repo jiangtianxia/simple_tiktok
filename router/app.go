@@ -37,7 +37,7 @@ func Router() *gin.Engine {
 		 */
 		v1.GET("/user", controller.UserInfo)
 		//用户操作
-		v1.GET("user/login", controller.Userlogin)
+		v1.POST("/user/login", controller.Userlogin)
 
 		// 视频投稿
 		v1.POST("/publish/action/", controller.Publish)

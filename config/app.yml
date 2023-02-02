@@ -54,7 +54,7 @@ rocketmq:
     redisProducer: "RedisProducer"
     redisTopic:  "RedisTopic"
     redisGroupName:  "RedisGroup"
-    redisTags: "publishAction||login||loginredis"
+    redisTags: "publishAction||login||userLoginRedis"
     publishActionTag: "publishAction"
     userLoginTag: "userLogin"
     retrySize:   2

@@ -10,14 +10,14 @@ func IsExist(username string) error {
 	return utils.DB.Where("username = ?", username).First(&userLogin).Error
 }
 
-func QueryPassword(username string) string {
+func QueryInfo(username string) models.UserBasic {
 	userLogin := models.UserBasic{}
-	utils.DB.Select("password").Where("username=?", username).First(&userLogin)
-	return userLogin.Password
+	utils.DB.Where("username=?", username).First(&userLogin)
+	return userLogin
 }
 
-func QueryIdentity(username string) uint64 {
-	userLogin := models.UserBasic{}
-	utils.DB.Select("identity").Where("username=?", username).First(&userLogin)
-	return userLogin.Identity
-}
+//func QueryIdentity(username string) uint64 {
+//	userLogin := models.UserBasic{}
+//	utils.DB.Select("identity").Where("username=?", username).First(&userLogin)
+//	return userLogin.Identity
+//}
