@@ -24,7 +24,10 @@ redis:
     KeyUserHashPrefix: "userinfo:"
     KeyPublishListPrefix: "list:publish:"
     KeyVideoInfoHashPrefix: "videoinfo:"
-    KetFavoriteSetPrefix: "favorite:"
+    KeyFavoriteSetPrefix: "favorite:"
+	KeyUserLoveVideoStringPrefix: "user:love:video:"
+	KeyVideoCommentCountStringPrefix: "video:comment:count:"
+	KeyVideoFavoriteCountStringPrefix: "video:favorite:count:"
 
 
     
@@ -69,4 +72,3 @@ cos:
 CircuitBreaker:
     roundInterval:  15 # 熔断周期，单位s
     recoverInterval: 5 # 冷却周期，单位s
-        

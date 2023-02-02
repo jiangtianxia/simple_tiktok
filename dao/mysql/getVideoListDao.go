@@ -4,6 +4,14 @@ import (
 	"simple_tiktok/models"
 	"simple_tiktok/utils"
 )
+
+/** 
+ * 获取发布列表的数据库查询操作
+ * @Author pjh
+ * @Summary 
+ * @Tags 
+ **/
+
 // 查询视频列表
 func QueryVideoList(userId *uint64) (*[]models.VideoBasic, error) {
 	var videoInfoList []models.VideoBasic
