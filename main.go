@@ -38,7 +38,7 @@ func main() {
 	utils.InitCurrentLimit()
 
 	// 初始化布隆过滤器
-	utils.InitBloomFilter()
+	//utils.InitBloomFilter()
 
 	// 初始化rocketmq
 	rocket.InitRocketmq()
