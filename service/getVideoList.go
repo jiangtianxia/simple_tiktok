@@ -95,6 +95,7 @@ func GetVideoListByUserId(authorId *uint64, loginUserId *uint64) (*[]Video, erro
 				IsFavorite: isFavorite,
 			})
 		}
+		return videoList,nil
 		
 	}
 
@@ -131,12 +132,13 @@ func GetVideoListByUserId(authorId *uint64, loginUserId *uint64) (*[]Video, erro
 
 		// B8. 对视频信息进行缓存
 		// 缓存用户发布的视频列表
-		key = fmt.Sprintf("")
+		key = fmt.Sprintf("%s%d", viper.GetString("redis.KeyUserPublishSetPrefix"), *authorId)
 		err = Myredis.RedisAddSetRDB4(key, fmt.Sprintf("%d", videoId))
 		if err != nil {
 			return nil, err
 		}
 		// 缓存视频信息
+		key = fmt.Sprintf("%s%d", viper.GetString("redis.KeyVideoInfoHashPrefix"), videoId)
 		err = Myredis.RedisSetHashRDB3(key, &map[string]interface{}{
 			"play_url": (*videoListFromDao)[i].PlayUrl,
 			"cover_url": (*videoListFromDao)[i].CoverUrl,
@@ -161,7 +163,6 @@ func GetVideoListByUserId(authorId *uint64, loginUserId *uint64) (*[]Video, erro
 func getAuthorName(authorId *uint64) (*string, error){
 	authorName := new(string)
 	key := fmt.Sprintf("%s%d",viper.GetString("redis.KeyUserHashPrefix"), *authorId)
-	fmt.Println(key)
 	n, err := utils.RDB1.Exists(ctx, key).Result()
 	if err != nil {
 		return nil, err
