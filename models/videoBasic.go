@@ -11,7 +11,7 @@ type VideoBasic struct {
 	PlayUrl      string `gorm:"column:play_url;type:varchar(255);"`  // 视频路径
 	CoverUrl     string `gorm:"column:cover_url;type:varchar(255);"` // 封面路径
 	Title        string `gorm:"column:title;type:text;"`             // 视频标题
-	PublishTime  int64  `gorm:"column:publish_time;type:int64;"`     // 发布时间
+	PublishTime  int64  `gorm:"column:publish_time;type:int;"`       // 发布时间
 }
 
 func (table *VideoBasic) TableName() string {
