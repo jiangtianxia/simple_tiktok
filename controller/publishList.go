@@ -21,7 +21,7 @@ func GetPublishList(c *gin.Context) {
 	if err != nil {
 		logger.SugarLogger.Error("Atoi error:" + err.Error())
 		fmt.Println("Atoi Error:" + err.Error())
-		GetPublishListReturn(c, -1, fmt.Sprintf("转换字符串 %s 为整型失败", userIdS), nil)
+		GetPublishListReturn(c, -1, "用户不存在", nil)
 		return
 	}
 	userId := uint64(userIdI)
@@ -30,7 +30,7 @@ func GetPublishList(c *gin.Context) {
 	if err != nil {
 		logger.SugarLogger.Error("Get Token Error:" + err.Error())
 		fmt.Println("Get Token Error:" + err.Error())
-		GetPublishListReturn(c, -1, "Token验证失败", nil)
+		GetPublishListReturn(c, -1, "Token失效", nil)
 		return
 	}
 	// 获取登录者的UserId
