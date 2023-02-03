@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"simple_tiktok/dao/mysql"
 	"simple_tiktok/models"
 	"simple_tiktok/utils"
 	"strconv"
@@ -64,7 +65,27 @@ func RedisAddPublishList(userId string, videoId string) error {
 	// 1、获取前缀，拼接key
 	key := viper.GetString("redis.KeyPublishListPrefix") + userId
 
-	// 2、头部插入数据到key当中
+	// 2、判断key是否存在
+	if utils.RDB4.Exists(ctx, key).Val() == 0 {
+		// 1）不存在，查询数据库，将数据存到缓存，当中
+		identity, _ := strconv.Atoi(userId)
+		videoList, err := mysql.FindVideoByUserIdentity(uint64(identity))
+		if err != nil {
+			return err
+		}
+
+		// 头部插入数据到key当中
+		// LPUSH KEY_NAME VALUE1.. VALUEN
+		pipeline := utils.RDB4.Pipeline()
+		for _, video := range videoList {
+			pipeline.LPush(ctx, key, video.Identity)
+		}
+		pipeline.Expire(ctx, key, time.Duration(viper.GetInt("redis.RedisExpireTime"))*time.Hour)
+		_, err = pipeline.Exec(ctx)
+		return err
+	}
+
+	// 头部插入数据到key当中
 	// LPUSH KEY_NAME VALUE1.. VALUEN
 	pipeline := utils.RDB4.Pipeline()
 	pipeline.LPush(ctx, key, videoId)

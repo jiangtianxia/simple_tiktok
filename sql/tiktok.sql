@@ -11,7 +11,7 @@
  Target Server Version : 80032
  File Encoding         : 65001
 
- Date: 30/01/2023 17:35:00
+ Date: 03/02/2023 22:34:04
 */
 
 SET NAMES utf8mb4;
@@ -33,7 +33,7 @@ CREATE TABLE `comment_video`  (
   `comment_time` datetime(0) NULL DEFAULT NULL COMMENT '评论时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_comment_video_deleted_at`(`deleted_at`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for favourite_video
@@ -49,7 +49,7 @@ CREATE TABLE `favourite_video`  (
   `status` tinyint(1) NULL DEFAULT NULL COMMENT '点赞状态（0：未点赞，1：已点赞）',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_favourite_video_deleted_at`(`deleted_at`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for user_basic
@@ -65,7 +65,7 @@ CREATE TABLE `user_basic`  (
   `password` varchar(36) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '密码',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_user_basic_deleted_at`(`deleted_at`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 35 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for video_basic
@@ -81,9 +81,9 @@ CREATE TABLE `video_basic`  (
   `play_url` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '视频url',
   `cover_url` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '封面url',
   `title` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL COMMENT '标题',
-  `publish_time` datetime(0) NULL DEFAULT NULL COMMENT '发布时间',
+  `publish_time` int(0) NULL DEFAULT NULL COMMENT '发布时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_video_basic_deleted_at`(`deleted_at`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
