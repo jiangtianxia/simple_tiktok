@@ -4,7 +4,6 @@ import (
 	"simple_tiktok/dao/mysql"
 	"github.com/spf13/viper"
 	"simple_tiktok/utils"
-	"simple_tiktok/models"
 	"fmt"
 	"context"
 	"strconv"
@@ -17,10 +16,149 @@ import (
  * @Summary 
  * @Tags 
  **/
+ var ctx context.Context
 
 func GetVideoListByUserId(authorId *uint64, loginUserId *uint64) (*[]Video, error){
-	ctx := context.Background()
+	ctx = context.Background()
+
 	// 1. 获取作者用户名
+	authorName,err := getAuthorName(authorId)
+	if err != nil {
+		return nil, err
+	}
+
+	// 2. 创建作者对象
+	author := Author{
+		FollowCount: 0,
+		FollowerCount: 0,
+		IsFollow: false,
+		Name: *authorName,
+		Id: *authorId,
+	}
+
+	// 3. 尝试从缓存中获取用户发表的视频id列表
+	key := fmt.Sprintf("%s%d", viper.GetString("redis.KeyUserPublishSetPrefix"), *authorId)
+	n, err := utils.RDB4.Exists(ctx, key).Result()
+	if err != nil {
+		return nil, err
+	}
+
+	// 若缓存中存在信息则使用 A 计划
+	// A4. 创建返回的视频列表参数
+	if n != 0 {
+		videoIds, err := utils.RDB4.SMembers(ctx, key).Result()
+		if err != nil {
+			return nil, err
+		}
+		videoList := &[]Video{}
+		for i := range videoIds {
+			sVideoId := videoIds[i]
+			iVideoId, err := strconv.Atoi(sVideoId)
+			if err != nil {
+				return nil, err
+			}
+			videoId := uint64(iVideoId)
+
+			// A5. 获取赞数
+			favoriteCount, err := getVideoFavoriteCount(videoId)
+			if err != nil {
+				return nil, err
+			}
+
+			// A6. 获取评论数
+			commentCount, err := getVideoCommentCount(videoId)
+			if err != nil {
+				return nil, err
+			}
+
+			// A7. 判断使用者是否喜欢该视频
+			bIsFavorite, err := judgeLoginUserLoveVideo(videoId, *loginUserId)
+			isFavorite := *bIsFavorite
+			if err != nil {
+				return nil, err
+			}
+
+			// A8. 获取视频封面url和视频url
+			coverUrl, playUrl, err := tryToGetVideoInfo(&videoId)
+			if err != nil {
+				return nil, err
+			}
+
+			// A9. 创建单个视频对象
+			*videoList = append(*videoList, Video{
+				Id: videoId,
+				Author: author,
+				PlayUrl: *playUrl,
+				CoverUrl: *coverUrl,
+				FavoriteCount: *favoriteCount,
+				CommentCount: *commentCount,
+				IsFavorite: isFavorite,
+			})
+		}
+		
+	}
+
+	// 以下为 B 计划，需要对 用户发表的视频id列表 和 视频信息 进行缓存
+	// 从数据库中获取视频信息
+	videoListFromDao, err := mysql.QueryVideoList(authorId)
+	if err != nil {
+		return nil, err
+	}
+
+	// B4. 创建返回的视频列表参数
+	videoList := &[]Video{}
+	for i := range *videoListFromDao {
+		videoId := (*videoListFromDao)[i].Identity 
+
+		// B5. 获取赞数
+		favoriteCount, err := getVideoFavoriteCount(videoId)
+		if err != nil {
+			return nil, err
+		}
+
+		// B6. 获取评论数
+		commentCount, err := getVideoCommentCount(videoId)
+		if err != nil {
+			return nil, err
+		}
+
+		// B7. 判断使用者是否喜欢该视频
+		bIsFavorite, err := judgeLoginUserLoveVideo(videoId, *loginUserId)
+		isFavorite := *bIsFavorite
+		if err != nil {
+			return nil, err
+		}
+
+		// B8. 对视频信息进行缓存
+		// 缓存用户发布的视频列表
+		key = fmt.Sprintf("")
+		err = Myredis.RedisAddSetRDB4(key, fmt.Sprintf("%d", videoId))
+		if err != nil {
+			return nil, err
+		}
+		// 缓存视频信息
+		err = Myredis.RedisSetHashRDB3(key, &map[string]interface{}{
+			"play_url": (*videoListFromDao)[i].PlayUrl,
+			"cover_url": (*videoListFromDao)[i].CoverUrl,
+		})
+		if err != nil {
+			return nil, err
+		}
+		// B9. 创建单个视频对象
+		*videoList = append(*videoList, Video{
+			Id: videoId,
+			Author: author,
+			PlayUrl: (*videoListFromDao)[i].PlayUrl,
+			CoverUrl: (*videoListFromDao)[i].CoverUrl,
+			FavoriteCount: *favoriteCount,
+			CommentCount: *commentCount,
+			IsFavorite: isFavorite,
+		})
+	}
+
+	return videoList, nil
+}
+func getAuthorName(authorId *uint64) (*string, error){
 	authorName := new(string)
 	key := fmt.Sprintf("%s%d",viper.GetString("redis.KeyUserHashPrefix"), *authorId)
 	fmt.Println(key)
@@ -37,6 +175,7 @@ func GetVideoListByUserId(authorId *uint64, loginUserId *uint64) (*[]Video, erro
 		if err != nil {
 			return nil, err
 		}
+		return authorName, nil
 	}
 	*authorName, _ = utils.RDB1.HGet(ctx, key, "username").Result()
 	// 没有username字段
@@ -50,133 +189,180 @@ func GetVideoListByUserId(authorId *uint64, loginUserId *uint64) (*[]Video, erro
 			return nil, err
 		}
 	}
-	// 2. 创建作者对象
-	author := Author{
-		FollowCount: 0,
-		FollowerCount: 0,
-		IsFollow: false,
-		Name: *authorName,
-		Id: *authorId,
-	}
-	// 3. 获取视频信息
-	videoListFromDao := &[]models.VideoBasic{}
-	// 感觉缓存起来有点麻烦，先直接数据库查了，看看能不能实现基础功能再缓存优化
-	// 要缓存的话key: userId, value: list[videoId, ...]，缓存位置在RDB4
-	// 然后在得到的list中遍历是否有videoId的缓存
-	// 但是这样的话下面的函数是不用写的，需要写的是查询某个用户的所有视频id，但你查了id，不如直接返回所有字段
-	// 或者在返回的所有字段里，处理各个字段，达到上面的缓存效果
-	videoListFromDao, err = mysql.QueryVideoList(authorId)
+	return authorName, nil
+}
+
+// 获取视频赞数的函数
+func getVideoFavoriteCount(videoId uint64) (*int64, error) {
+	favoriteCount := new(int64)
+	key := fmt.Sprintf("%s%d",viper.GetString("redis.KeyVideoFavoriteCountStringPrefix"), videoId)
+	// 先从RDB0中查看键值对是否存在
+	n, err := utils.RDB0.Exists(ctx, key).Result()
 	if err != nil {
 		return nil, err
 	}
-	// 4. 创建返回的视频列表参数
-	videoList := &[]Video{}
-	for i := range *videoListFromDao {
-		videoId := (*videoListFromDao)[i].Identity 
-		// 5. 获取赞数
-		favoriteCount := new(int64)
-		key := fmt.Sprintf("%s%d",viper.GetString("redis.KeyVideoFavoriteCountStringPrefix"), videoId)
-		// 先从RDB0中查看键值对是否存在
-		n, err := utils.RDB0.Exists(ctx, key).Result()
+	// redis中有key，获取string转换成int64
+	if n != 0 {
+		sFavoriteCount, err := utils.RDB0.Get(ctx, key).Result()
 		if err != nil {
 			return nil, err
 		}
-		// 如果redis中没有key，调用mysql的方法获得状态
-		if n == 0 {
-			favoriteCount, err = mysql.QueryVideoFavoriteCount(&videoId)
-			if err != nil {
-				return nil, err
-			}
-			err = Myredis.RedisAddStringRDB0(key, fmt.Sprintf("%d", *favoriteCount))
-			if err != nil {
-				return nil, err
-			}
-		// redis中有key，获取string转换成int64
-		} else {
-			sFavoriteCount, err := utils.RDB0.Get(ctx, key).Result()
-			if err != nil {
-				return nil, err
-			}
-			iFavoriteCount, err := strconv.Atoi(sFavoriteCount)
-			if err != nil {
-				return nil, err
-			}
-			*favoriteCount = int64(iFavoriteCount)
-		}
-		// 6. 获取评论数
-		commentCount := new(int64)
-		key = fmt.Sprintf("%s%d",viper.GetString("redis.KeyVideoCommentCountStringPrefix"), videoId)
-		// 先从RDB0中查看键值对是否存在
-		n, err = utils.RDB0.Exists(ctx, key).Result()
+		iFavoriteCount, err := strconv.Atoi(sFavoriteCount)
 		if err != nil {
 			return nil, err
 		}
-		// 如果redis中没有key，调用mysql的方法获得状态
-		if n == 0 {
-			commentCount, err = mysql.QueryCommentCount(&videoId)
-			if err != nil {
-				return nil, err
-			}
-			err = Myredis.RedisAddStringRDB0(key, fmt.Sprintf("%d", *commentCount))
-			if err != nil {
-				return nil, err
-			}
-		// redis中有key，获取string转换成int64
-		} else {
-			sCommentCount, err := utils.RDB0.Get(ctx, key).Result()
-			if err != nil {
-				return nil, err
-			}
-			iCommentCount, err := strconv.Atoi(sCommentCount)
-			if err != nil {
-				return nil, err
-			}
-			*commentCount = int64(iCommentCount)
-		}
-		// 7. 判断使用者是否喜欢该视频
-		var isFavorite bool
-		key = fmt.Sprintf("%s%d-%d",viper.GetString("redis.KeyUserLoveVideoStringPrefix"), videoId, *loginUserId)
-		// 先从RDB0中查看键值对是否存在
-		n, err = utils.RDB0.Exists(ctx, key).Result()
-		if err != nil {
-			return nil, err
-		}
-		// 如果redis中没有key，调用mysql的方法获得状态
-		if n == 0 {
-			isFavorite, err = mysql.QueryIsFavorite(&videoId, loginUserId)
-			if err != nil {
-				return nil, err
-			}
-			// 在redis中存储，0表示不喜欢，1表示喜欢
-			if isFavorite {
-				err = Myredis.RedisAddStringRDB0(key, "1")
-			} else {
-				err = Myredis.RedisAddStringRDB0(key, "0")
-			}
-			if err != nil {
-				return nil, err
-			}
-		// redis中有key，获取string转换成bool
-		} else {
-			isFavorite = true
-			if utils.RDB0.Get(ctx, key).Val() == "0" {
-				isFavorite = false
-			}
-		}
-		// 8. 创建单个视频对象
-		*videoList = append(*videoList, Video{
-			Id: videoId,
-			Author: author,
-			PlayUrl: (*videoListFromDao)[i].PlayUrl,
-			CoverUrl: (*videoListFromDao)[i].CoverUrl,
-			FavoriteCount: *favoriteCount,
-			CommentCount: *commentCount,
-			IsFavorite: isFavorite,
-		})
+		*favoriteCount = int64(iFavoriteCount)
+		return favoriteCount, nil
 	}
-
-	return videoList, nil
+	// 如果redis中没有key，调用mysql的函数获得状态
+	favoriteCount, err = mysql.QueryVideoFavoriteCount(&videoId)
+	if err != nil {
+		return nil, err
+	}
+	err = Myredis.RedisAddStringRDB0(key, fmt.Sprintf("%d", *favoriteCount))
+	if err != nil {
+		return nil, err
+	}
+	return favoriteCount, nil
 }
+
+// 获取视频评论数的函数
+func getVideoCommentCount(videoId uint64) (*int64, error) {
+	commentCount := new(int64)
+	key := fmt.Sprintf("%s%d",viper.GetString("redis.KeyVideoCommentCountStringPrefix"), videoId)
+	// 先从RDB0中查看键值对是否存在
+	n, err := utils.RDB0.Exists(ctx, key).Result()
+	if err != nil {
+		return nil, err
+	}
+	// redis中有key，获取string转换成int64
+	if n != 0 {
+		sCommentCount, err := utils.RDB0.Get(ctx, key).Result()
+		if err != nil {
+			return nil, err
+		}
+		iCommentCount, err := strconv.Atoi(sCommentCount)
+		if err != nil {
+			return nil, err
+		}
+		*commentCount = int64(iCommentCount)
+		return commentCount, nil
+	}
+	// 如果redis中没有key，调用mysql的方法获得状态
+	commentCount, err = mysql.QueryCommentCount(&videoId)
+	if err != nil {
+		return nil, err
+	}
+	err = Myredis.RedisAddStringRDB0(key, fmt.Sprintf("%d", *commentCount))
+	if err != nil {
+		return nil, err
+	}
+	return commentCount, nil
+}
+
+// 判断登录的用户是否喜欢指定视频
+func judgeLoginUserLoveVideo(videoId uint64, loginUserId uint64) (*bool, error) {
+	var isFavorite bool
+	key := fmt.Sprintf("%s%d-%d",viper.GetString("redis.KeyUserLoveVideoStringPrefix"), videoId, loginUserId)
+	// 先从RDB0中查看键值对是否存在
+	n, err := utils.RDB0.Exists(ctx, key).Result()
+	if err != nil {
+		return nil, err
+	}
+	// redis中有key，获取string转换成bool
+	if n != 0 {
+		isFavorite = true
+		if utils.RDB0.Get(ctx, key).Val() == "0" {
+			isFavorite = false
+		}
+		return &isFavorite, nil
+	}
+	// 如果redis中没有key，调用mysql的方法获得状态
+	isFavorite, err = mysql.QueryIsFavorite(&videoId, &loginUserId)
+	if err != nil {
+		return nil, err
+	}
+	// 在redis中存储，0表示不喜欢，1表示喜欢
+	if isFavorite {
+		err = Myredis.RedisAddStringRDB0(key, "1")
+	} else {
+		err = Myredis.RedisAddStringRDB0(key, "0")
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &isFavorite, nil
+}
+
+// 从缓存中获取封面地址和视频播放地址，缓存中没有的话就从数据库中查询，并缓存视频的播放地址，封面地址
+func tryToGetVideoInfo(videoId *uint64) (*string, *string, error) {
+	key := fmt.Sprintf("%s%d", viper.GetString("redis.KeyVideoInfoHashPrefix"), *videoId)
+	// 判断视频键是否存在
+	n, err := utils.RDB3.Exists(ctx, key).Result()
+	if err != nil {
+		return nil, nil, err
+	}
+	// 视频键不存在，写入缓存直接返回
+	if n == 0 {
+		videoBasic, err := mysql.QueryVideoInfoByVideoId(videoId)
+		if err != nil {
+			return nil, nil, err
+		}
+		// 缓存
+		err = Myredis.RedisSetHashRDB3(key, &map[string]interface{}{
+			"play_url": (*videoBasic).PlayUrl,
+			"cover_url": (*videoBasic).CoverUrl,
+		})
+		if err != nil {
+			return nil, nil, err
+		}
+		return &(*videoBasic).CoverUrl, &(*videoBasic).PlayUrl, nil
+	}
+	// 视频键存在，从缓存中读取封面地址
+	coverUrl, err := utils.RDB3.HGet(ctx, key, "cover_url").Result()
+	if err != nil {
+		return nil, nil, err
+	}
+	// 未使用该字段，从数据库中获取并写入缓存
+	if coverUrl == "" {
+		videoBasic, err := mysql.QueryVideoInfoByVideoId(videoId)
+		if err != nil {
+			return nil, nil, err
+		}
+		// 缓存
+		err = Myredis.RedisSetHashRDB3(key, &map[string]interface{}{
+			"play_url": (*videoBasic).PlayUrl,
+			"cover_url": (*videoBasic).CoverUrl,
+		})
+		if err != nil {
+			return nil, nil, err
+		}
+		return &(*videoBasic).CoverUrl, &(*videoBasic).PlayUrl, nil
+	}
+	// 获取播放地址
+	playUrl, err := utils.RDB3.HGet(ctx, key, "play_url").Result()
+	if err != nil {
+		return nil, nil, err
+	}
+	// 未使用该字段，从数据库中获取并写入缓存
+	if playUrl == "" {
+		videoBasic, err := mysql.QueryVideoInfoByVideoId(videoId)
+		if err != nil {
+			return nil, nil, err
+		}
+		// 缓存
+		err = Myredis.RedisSetHashRDB3(key, &map[string]interface{}{
+			"play_url": (*videoBasic).PlayUrl,
+			"cover_url": (*videoBasic).CoverUrl,
+		})
+		if err != nil {
+			return nil, nil, err
+		}
+		return &(*videoBasic).CoverUrl, &(*videoBasic).PlayUrl, nil
+	}
+	return &coverUrl, &playUrl, nil
+}
+
 // 视频参数
 type Video struct {
 	Id uint64 `json:"id"`
@@ -188,6 +374,7 @@ type Video struct {
 	IsFavorite bool `json:"is_favorite"`
 	Title string `json:"title"`
 }
+
 // 作者参数
 type Author struct {
 	Id uint64 `json:"id"`

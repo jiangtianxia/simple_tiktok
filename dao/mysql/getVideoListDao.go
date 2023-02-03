@@ -45,3 +45,9 @@ func QueryIsFavorite(videoId *uint64, userId *uint64) (bool, error) {
 	}
 	return true, nil
 }
+// 查询视频信息
+func QueryVideoInfoByVideoId (videoId *uint64) (*models.VideoBasic, error) {
+	var videoInfo models.VideoBasic
+	utils.DB.Table("video_basic").Where("identity = ?", videoId).Find(&videoInfo)
+	return &videoInfo, nil
+}

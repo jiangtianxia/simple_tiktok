@@ -25,9 +25,10 @@ redis:
     KeyPublishListPrefix: "list:publish:"
     KeyVideoInfoHashPrefix: "videoinfo:"
     KeyFavoriteSetPrefix: "favorite:"
-    KeyUserLoveVideoStringPrefix: "user:love:video:"
-    KeyVideoCommentCountStringPrefix: "video:comment:count:"
-    KeyVideoFavoriteCountStringPrefix: "video:favorite:count:"
+    KeyUserLoveVideoStringPrefix: "string:favorite:bool:"
+    KeyVideoCommentCountStringPrefix: "string:comment:count:"
+    KeyVideoFavoriteCountStringPrefix: "string:favorite:count:"
+    KeyUserPublishSetPrefix: "set:user:publish:"
 
 
     
