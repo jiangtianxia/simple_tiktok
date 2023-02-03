@@ -3,9 +3,9 @@ package service
 import (
 	"simple_tiktok/dao/mysql"
 	"github.com/spf13/viper"
+	"github.com/gin-gonic/gin"
 	"simple_tiktok/utils"
 	"fmt"
-	"context"
 	"strconv"
 	Myredis "simple_tiktok/dao/redis"
 )
@@ -16,10 +16,11 @@ import (
  * @Summary 
  * @Tags 
  **/
- var ctx context.Context
 
-func GetVideoListByUserId(authorId *uint64, loginUserId *uint64) (*[]Video, error){
-	ctx = context.Background()
+var ctx *gin.Context
+
+func GetVideoListByUserId(c *gin.Context, authorId *uint64, loginUserId *uint64) (*[]Video, error){
+	ctx = c
 
 	// 1. 获取作者用户名
 	authorName,err := getAuthorName(authorId)

@@ -36,7 +36,7 @@ func GetPublishList(c *gin.Context) {
 	// 获取登录者的UserId
 	loginUserId := User.Identity
 	// 调用service查询结果
-	videoList, err := service.GetVideoListByUserId(&userId, &loginUserId)
+	videoList, err := service.GetVideoListByUserId(c, &userId, &loginUserId)
 	if err != nil {
 		logger.SugarLogger.Error("Query VideoList Error:" + err.Error())
 		fmt.Println("Query VideoList Error:" + err.Error())
