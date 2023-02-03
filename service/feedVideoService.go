@@ -10,7 +10,6 @@ import (
 	"simple_tiktok/logger"
 	"simple_tiktok/utils"
 	"strconv"
-	"time"
 )
 
 type VideoInfo struct {
@@ -32,17 +31,17 @@ type Author struct {
 	IsFollow      bool   `json:"is_follow"`
 }
 
-func FeedVideo(c *gin.Context, latestTime time.Time) ([]VideoInfo, time.Time, error) {
+func FeedVideo(c *gin.Context, latestTime int64) ([]VideoInfo, int64, error) {
 
 	hashKey := viper.GetString("redis.KeyVideoList")
 	//先判断zset是否存在  zset没有设置过期时间
 	if utils.RDB2.Exists(c, hashKey).Val() == 0 {
-		return nil, time.Time{}, nil
+		return nil, 0, nil
 	}
 
 	// 使用缓存 查询出发布时间小于latestTime的30条记录  记录中包含视频的identity
-	identityList := utils.RDB2.ZRevRangeByScore(c, hashKey, &redis.ZRangeBy{Min: strconv.Itoa(0), Max: strconv.FormatInt(latestTime.Unix(), 10), Count: viper.GetInt64("feedVideoCnt")}).Val()
-	var nextTime time.Time
+	identityList := utils.RDB2.ZRevRangeByScore(c, hashKey, &redis.ZRangeBy{Min: strconv.Itoa(0), Max: strconv.FormatInt(latestTime, 10), Count: viper.GetInt64("feedVideoCnt")}).Val()
+	var nextTime int64
 
 	videoInfos := make([]VideoInfo, len(identityList))
 	for i, identity := range identityList {
@@ -56,8 +55,6 @@ func FeedVideo(c *gin.Context, latestTime time.Time) ([]VideoInfo, time.Time, er
 			fmt.Println("数据库")
 		}
 
-		timeTmp := "2006-01-02 15:04:05" // 定义时间模板
-		loc, _ := time.LoadLocation("local")
 		// 使用缓存
 		video := utils.RDB3.HGetAll(c, viper.GetString("redis.KeyVideoInfoHashPrefix")+identity).Val()
 
@@ -76,7 +73,7 @@ func FeedVideo(c *gin.Context, latestTime time.Time) ([]VideoInfo, time.Time, er
 		videoInfos[i].CommentCount = 0
 		videoInfos[i].IsFavorite = false
 		videoInfos[i].Title = video["title"]
-		nextTime, _ = time.ParseInLocation(timeTmp, video["publish_time"], loc)
+		nextTime, _ = strconv.ParseInt(video["publish_time"], 10, 64)
 		fmt.Println("缓存")
 	}
 

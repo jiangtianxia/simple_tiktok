@@ -13,12 +13,11 @@ func FeedVideo(c *gin.Context) {
 
 	// 接收参数
 	resTime := c.Query("latest_time")
-	var latestTime time.Time
+	var latestTime int64
 	if resTime == "" { // 不填表示当前时间
-		latestTime = time.Now()
+		latestTime = time.Now().Unix()
 	} else {
-		int64Time, _ := strconv.ParseInt(resTime, 10, 64)
-		latestTime = time.Unix(int64Time, 0)
+		latestTime, _ = strconv.ParseInt(resTime, 10, 64)
 	}
 	token := c.Query("token")
 

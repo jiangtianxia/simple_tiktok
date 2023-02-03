@@ -18,13 +18,13 @@ var ctx = context.Background()
  * @Description 使用有序集合 按照视频发布时间降序存储视频的identity 和 发布时间
  * @Date 19:00 2023/1/29
  **/
-func RedisAddVideoList(publishTime time.Time, datavideoId string) error {
+func RedisAddVideoList(publishTime int64, datavideoId string) error {
 	// 1、获取key
 	key := viper.GetString("redis.KeyVideoList")
 
 	// 2、头部插入数据到key当中
 	// LPUSH KEY_NAME VALUE1.. VALUEN
-	err := utils.RDB2.ZAdd(ctx, key, redis.Z{Score: float64(publishTime.Unix()), Member: datavideoId}).Err()
+	err := utils.RDB2.ZAdd(ctx, key, redis.Z{Score: float64(publishTime), Member: datavideoId}).Err()
 	return err
 }
 
