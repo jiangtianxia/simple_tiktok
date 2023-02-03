@@ -22,7 +22,7 @@ redis:
     poolSize: 1000
     minIdleConn: 100
     RedisExpireTime: 120 # 单位h
-    KeyVideoList: "list:video"
+    KeyVideoList: "zset:video"
     KeyUserHashPrefix: "userinfo:"
     KeyPublishListPrefix: "list:publish:"
     KeyVideoInfoHashPrefix: "videoinfo:"

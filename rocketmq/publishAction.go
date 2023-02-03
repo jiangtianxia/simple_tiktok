@@ -10,7 +10,7 @@ import (
 func PublishAction(videoInfo models.VideoBasic) {
 	videoid := strconv.Itoa(int(videoInfo.Identity))
 	userid := strconv.Itoa(int(videoInfo.UserIdentity))
-	err := redis.RedisAddVideoList(videoid)
+	err := redis.RedisAddVideoList(videoInfo.PublishTime, videoid)
 	if err != nil {
 		logger.SugarLogger.Error("RedisAddVideoList Error：", err.Error())
 	}
