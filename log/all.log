@@ -28,3 +28,5 @@
 2023-02-02T14:48:19.183+0800	INFO	simple_tiktok/main.go:54	配置路由完成
 2023-02-02T14:53:47.466+0800	INFO	simple_tiktok/main.go:50	初始化配置完成
 2023-02-02T14:53:47.467+0800	INFO	simple_tiktok/main.go:54	配置路由完成
+2023-02-03T15:16:23.744+0800	INFO	simple_tiktok/main.go:50	初始化配置完成
+2023-02-03T15:16:23.745+0800	INFO	simple_tiktok/main.go:54	配置路由完成

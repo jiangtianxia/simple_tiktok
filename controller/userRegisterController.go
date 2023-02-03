@@ -15,12 +15,9 @@ import (
 )
 
 func UserRegister(c *gin.Context) {
-	username := c.Query("username")
-	password := c.Query("password")
-	
-	req := service.RegisterRequire{}
-	req.Username = username
-	req.Password = password
+	var req service.RegisterRequire
+	c.BindJSON(&req)
+
 	registerResponse, err := service.PostUserRegister(c, &req)
 
 	if err != nil {

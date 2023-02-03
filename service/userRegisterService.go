@@ -19,6 +19,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//请求体
+type RegisterRequire struct {
+	Username string 
+	Password    string 
+}
+
+type RegisterResponse struct {
+	Identity uint64 `json:"identity"`
+	Token    string `json:"token"`
+}
+
 // 注册得到token和id
 func PostUserRegister(c *gin.Context, req *RegisterRequire) (*RegisterResponse, error) {
 	//验证合法性
@@ -85,14 +96,4 @@ func PostUserRegister(c *gin.Context, req *RegisterRequire) (*RegisterResponse, 
 	resp.Identity = ur.Identity
 
 	return &resp, nil
-}
-//请求体
-type RegisterRequire struct {
-	Username string 
-	Password    string 
-}
-
-type RegisterResponse struct {
-	Identity uint64 `json:"identity"`
-	Token    string `json:"token"`
 }
