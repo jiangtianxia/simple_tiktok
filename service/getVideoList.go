@@ -143,6 +143,7 @@ func GetVideoListByUserId(authorId *uint64, loginUserId *uint64) (*[]Video, erro
 		err = Myredis.RedisSetHashRDB3(key, &map[string]interface{}{
 			"play_url": (*videoListFromDao)[i].PlayUrl,
 			"cover_url": (*videoListFromDao)[i].CoverUrl,
+			"title": (*videoListFromDao)[i].Title,
 		})
 		if err != nil {
 			return nil, err
