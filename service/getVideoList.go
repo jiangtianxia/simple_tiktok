@@ -79,7 +79,7 @@ func GetVideoListByUserId(authorId *uint64, loginUserId *uint64) (*[]Video, erro
 			}
 
 			// A8. 获取视频封面url和视频url
-			coverUrl, playUrl, err := tryToGetVideoInfo(&videoId)
+			coverUrl, playUrl, title, err := tryToGetVideoInfo(&videoId)
 			if err != nil {
 				return nil, err
 			}
@@ -93,6 +93,7 @@ func GetVideoListByUserId(authorId *uint64, loginUserId *uint64) (*[]Video, erro
 				FavoriteCount: *favoriteCount,
 				CommentCount: *commentCount,
 				IsFavorite: isFavorite,
+				Title: *title,
 			})
 		}
 		return videoList,nil
@@ -296,72 +297,93 @@ func judgeLoginUserLoveVideo(videoId uint64, loginUserId uint64) (*bool, error) 
 }
 
 // 从缓存中获取封面地址和视频播放地址，缓存中没有的话就从数据库中查询，并缓存视频的播放地址，封面地址
-func tryToGetVideoInfo(videoId *uint64) (*string, *string, error) {
+func tryToGetVideoInfo(videoId *uint64) (*string, *string, *string, error) {
 	key := fmt.Sprintf("%s%d", viper.GetString("redis.KeyVideoInfoHashPrefix"), *videoId)
 	// 判断视频键是否存在
 	n, err := utils.RDB3.Exists(ctx, key).Result()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	// 视频键不存在，写入缓存直接返回
 	if n == 0 {
 		videoBasic, err := mysql.QueryVideoInfoByVideoId(videoId)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, nil, err
 		}
 		// 缓存
 		err = Myredis.RedisSetHashRDB3(key, &map[string]interface{}{
 			"play_url": (*videoBasic).PlayUrl,
 			"cover_url": (*videoBasic).CoverUrl,
+			"title": (*videoBasic).Title,
 		})
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, nil, err
 		}
-		return &(*videoBasic).CoverUrl, &(*videoBasic).PlayUrl, nil
+		return &(*videoBasic).CoverUrl, &(*videoBasic).PlayUrl, &(*videoBasic).Title, nil
 	}
 	// 视频键存在，从缓存中读取封面地址
 	coverUrl, err := utils.RDB3.HGet(ctx, key, "cover_url").Result()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	// 未使用该字段，从数据库中获取并写入缓存
 	if coverUrl == "" {
 		videoBasic, err := mysql.QueryVideoInfoByVideoId(videoId)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, nil, err
 		}
 		// 缓存
 		err = Myredis.RedisSetHashRDB3(key, &map[string]interface{}{
 			"play_url": (*videoBasic).PlayUrl,
 			"cover_url": (*videoBasic).CoverUrl,
+			"title": (*videoBasic).Title,
 		})
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, nil, err
 		}
-		return &(*videoBasic).CoverUrl, &(*videoBasic).PlayUrl, nil
+		return &(*videoBasic).CoverUrl, &(*videoBasic).PlayUrl, &(*videoBasic).Title, nil
 	}
 	// 获取播放地址
 	playUrl, err := utils.RDB3.HGet(ctx, key, "play_url").Result()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	// 未使用该字段，从数据库中获取并写入缓存
 	if playUrl == "" {
 		videoBasic, err := mysql.QueryVideoInfoByVideoId(videoId)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, nil, err
 		}
 		// 缓存
 		err = Myredis.RedisSetHashRDB3(key, &map[string]interface{}{
 			"play_url": (*videoBasic).PlayUrl,
 			"cover_url": (*videoBasic).CoverUrl,
+			"title": (*videoBasic).Title,
 		})
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, nil, err
 		}
-		return &(*videoBasic).CoverUrl, &(*videoBasic).PlayUrl, nil
+		return &(*videoBasic).CoverUrl, &(*videoBasic).PlayUrl, &(*videoBasic).Title, nil
 	}
-	return &coverUrl, &playUrl, nil
+	// 获取视频标题
+	title, err := utils.RDB3.HGet(ctx, key, "title").Result()
+	if title == "" {
+		videoBasic, err := mysql.QueryVideoInfoByVideoId(videoId)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+		// 缓存
+		err = Myredis.RedisSetHashRDB3(key, &map[string]interface{}{
+			"play_url": (*videoBasic).PlayUrl,
+			"cover_url": (*videoBasic).CoverUrl,
+			"title": (*videoBasic).Title,
+		})
+		if err != nil {
+			return nil, nil, nil, err
+		}
+		return &(*videoBasic).CoverUrl, &(*videoBasic).PlayUrl, &(*videoBasic).Title, nil
+	}
+	return &coverUrl, &playUrl, &title, nil
 }
 
 // 视频参数
