@@ -30,7 +30,7 @@ func UserInfo(c *gin.Context) {
 		return
 	}
 
-	// 布隆过滤器
+	////布隆过滤器
 	//filterRes, _ := utils.BloomFilterCheck(userId)
 	//if !filterRes {
 	//	c.JSON(http.StatusInternalServerError, gin.H{
@@ -45,14 +45,14 @@ func UserInfo(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status_code": -1,
-			"status_msg":  err.Error(),
+			"status_msg":  "获取用户信息错误",
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"status_code": 0,
-		"status_msg":  "string",
+		"status_msg":  "获取用户信息成功",
 		"user":        res,
 	})
 }
