@@ -140,12 +140,7 @@ func GetVideoListByUserId(c *gin.Context, authorId *uint64, loginUserId *uint64)
 			return nil, err
 		}
 		// 缓存视频信息
-		key = fmt.Sprintf("%s%d", viper.GetString("redis.KeyVideoInfoHashPrefix"), videoId)
-		err = Myredis.RedisSetHashRDB3(key, &map[string]interface{}{
-			"play_url": (*videoListFromDao)[i].PlayUrl,
-			"cover_url": (*videoListFromDao)[i].CoverUrl,
-			"title": (*videoListFromDao)[i].Title,
-		})
+		err = Myredis.RedisAddVideoInfo((*videoListFromDao)[i])
 		if err != nil {
 			return nil, err
 		}
@@ -175,7 +170,13 @@ func getAuthorName(authorId *uint64) (*string, error){
 		if err != nil {
 			return nil, err
 		}
-		err := Myredis.RedisSetHashRDB1(key, "username", *authorName)
+		err = Myredis.RedisAddUserInfo(ctx, key, map[string]interface{}{
+			"identity":       *authorId,
+			"username":       *authorName,
+			"follow_count":   0,
+			"follower_count": 0,
+			"is_follow":      false,
+		})
 		if err != nil {
 			return nil, err
 		}
@@ -188,7 +189,13 @@ func getAuthorName(authorId *uint64) (*string, error){
 		if err != nil {
 			return nil, err
 		}
-		err := Myredis.RedisSetHashRDB1(key, "username", *authorName)
+		err = Myredis.RedisAddUserInfo(ctx, key, map[string]interface{}{
+			"identity":       *authorId,
+			"username":       *authorName,
+			"follow_count":   0,
+			"follower_count": 0,
+			"is_follow":      false,
+		})
 		if err != nil {
 			return nil, err
 		}
@@ -313,11 +320,7 @@ func tryToGetVideoInfo(videoId *uint64) (*string, *string, *string, error) {
 			return nil, nil, nil, err
 		}
 		// 缓存
-		err = Myredis.RedisSetHashRDB3(key, &map[string]interface{}{
-			"play_url": (*videoBasic).PlayUrl,
-			"cover_url": (*videoBasic).CoverUrl,
-			"title": (*videoBasic).Title,
-		})
+		err = Myredis.RedisAddVideoInfo(*videoBasic)
 		if err != nil {
 			return nil, nil, nil, err
 		}
@@ -335,11 +338,7 @@ func tryToGetVideoInfo(videoId *uint64) (*string, *string, *string, error) {
 			return nil, nil, nil, err
 		}
 		// 缓存
-		err = Myredis.RedisSetHashRDB3(key, &map[string]interface{}{
-			"play_url": (*videoBasic).PlayUrl,
-			"cover_url": (*videoBasic).CoverUrl,
-			"title": (*videoBasic).Title,
-		})
+		err = Myredis.RedisAddVideoInfo(*videoBasic)
 		if err != nil {
 			return nil, nil, nil, err
 		}
@@ -357,11 +356,7 @@ func tryToGetVideoInfo(videoId *uint64) (*string, *string, *string, error) {
 			return nil, nil, nil, err
 		}
 		// 缓存
-		err = Myredis.RedisSetHashRDB3(key, &map[string]interface{}{
-			"play_url": (*videoBasic).PlayUrl,
-			"cover_url": (*videoBasic).CoverUrl,
-			"title": (*videoBasic).Title,
-		})
+		err = Myredis.RedisAddVideoInfo(*videoBasic)
 		if err != nil {
 			return nil, nil, nil, err
 		}
@@ -375,11 +370,7 @@ func tryToGetVideoInfo(videoId *uint64) (*string, *string, *string, error) {
 			return nil, nil, nil, err
 		}
 		// 缓存
-		err = Myredis.RedisSetHashRDB3(key, &map[string]interface{}{
-			"play_url": (*videoBasic).PlayUrl,
-			"cover_url": (*videoBasic).CoverUrl,
-			"title": (*videoBasic).Title,
-		})
+		err = Myredis.RedisAddVideoInfo(*videoBasic)
 		if err != nil {
 			return nil, nil, nil, err
 		}
