@@ -64,7 +64,6 @@ rocketmq:
     redisGroupName1:  "LoginGroup"
     redisTags1: "login||userLoginRedis"
     userLoginTag: "userLogin"
-    retrySize1:   2
 
 cos:
     addr: "https://tiktok-1310814941.cos.ap-guangzhou.myqcloud.com"
