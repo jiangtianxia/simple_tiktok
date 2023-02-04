@@ -66,5 +66,9 @@ cos:
     addr: "https://tiktok-1310814941.cos.ap-guangzhou.myqcloud.com"
     SecretId: "AKID2vc5LM9h03sZ0Nn3cO6rcATXNzNXSDjx"
     SecretKey: "NZcS5WgaFivrVuNbYjzANfrra4KXZNG1"
-    
+
+
+CircuitBreaker:
+    roundInterval:  15 # 熔断周期，单位s
+    recoverInterval: 5 # 冷却周期，单位s
         
