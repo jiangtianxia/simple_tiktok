@@ -38,7 +38,7 @@ func GetVideoListByUserId(c *gin.Context, authorId *uint64, loginUserId *uint64)
 	}
 
 	// 3. 尝试从缓存中获取用户发表的视频id列表
-	key := fmt.Sprintf("%s%d", viper.GetString("redis.KeyUserPublishSetPrefix"), *authorId)
+	key := fmt.Sprintf("%s%d", viper.GetString("redis.KeyPublishListPrefix"), *authorId)
 	n, err := utils.RDB4.Exists(ctx, key).Result()
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func GetVideoListByUserId(c *gin.Context, authorId *uint64, loginUserId *uint64)
 	// 若缓存中存在信息则使用 A 计划
 	// A4. 创建返回的视频列表参数
 	if n != 0 {
-		videoIds, err := utils.RDB4.SMembers(ctx, key).Result()
+		videoIds, err := utils.RDB4.LRange(ctx, key, 0, -1).Result()
 		if err != nil {
 			return nil, err
 		}
@@ -134,8 +134,7 @@ func GetVideoListByUserId(c *gin.Context, authorId *uint64, loginUserId *uint64)
 
 		// B8. 对视频信息进行缓存
 		// 缓存用户发布的视频列表
-		key = fmt.Sprintf("%s%d", viper.GetString("redis.KeyUserPublishSetPrefix"), *authorId)
-		err = Myredis.RedisAddSetRDB4(key, fmt.Sprintf("%d", videoId))
+		err = Myredis.RedisAddPublishList(fmt.Sprintf("%d", *authorId), fmt.Sprintf("%d", videoId))
 		if err != nil {
 			return nil, err
 		}
@@ -158,6 +157,8 @@ func GetVideoListByUserId(c *gin.Context, authorId *uint64, loginUserId *uint64)
 
 	return videoList, nil
 }
+
+// 获取作者用户名
 func getAuthorName(authorId *uint64) (*string, error){
 	authorName := new(string)
 	key := fmt.Sprintf("%s%d",viper.GetString("redis.KeyUserHashPrefix"), *authorId)
@@ -173,9 +174,6 @@ func getAuthorName(authorId *uint64) (*string, error){
 		err = Myredis.RedisAddUserInfo(ctx, key, map[string]interface{}{
 			"identity":       *authorId,
 			"username":       *authorName,
-			"follow_count":   0,
-			"follower_count": 0,
-			"is_follow":      false,
 		})
 		if err != nil {
 			return nil, err
@@ -192,9 +190,6 @@ func getAuthorName(authorId *uint64) (*string, error){
 		err = Myredis.RedisAddUserInfo(ctx, key, map[string]interface{}{
 			"identity":       *authorId,
 			"username":       *authorName,
-			"follow_count":   0,
-			"follower_count": 0,
-			"is_follow":      false,
 		})
 		if err != nil {
 			return nil, err
@@ -204,26 +199,21 @@ func getAuthorName(authorId *uint64) (*string, error){
 }
 
 // 获取视频赞数的函数
-//TODO
 func getVideoFavoriteCount(videoId uint64) (*int64, error) {
 	favoriteCount := new(int64)
-	key := fmt.Sprintf("%s%d",viper.GetString("redis.KeyVideoFavoriteCountStringPrefix"), videoId)
+	key := fmt.Sprintf("%s%d",viper.GetString("redis.KeyFavoriteUserSortSetPrefix"), videoId)
 	// 先从RDB0中查看键值对是否存在
-	n, err := utils.RDB0.Exists(ctx, key).Result()
+	n, err := utils.RDB5.Exists(ctx, key).Result()
 	if err != nil {
 		return nil, err
 	}
-	// redis中有key，获取string转换成int64
+	// redis中有key，使用ZCount计数
 	if n != 0 {
-		sFavoriteCount, err := utils.RDB0.Get(ctx, key).Result()
+		*favoriteCount, err = utils.RDB5.ZCount(ctx, key, ).Result()
+		//TODO
 		if err != nil {
 			return nil, err
 		}
-		iFavoriteCount, err := strconv.Atoi(sFavoriteCount)
-		if err != nil {
-			return nil, err
-		}
-		*favoriteCount = int64(iFavoriteCount)
 		return favoriteCount, nil
 	}
 	// 如果redis中没有key，调用mysql的函数获得状态

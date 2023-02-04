@@ -63,3 +63,10 @@ func QueryVideoCommentInfo(videoId *uint64) (*[]models.CommentVideo, error) {
 	utils.DB.Table("comment_video").Where("video_identity = ?", *videoId).Find(&commentList)
 	return &commentList, nil
 }
+
+// 获取点赞信息
+func QueryFavoriteInfo(videoId *uint64) (*[]models.FavouriteVideo, error) {
+	var favoriteList []models.FavouriteVideo
+	utils.DB.Table("comment_video").Where("video_identity = ?", *videoId).Find(&favoriteList)
+	return &favoriteList, nil
+}
