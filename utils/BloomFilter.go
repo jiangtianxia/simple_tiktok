@@ -64,7 +64,7 @@ func BloomFilterAdd(value string) error {
 }
 
 // 判断该值是否存在布隆过滤器
-func BloomFilterCheck(value string) (bool, error) {
+func BloomFilterCheck(value interface{}) (bool, error) {
 	result := [4]uint{}
 	for i, seed := range seeds {
 		result[i] = CreateHash(seed, value)

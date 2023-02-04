@@ -1,9 +1,13 @@
 package rocket
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/gin-gonic/gin"
+	"net/http"
 	"simple_tiktok/models"
+	"simple_tiktok/service"
 
 	"github.com/spf13/viper"
 )
@@ -23,7 +27,13 @@ func InitRocketmq() {
 	redisGroupName := viper.GetString("rocketmq.redisGroupName")
 	redisTags := viper.GetString("rocketmq.redisTags")
 
+	redisTopic1 := viper.GetString("rocketmq.redisTopic1")
+	redisGroupName1 := viper.GetString("rocketmq.redisGroupName1")
+	redisTags1 := viper.GetString("rocketmq.redisTags1")
+
 	go CreateConsumer(redisGroupName, redisTopic, redisTags)
+	go CreateConsumer(redisGroupName1, redisTopic1, redisTags1)
+
 	fmt.Println("rocketmq inited ...... ")
 }
 
@@ -54,9 +64,26 @@ func ReceiveChan() {
 		case data := <-loginChan:
 			userLogin := &models.UserBasic{}
 			json.Unmarshal(data.Data, userLogin)
-			fmt.Println(userLogin)
+			userlogin, err := service.Login(context.Background(), userLogin.Username, userLogin.Password)
+			if err != nil {
+				context.Background().JSON(http.StatusInternalServerError, gin.H{
+					"status_code": -1,
+					"status_msg":  err.Error(),
+				})
+				return
+			}
+
 			UserLogin(*userLogin)
 
+			context.Background().JSON(
+				http.StatusOK,
+				gin.H{
+					"status_code": 0,
+					"status_msg":  "获取用户信息成功",
+					"identity":    userlogin["identity"],
+					"token":       userlogin["token"],
+				},
+			)
 		}
 	}
 }

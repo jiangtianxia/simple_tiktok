@@ -1,9 +1,13 @@
 package controller
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"simple_tiktok/service"
+	"simple_tiktok/models"
+	rocket "simple_tiktok/rocketmq"
+	"time"
 )
 
 func Userlogin(c *gin.Context) {
@@ -11,32 +15,46 @@ func Userlogin(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
 
-	userlogin, err := service.Login(c, username, password)
+	user := models.UserBasic{
+		Password: password,
+		Username: username,
+	}
+
+	data, _ := json.Marshal(user)
+
+	// 发送消息
+	res, err := rocket.SendMsg(c, "LoginProducer", "LoginTopic", "login", data)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status_code": -1,
-			"status_msg":  err.Error(),
+		fmt.Println("发送消息失败， error:", err.Error())
+		c.JSON(http.StatusOK, gin.H{
+			"message": "失败",
 		})
 		return
 	}
 
-	////布隆过滤器
-	//if !utils.Filter.Check(username) {
-	//	c.JSON(http.StatusInternalServerError, gin.H{
-	//		"status_code": -1,
-	//		"status_msg":  "no such user",
-	//	})
-	//	return
-	//}
+	fmt.Println(res.Status)
+	fmt.Println(res.Status == 1)
+	if res.Status == 0 {
+		for i := 0; i < 30; i++ {
+			// hash msgid req
+			// 根据msgid，查询redis缓存中是否存在数据，如果存在则将结果返回
+			c.JSON(http.StatusOK, gin.H{
+				"message": "成功",
+				"res":     res.MsgID,
+			})
+			fmt.Println("查询缓存")
+			time.Sleep(time.Second)
+		}
 
-	c.JSON(
-		http.StatusOK,
-		gin.H{
-			"status_code": 0,
-			"status_msg":  "string",
-			"identity":    userlogin["identity"],
-			"token":       userlogin["token"],
-		},
-	)
+		// 30秒后，还是没有结果，则返回请求超时
+		c.JSON(http.StatusOK, gin.H{
+			"message": "请求超时",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "消息发送失败",
+	})
 
 }
