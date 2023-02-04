@@ -4,7 +4,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type userMessage struct {
+type UserMessage struct {
 	gorm.Model
 	Identity         uint64 `gorm:"column:identity;type:int;"`           // 聊天记录一标识
 	ToUserIdentity   uint64 `gorm:"column:to_user_identity;type:int;"`   // 接收者ID
@@ -13,6 +13,6 @@ type userMessage struct {
 	CreateTime       string `gorm:"column:create_time;type:varchar(36)"` //发送时间
 }
 
-func (table *userMessage) TableName() string {
+func (table *UserMessage) TableName() string {
 	return "user_message"
 }
