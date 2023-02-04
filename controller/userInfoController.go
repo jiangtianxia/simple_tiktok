@@ -9,11 +9,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func UserInfo1(c *gin.Context) {
+/**
+ * @Author Xiaoyu Zhang
+ * @Description 用户信息接口
+ * @Date 14:00 2023/1/31
+ **/
+func UserInfo(c *gin.Context) {
 	tmp, _ := utils.GenerateToken(1, "merry")
 	// 接受参数
-	userId := c.Query("user_id")
-	//token := c.Query("token")
+	userId := c.DefaultQuery("user_id", "0")
+	//token := c.DefaultQuery("token", "")
 
 	// 验证token
 	_, err := middlewares.AuthUserCheck(tmp)
@@ -26,7 +31,8 @@ func UserInfo1(c *gin.Context) {
 	}
 
 	// 布隆过滤器
-	//if !utils.Filter.Check(userId) {
+	//filterRes, _ := utils.BloomFilterCheck(userId)
+	//if !filterRes {
 	//	c.JSON(http.StatusInternalServerError, gin.H{
 	//		"status_code": -1,
 	//		"status_msg":  "no such user",

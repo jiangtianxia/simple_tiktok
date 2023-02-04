@@ -21,13 +21,14 @@ redis:
     minIdleConn: 100
     RedisExpireTime: 120 # 单位h
     KeyVideoList: "list:video"
+    defaultErrorIdentity: -1
     KeyUserHashPrefix: "userinfo:"
     KeyPublishListPrefix: "list:publish:"
     KeyVideoInfoHashPrefix: "videoinfo:"
     KetFavoriteSetPrefix: "favorite:"
 
 
-    
+
 
 md5:
     salt: "tiktokGi0I0R1tC#%"
@@ -54,9 +55,10 @@ rocketmq:
     redisProducer: "RedisProducer"
     redisTopic:  "RedisTopic"
     redisGroupName:  "RedisGroup"
-    redisTags: "publishAction||login||loginredis"
+    redisTags: "publishAction||login||loginredis||userInfo"
     publishActionTag: "publishAction"
     ReidsloginTag: "loginredis"
+    userInfoTag: "userInfo"
     retrySize:   2
 
 
