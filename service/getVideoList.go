@@ -204,6 +204,7 @@ func getAuthorName(authorId *uint64) (*string, error){
 }
 
 // 获取视频赞数的函数
+//TODO
 func getVideoFavoriteCount(videoId uint64) (*int64, error) {
 	favoriteCount := new(int64)
 	key := fmt.Sprintf("%s%d",viper.GetString("redis.KeyVideoFavoriteCountStringPrefix"), videoId)
@@ -240,38 +241,50 @@ func getVideoFavoriteCount(videoId uint64) (*int64, error) {
 // 获取视频评论数的函数
 func getVideoCommentCount(videoId uint64) (*int64, error) {
 	commentCount := new(int64)
-	key := fmt.Sprintf("%s%d",viper.GetString("redis.KeyVideoCommentCountStringPrefix"), videoId)
+	key := fmt.Sprintf("%s%d",viper.GetString("KeyCommentListPrefix"), videoId)
 	// 先从RDB0中查看键值对是否存在
-	n, err := utils.RDB0.Exists(ctx, key).Result()
+	n, err := utils.RDB8.Exists(ctx, key).Result()
 	if err != nil {
 		return nil, err
 	}
-	// redis中有key，获取string转换成int64
+	// redis中有key，查找缓存列表中有多少个元素
 	if n != 0 {
-		sCommentCount, err := utils.RDB0.Get(ctx, key).Result()
+		*commentCount, err = utils.RDB8.LLen(ctx, key).Result()
 		if err != nil {
 			return nil, err
 		}
-		iCommentCount, err := strconv.Atoi(sCommentCount)
-		if err != nil {
-			return nil, err
-		}
-		*commentCount = int64(iCommentCount)
 		return commentCount, nil
 	}
-	// 如果redis中没有key，调用mysql的方法获得状态
-	commentCount, err = mysql.QueryCommentCount(&videoId)
+	// 如果redis中没有key，调用mysql的函数获取所有评论对象，将评论id缓存进RDB8 -- 将评论信息缓存进RDB7
+	commentList, err := mysql.QueryVideoCommentInfo(&videoId)
 	if err != nil {
 		return nil, err
 	}
-	err = Myredis.RedisAddStringRDB0(key, fmt.Sprintf("%d", *commentCount))
-	if err != nil {
-		return nil, err
+	for i := range *commentList {
+		// 缓存评论id
+		err = Myredis.RedisAddListRBD8(key, fmt.Sprintf("%d", (*commentList)[i].Identity))
+		if err != nil {
+			return nil, err
+		}
+		// 缓存评论信息
+		commentKey := fmt.Sprintf("%s%d", viper.GetString("KeyCommentInfoHashPrefix"), (*commentList)[i].Identity)
+		err = Myredis.RedisSetHashRDB7(commentKey, map[string]interface{}{
+			"video_identity": (*commentList)[i].VideoIdentity,
+			"user_identity": (*commentList)[i].UserIdentity,
+			"text": (*commentList)[i].Text,
+			"comment_time": (*commentList)[i].CommentTime,
+		})
+		if err != nil {
+			return nil, err
+		}
 	}
+	// 获取评论数
+	*commentCount = int64(len(*commentList))
 	return commentCount, nil
 }
 
 // 判断登录的用户是否喜欢指定视频
+// TODO
 func judgeLoginUserLoveVideo(videoId uint64, loginUserId uint64) (*bool, error) {
 	var isFavorite bool
 	key := fmt.Sprintf("%s%d-%d",viper.GetString("redis.KeyUserLoveVideoStringPrefix"), videoId, loginUserId)
