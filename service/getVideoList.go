@@ -171,7 +171,7 @@ func getAuthorName(authorId *uint64) (*string, error){
 		if err != nil {
 			return nil, err
 		}
-		err = Myredis.RedisAddUserInfo(ctx, key, map[string]interface{}{
+		err = Myredis.RedisAddUserInfo(key, map[string]interface{}{
 			"identity":       *authorId,
 			"username":       *authorName,
 		})
@@ -187,7 +187,7 @@ func getAuthorName(authorId *uint64) (*string, error){
 		if err != nil {
 			return nil, err
 		}
-		err = Myredis.RedisAddUserInfo(ctx, key, map[string]interface{}{
+		err = Myredis.RedisAddUserInfo(key, map[string]interface{}{
 			"identity":       *authorId,
 			"username":       *authorName,
 		})
@@ -209,7 +209,8 @@ func getVideoFavoriteCount(videoId uint64) (*int64, error) {
 	}
 	// redis中有key，使用ZCount计数
 	if n != 0 {
-		*favoriteCount, err = utils.RDB5.ZCount(ctx, key, ).Result()
+		// 0 分为不喜欢，1分为喜欢
+		*favoriteCount, err = utils.RDB5.ZCount(ctx, key, "1", "2").Result()
 		//TODO
 		if err != nil {
 			return nil, err
