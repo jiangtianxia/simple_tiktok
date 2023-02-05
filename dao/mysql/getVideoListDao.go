@@ -26,11 +26,11 @@ func QueryAuthorName(userId *uint64) (*string, error) {
 	return &author.Username, nil
 }
 
-// 查询视频喜欢数
-func QueryVideoFavoriteCount (videoId *uint64) (*int64, error) {
-	var videoFavorite models.FavouriteVideo
-	result := utils.DB.Table("video_favorite").Where("video_identity = ?", *videoId).Find(&videoFavorite)
-	return &result.RowsAffected, nil
+// 查询视频喜欢记录
+func QueryVideoFavoriteCount (videoId *uint64) (*[]models.FavouriteVideo, error) {
+	var videoFavoriteList []models.FavouriteVideo
+	utils.DB.Table("video_favorite").Where("video_identity = ?", *videoId).Find(&videoFavoriteList)
+	return &videoFavoriteList, nil
 }
 
 // 查询视频的评论数

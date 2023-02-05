@@ -28,10 +28,6 @@ redis:
     KeyCommentInfoHashPrefix: "commentinfo:"
     KeyFavoriteUserSortSetPrefix: "favorite:user:"
     KeyCommentListPrefix: "list:comment:"
-    KeyFavoriteSetPrefix: "favorite:"
-    KeyUserLoveVideoStringPrefix: "string:favorite:bool:"
-    KeyVideoFavoriteCountStringPrefix: "string:favorite:count:"
-    KeyUserPublishSetPrefix: "set:user:publish:"
 
 
 

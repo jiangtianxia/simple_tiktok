@@ -3,6 +3,7 @@ package redis
 import (
 	"simple_tiktok/utils"
 	"time"
+	"github.com/go-redis/redis/v9"
 )
 
 /** 
@@ -11,16 +12,6 @@ import (
  * @Summary 
  * @Tags 
  **/
-
-// 往RDB0中写入string键值对
-func RedisAddStringRDB0(key string, value string) error {
-	pipeline := utils.RDB0.TxPipeline()
-	pipeline.Set(ctx, key, value, 10 * time.Hour)
-	pipeline.Expire(ctx, key, time.Hour*24*5)
-
-	_, err := pipeline.Exec(ctx)
-	return err
-}
 
 // 往RDB4中set键值对添加元素，不用List的原因是防重复
 func RedisAddSetRDB4(key string, element string) error {
@@ -46,6 +37,29 @@ func RedisAddListRBD8(key string, commitId string) error {
 func RedisSetHashRDB7(key string, value map[string]interface{}) error {
 	pipeline := utils.RDB7.TxPipeline()
 	pipeline.HSet(ctx, key, value)
+	pipeline.Expire(ctx, key, time.Hour*24*5)
+
+	_, err := pipeline.Exec(ctx)
+	return err
+}
+
+// 往RDB5中插入点赞视频的Id和分数
+func RedisAddZSetRDB5(key string, value string, status float64) error {
+	pipeline := utils.RDB5.TxPipeline()
+	pipeline.ZAdd(ctx, key, redis.Z{
+		Score: status,
+		Member: value,
+	})
+	pipeline.Expire(ctx, key, time.Hour*24*5)
+
+	_, err := pipeline.Exec(ctx)
+	return err
+}
+
+// 往RDB6中把点赞的用户ID添加到list中
+func RedisAddListRDB6(key string, value string) error {
+	pipeline := utils.RDB6.TxPipeline()
+	pipeline.LPush(ctx, key, value)
 	pipeline.Expire(ctx, key, time.Hour*24*5)
 
 	_, err := pipeline.Exec(ctx)

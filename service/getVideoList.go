@@ -201,30 +201,40 @@ func getAuthorName(authorId *uint64) (*string, error){
 // 获取视频赞数的函数
 func getVideoFavoriteCount(videoId uint64) (*int64, error) {
 	favoriteCount := new(int64)
-	key := fmt.Sprintf("%s%d",viper.GetString("redis.KeyFavoriteUserSortSetPrefix"), videoId)
-	// 先从RDB0中查看键值对是否存在
+	key := fmt.Sprintf("%s%d", viper.GetString("redis.KeyFavoriteUserSortSetPrefix"), videoId)
+	// 先从RDB5中查看键值对是否存在
 	n, err := utils.RDB5.Exists(ctx, key).Result()
 	if err != nil {
 		return nil, err
 	}
 	// redis中有key，使用ZCount计数
 	if n != 0 {
-		// 0 分为不喜欢，1分为喜欢
+		// 0分为不喜欢，1分为喜欢
 		*favoriteCount, err = utils.RDB5.ZCount(ctx, key, "1", "2").Result()
-		//TODO
 		if err != nil {
 			return nil, err
 		}
 		return favoriteCount, nil
 	}
 	// 如果redis中没有key，调用mysql的函数获得状态
-	favoriteCount, err = mysql.QueryVideoFavoriteCount(&videoId)
+	videoFavoriteList, err := mysql.QueryVideoFavoriteCount(&videoId)
 	if err != nil {
 		return nil, err
 	}
-	err = Myredis.RedisAddStringRDB0(key, fmt.Sprintf("%d", *favoriteCount))
-	if err != nil {
-		return nil, err
+	*favoriteCount = 0
+	for i := range *videoFavoriteList {
+		if (*videoFavoriteList)[i].Status == "0" {
+			err = Myredis.RedisAddZSetRDB5(key, fmt.Sprintf("%d", (*videoFavoriteList)[i].UserIdentity), 0)
+			if err != nil {
+				return nil, err
+			}
+			continue
+		}
+		err = Myredis.RedisAddZSetRDB5(key, fmt.Sprintf("%d", (*videoFavoriteList)[i].UserIdentity), 0)
+		if err != nil {
+			return nil, err
+		}
+		*favoriteCount++
 	}
 	return favoriteCount, nil
 }
@@ -233,7 +243,7 @@ func getVideoFavoriteCount(videoId uint64) (*int64, error) {
 func getVideoCommentCount(videoId uint64) (*int64, error) {
 	commentCount := new(int64)
 	key := fmt.Sprintf("%s%d",viper.GetString("KeyCommentListPrefix"), videoId)
-	// 先从RDB0中查看键值对是否存在
+	// 先从RDB8中查看键值对是否存在
 	n, err := utils.RDB8.Exists(ctx, key).Result()
 	if err != nil {
 		return nil, err
@@ -275,38 +285,54 @@ func getVideoCommentCount(videoId uint64) (*int64, error) {
 }
 
 // 判断登录的用户是否喜欢指定视频
-// TODO
 func judgeLoginUserLoveVideo(videoId uint64, loginUserId uint64) (*bool, error) {
-	var isFavorite bool
-	key := fmt.Sprintf("%s%d-%d",viper.GetString("redis.KeyUserLoveVideoStringPrefix"), videoId, loginUserId)
-	// 先从RDB0中查看键值对是否存在
-	n, err := utils.RDB0.Exists(ctx, key).Result()
+	key := fmt.Sprintf("%s%d", viper.GetString("redis.KeyFavoriteUserSortSetPrefix"), videoId)
+	isFavorite := new(bool)
+	n, err := utils.RDB5.Exists(ctx, key).Result()
 	if err != nil {
 		return nil, err
 	}
-	// redis中有key，获取string转换成bool
 	if n != 0 {
-		isFavorite = true
-		if utils.RDB0.Get(ctx, key).Val() == "0" {
-			isFavorite = false
+		scroe, err := utils.RDB5.ZScore(ctx, key, fmt.Sprintf("%d", loginUserId)).Result()
+		if err != nil {
+			// sorted set 中不存在这个member，没有关联过
+			if err.Error() == "redis: nil" {
+				scroe = 0
+			} else {
+				return nil, err
+			}
 		}
-		return &isFavorite, nil
+		*isFavorite = false
+		if scroe > 0 {
+			*isFavorite = true
+		}
+		return isFavorite, nil
 	}
-	// 如果redis中没有key，调用mysql的方法获得状态
-	isFavorite, err = mysql.QueryIsFavorite(&videoId, &loginUserId)
+	videoFavoriteList, err := mysql.QueryVideoFavoriteCount(&videoId)
 	if err != nil {
 		return nil, err
 	}
-	// 在redis中存储，0表示不喜欢，1表示喜欢
-	if isFavorite {
-		err = Myredis.RedisAddStringRDB0(key, "1")
-	} else {
-		err = Myredis.RedisAddStringRDB0(key, "0")
+	// 默认不喜欢
+	*isFavorite = false
+	// 缓存RDB5
+	for i := range *videoFavoriteList {
+		if (*videoFavoriteList)[i].Status == "0" {
+			err = Myredis.RedisAddZSetRDB5(key, fmt.Sprintf("%d", (*videoFavoriteList)[i].UserIdentity), 0)
+			if err != nil {
+				return nil, err
+			}
+			continue
+		}
+		err = Myredis.RedisAddZSetRDB5(key, fmt.Sprintf("%d", (*videoFavoriteList)[i].UserIdentity), 0)
+		if err != nil {
+			return nil, err
+		}
+		// 搜索到这个人喜欢
+		if (*videoFavoriteList)[i].UserIdentity == loginUserId {
+			*isFavorite = true
+		}
 	}
-	if err != nil {
-		return nil, err
-	}
-	return &isFavorite, nil
+	return isFavorite, nil
 }
 
 // 从缓存中获取封面地址和视频播放地址，缓存中没有的话就从数据库中查询，并缓存视频的播放地址，封面地址
