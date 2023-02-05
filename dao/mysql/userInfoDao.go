@@ -12,7 +12,6 @@ func FindUserByIdentity(identity uint64) (*models.UserBasic, error) {
 	if err := utils.DB.Table("user_basic").Where("identity = ?", identity).First(&user).Error; err != nil {
 		logger.SugarLogger.Error(err)
 		return nil, err
-	} else {
-		return &user, nil
 	}
+	return &user, nil
 }
