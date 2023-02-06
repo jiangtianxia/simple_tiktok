@@ -16,7 +16,7 @@ import (
 //查询是否存在
 func IsExist(username string) bool {
 	var user models.UserBasic
-	utils.DB.Select("username").Where("username = ?", username).First(&user)
+	utils.DB.Model(&models.UserBasic{}).Select("username").Where("username = ?", username).Scan(&user)
 	return user.Identity != 0
 }
 

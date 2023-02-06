@@ -56,13 +56,16 @@ func PostUserRegister(c *gin.Context, req *RegisterRequire) (*RegisterResponse, 
 	
 	//雪花算法生成id
 	getid, err := utils.GetID()
+	getpsw := utils.MakePassword(req.Password)
 	if err != nil {
 		return nil, err
 	}
 
-	ur := models.UserBasic{Identity: getid, Username: req.Username, Password: utils.MakePassword(req.Password)}
+	ur := models.UserBasic{Identity: getid, Username: req.Username, Password: getpsw}
 	var res1 = map[string]interface{}{
+		"identity":       getid,
 		"username":       ur.Username,
+		"password":       getpsw,
 	}
 
 	// 新增缓存
