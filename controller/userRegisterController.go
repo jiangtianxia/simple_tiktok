@@ -8,6 +8,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"simple_tiktok/service"
 
@@ -15,9 +16,16 @@ import (
 )
 
 func UserRegister(c *gin.Context) {
-	var req service.RegisterRequire
-	c.ShouldBindJSON(&req)
+	username := c.Query("username")
+	password := c.Query("password")
 
+
+	fmt.Print(username)
+	fmt.Print(password)
+	req := service.RegisterRequire{
+		Username: string(username),
+		Password: string(password),
+	}
 	registerResponse, err := service.PostUserRegister(c, &req)
 
 	if err != nil {
