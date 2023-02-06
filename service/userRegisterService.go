@@ -60,7 +60,7 @@ func PostUserRegister(c *gin.Context, req *RegisterRequire) (*RegisterResponse, 
 		return nil, err
 	}
 
-	ur := models.UserBasic{Identity: getid, Username: utils.MakePassword(req.Username), Password: utils.MakePassword(req.Password)}
+	ur := models.UserBasic{Identity: getid, Username: req.Username, Password: utils.MakePassword(req.Password)}
 	var res1 = map[string]interface{}{
 		"username":       ur.Username,
 	}

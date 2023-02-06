@@ -16,7 +16,7 @@ import (
 //查询是否存在
 func IsExist(username string) bool {
 	var user models.UserBasic
-	utils.DB.Where("username = ?", username).First(&user)
+	utils.DB.Select("username").Where("username = ?", username).First(&user)
 	return user.Identity != 0
 }
 
@@ -25,6 +25,6 @@ func AddUserBasic(userbasic *models.UserBasic) error {
 	if userbasic == nil {
 		return errors.New("空指针")
 	}
-	
-	return utils.DB.Create(userbasic).Error
+	utils.DB.Create(&userbasic)
+	return nil
 }
