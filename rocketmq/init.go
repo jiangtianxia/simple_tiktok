@@ -3,9 +3,9 @@ package rocket
 import (
 	"encoding/json"
 	"fmt"
-	"simple_tiktok/models"
-
 	"github.com/spf13/viper"
+
+	"simple_tiktok/models"
 )
 
 /**
@@ -23,7 +23,13 @@ func InitRocketmq() {
 	redisGroupName := viper.GetString("rocketmq.redisGroupName")
 	redisTags := viper.GetString("rocketmq.redisTags")
 
+	redisTopic1 := viper.GetString("rocketmq.redisTopic1")
+	redisGroupName1 := viper.GetString("rocketmq.redisGroupName1")
+	redisTags1 := viper.GetString("rocketmq.redisTags1")
+
 	go CreateConsumer(redisGroupName, redisTopic, redisTags)
+	go CreateConsumer(redisGroupName1, redisTopic1, redisTags1)
+
 	fmt.Println("rocketmq inited ...... ")
 }
 

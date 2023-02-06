@@ -15,9 +15,3 @@ func QueryInfo(username string) models.UserBasic {
 	utils.DB.Where("username=?", username).First(&userLogin)
 	return userLogin
 }
-
-//func QueryIdentity(username string) uint64 {
-//	userLogin := models.UserBasic{}
-//	utils.DB.Select("identity").Where("username=?", username).First(&userLogin)
-//	return userLogin.Identity
-//}
