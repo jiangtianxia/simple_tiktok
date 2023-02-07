@@ -3,9 +3,9 @@ package rocket
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/spf13/viper"
-
 	"simple_tiktok/models"
+
+	"github.com/spf13/viper"
 )
 
 /**
@@ -45,6 +45,8 @@ type ChanMsg struct {
 }
 
 var publishChan chan ChanMsg = make(chan ChanMsg, 100)
+//var LoginChan chan ChanMsg = make(chan ChanMsg, 100)
+var userInfoChan chan ChanMsg = make(chan ChanMsg, 100)
 var loginChan chan ChanMsg = make(chan ChanMsg, 100)
 
 func ReceiveChan() {
@@ -63,6 +65,13 @@ func ReceiveChan() {
 			fmt.Println(userLogin)
 			UserLogin(*userLogin)
 
+		case data := <-userInfoChan:
+			userInfo := &models.UserBasic{}
+			err := json.Unmarshal(data.Data, userInfo)
+			if err != nil {
+				logger.SugarLogger.Error(err)
+			}
+			UserInfoAction(*userInfo)
 		}
 	}
 }

@@ -38,7 +38,7 @@ func main() {
 	utils.InitCurrentLimit()
 
 	// 初始化布隆过滤器
-	utils.InitBloomFilter()
+	//utils.InitBloomFilter()
 
 	// 初始化rocketmq
 	rocket.InitRocketmq()
@@ -46,6 +46,9 @@ func main() {
 
 	// 初始化COS客户端
 	utils.InitCos()
+
+	// 初始化熔断器
+	utils.InitCircuitBreaker()
 
 	logger.SugarLogger.Info("初始化配置完成")
 

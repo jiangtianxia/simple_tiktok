@@ -27,7 +27,7 @@ redis:
     KetFavoriteSetPrefix: "favorite:"
 
 
-    
+
 
 md5:
     salt: "tiktokGi0I0R1tC#%"
@@ -54,9 +54,12 @@ rocketmq:
     redisProducer: "RedisProducer"
     redisTopic:  "RedisTopic"
     redisGroupName:  "RedisGroup"
-    redisTags: "publishAction||login||userLoginRedis"
+#    redisTags: "publishAction||login||userLoginRedis"
+    redisTags: "publishAction||login||loginredis||userInfo"
     publishActionTag: "publishAction"
 #    userLoginTag: "userLogin"
+    ReidsloginTag: "loginredis"
+    userInfoTag: "userInfo"
     retrySize:   2
 
 #问题出在9999接口连接不上
@@ -70,5 +73,9 @@ cos:
     addr: "https://tiktok-1310814941.cos.ap-guangzhou.myqcloud.com"
     SecretId: "AKID2vc5LM9h03sZ0Nn3cO6rcATXNzNXSDjx"
     SecretKey: "NZcS5WgaFivrVuNbYjzANfrra4KXZNG1"
-    
+
+
+CircuitBreaker:
+    roundInterval:  15 # 熔断周期，单位s
+    recoverInterval: 5 # 冷却周期，单位s
         

@@ -54,8 +54,8 @@ func UploadCOS(c *gin.Context, srcFile multipart.File, head *multipart.FileHeade
 	// 视频保存名
 	filename := strconv.Itoa(int(time.Now().Unix())) + strconv.Itoa(int(identity))
 	key := filename + suffix
-	fmt.Println(identity)
-	fmt.Println(filename)
+	// fmt.Println(identity)
+	// fmt.Println(filename)
 
 	_, err = utils.COSClient.Object.Put(c, key, srcFile, nil)
 	if err != nil {
@@ -110,10 +110,10 @@ func UploadCOS(c *gin.Context, srcFile multipart.File, head *multipart.FileHeade
 		PlayUrl:      "/" + key,
 		CoverUrl:     coveurl,
 		Title:        title,
-		PublishTime:  time.Now(),
+		PublishTime:  time.Now().Unix(),
 	}
 
-	fmt.Println(videoInfo)
+	// fmt.Println(videoInfo)
 	err = mysql.CreateVideoBasic(videoInfo)
 	if err != nil {
 		logger.SugarLogger.Error("CreateVideoBasic Error：" + err.Error())
