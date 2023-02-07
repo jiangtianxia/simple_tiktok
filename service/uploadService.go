@@ -110,7 +110,7 @@ func UploadCOS(c *gin.Context, srcFile multipart.File, head *multipart.FileHeade
 		PlayUrl:      "/" + key,
 		CoverUrl:     coveurl,
 		Title:        title,
-		PublishTime:  time.Now(),
+		PublishTime:  time.Now().Unix(),
 	}
 
 	// fmt.Println(videoInfo)

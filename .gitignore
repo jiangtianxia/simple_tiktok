@@ -1,2 +1,8 @@
+<<<<<<< HEAD
 *.sum
 *.mod
+=======
+upload/*
+log/*
+simple_tiktok
+>>>>>>> 841e37c7dbc350f0b8e276b5fbfd6653c23f88d0

@@ -1,10 +1,13 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
 	"simple_tiktok/dao/mysql"
 	myRedis "simple_tiktok/dao/redis"
 	"simple_tiktok/logger"
+	"simple_tiktok/models"
+	rocket "simple_tiktok/rocketmq"
 	"simple_tiktok/utils"
 	"strconv"
 
@@ -12,10 +15,15 @@ import (
 	"github.com/spf13/viper"
 )
 
-func UserInfo(c *gin.Context, userId string) (interface{}, error) {
+/**
+ * @Author Xiaoyu Zhang
+ * @Description 获取用户信息
+ * @Date 14:00 2023/1/31
+ **/
+func UserInfo(c *gin.Context, userId string) (map[string]interface{}, error) {
 	hashKey := viper.GetString("redis.KeyUserHashPrefix") + userId
 	// 判断是否有缓存
-	if utils.RDB0.Exists(c, hashKey).Val() == 0 {
+	if utils.RDB1.Exists(c, hashKey).Val() == 0 {
 		// 查询数据库
 		idNum, err := strconv.Atoi(userId)
 		identityUint64 := uint64(idNum)
@@ -26,8 +34,8 @@ func UserInfo(c *gin.Context, userId string) (interface{}, error) {
 		user, err := mysql.FindUserByIdentity(identityUint64)
 		if err != nil {
 			// 防止缓存击穿
-			redisErr := myRedis.RedisAddUserInfo(c, hashKey, map[string]interface{}{
-				"identity": -1,
+			redisErr := myRedis.RedisAddUserInfo(hashKey, map[string]interface{}{
+				"identity": viper.GetInt("redis.defaultErrorIdentity"),
 			})
 			if redisErr != nil {
 				logger.SugarLogger.Error(err)
@@ -35,6 +43,35 @@ func UserInfo(c *gin.Context, userId string) (interface{}, error) {
 			}
 			return nil, err
 		}
+
+		// 使用时间队列新增缓存
+		var userInfo = models.UserBasic{
+			Identity: user.Identity,
+			Username: user.Username,
+		}
+		data, _ := json.Marshal(userInfo)
+		redisTopic := viper.GetString("rocketmq.redisTopic")
+		Producer := viper.GetString("rocketmq.redisProducer")
+		tag := viper.GetString("rocketmq.userInfoTag")
+		msg, err := rocket.SendMsg(c, Producer, redisTopic, tag, data)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Println(msg)
+		fmt.Println("新增缓存：", userInfo)
+		//// 新增缓存
+		//var newCathe = map[string]interface{}{
+		//	"identity": user.Identity,
+		//	"username": user.Username,
+		//}
+		//
+		//err = myRedis.RedisAddUserInfo(hashKey, newCathe)
+		//if err != nil {
+		//	logger.SugarLogger.Error(err)
+		//	return nil, err
+		//}
+
+		// 返回结果
 		var res = map[string]interface{}{
 			"identity":       user.Identity,
 			"username":       user.Username,
@@ -42,31 +79,19 @@ func UserInfo(c *gin.Context, userId string) (interface{}, error) {
 			"follower_count": 0,
 			"is_follow":      false,
 		}
-
-		// 新增缓存
-		err = myRedis.RedisAddUserInfo(c, hashKey, res)
-		if err != nil {
-			logger.SugarLogger.Error(err)
-			return nil, err
-		}
-
-		fmt.Println("数据库")
 		return res, nil
-
 	}
 	// 使用缓存
-	cathe := utils.RDB0.HGetAll(c, hashKey).Val()
+	cathe := utils.RDB1.HGetAll(c, hashKey).Val()
 	identity, _ := strconv.Atoi(cathe["identity"])
-	followCount, _ := strconv.Atoi(cathe["follow_count"])
-	followerCount, _ := strconv.Atoi(cathe["follower_count"])
-	isFollow, _ := strconv.ParseBool(cathe["is_follow"])
 	var res = map[string]interface{}{
 		"identity":       identity,
 		"username":       cathe["username"],
-		"follow_count":   followCount,
-		"follower_count": followerCount,
-		"is_follow":      isFollow,
+		"follow_count":   0,
+		"follower_count": 0,
+		"is_follow":      false,
 	}
-	fmt.Println("缓存")
+	fmt.Println("已有缓存", cathe)
+
 	return res, nil
 }
