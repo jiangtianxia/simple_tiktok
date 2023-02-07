@@ -12,7 +12,7 @@ import (
 	"simple_tiktok/utils"
 )
 
-//查询是否存在
+// 查询是否存在
 func IsExist(username string) bool {
 	var user models.UserBasic
 	var size int64

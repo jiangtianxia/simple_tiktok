@@ -81,7 +81,7 @@ func PostUserRegister(c *gin.Context, req *RegisterRequire) (*RegisterResponse, 
 	
 	res2 := models.UserBasic{Identity: (uint64)(identity), Username: cathe["username"], Password: cathe["password"]}
 	
-	//更新数据
+	// 更新数据
 	err = mysql.AddUserBasic(&res2)
 	if err != nil {
 		return nil, err
