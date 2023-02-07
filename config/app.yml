@@ -59,7 +59,7 @@ rocketmq:
 #    userLoginTag: "userLogin"
     retrySize:   2
 
-#问题出在9999接口操作上，没有对应连上
+#问题出在9999接口连接不上
     addr1:  "101.43.157.116:9999"
     redisTopic1:  "LoginTopic"
     redisGroupName1:  "login"
