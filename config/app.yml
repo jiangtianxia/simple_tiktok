@@ -54,19 +54,16 @@ rocketmq:
     redisProducer: "RedisProducer"
     redisTopic:  "RedisTopic"
     redisGroupName:  "RedisGroup"
-#    redisTags: "publishAction||login||userLoginRedis"
-    redisTags: "publishAction||login||loginredis||userInfo"
+    redisTags: "publishAction||userInfo"
     publishActionTag: "publishAction"
-#    userLoginTag: "userLogin"
-    ReidsloginTag: "loginredis"
     userInfoTag: "userInfo"
     retrySize:   2
 
-#问题出在9999接口连接不上
+#问题出在 9999 接口连接不上
     addr1:  "101.43.157.116:9999"
     redisTopic1:  "LoginTopic"
     redisGroupName1:  "login"
-    redisTags1: "login||userLoginRedis"
+    redisTags1: "userLogin"
     userLoginTag: "userLogin"
 
 cos:

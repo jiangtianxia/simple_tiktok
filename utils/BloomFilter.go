@@ -3,7 +3,6 @@ package utils
 import (
 	"context"
 	"fmt"
-	"reflect"
 )
 
 /**
@@ -63,29 +62,30 @@ func BloomFilterAdd(value string) error {
 	return err
 }
 
-// 判断该值是否存在布隆过滤器
-func BloomFilterCheck(value interface{}) (bool, error) {
-	result := [4]uint{}
-	for i, seed := range seeds {
-		result[i] = CreateHash(seed, value)
-	}
-
-	// 同时检查元素是否可能存在于key指定的Bloom中
-	// BF.MEXISTS {key} {item} [item…]
-	res, err := RDB9.Do(ctx, "BF.MEXISTS", KeyBloomFilter, result[0], result[1], result[2], result[3]).Result()
-	if err != nil {
-		return false, err
-	}
-
-	valueS := reflect.ValueOf(res)
-	for i := 0; i < valueS.Len(); i++ {
-		if fmt.Sprintf("%v", valueS.Index(i)) == "0" {
-			return false, nil
-		}
-	}
-
-	return true, nil
-}
+//
+//// 判断该值是否存在布隆过滤器
+//func BloomFilterCheck(value interface{}) (bool, error) {
+//	result := [4]uint{}
+//	for i, seed := range seeds {
+//		result[i] = CreateHash(seed, value)
+//	}
+//
+//	// 同时检查元素是否可能存在于key指定的Bloom中
+//	// BF.MEXISTS {key} {item} [item…]
+//	res, err := RDB9.Do(ctx, "BF.MEXISTS", KeyBloomFilter, result[0], result[1], result[2], result[3]).Result()
+//	if err != nil {
+//		return false, err
+//	}
+//
+//	valueS := reflect.ValueOf(res)
+//	for i := 0; i < valueS.Len(); i++ {
+//		if fmt.Sprintf("%v", valueS.Index(i)) == "0" {
+//			return false, nil
+//		}
+//	}
+//
+//	return true, nil
+//}
 
 // /**
 //  * @Author jiang
