@@ -45,7 +45,6 @@ func PostUserRegister(c *gin.Context, req *RegisterRequire) (*RegisterResponse, 
 		return nil, errors.New("用户名已存在")
 	}
 
-	// 添加缓存这里参考zxy的，暂未测试
 	redisErr := myRedis.RedisUserRegister(c, req.Username, map[string]interface{}{
 		"identity": -1,
 	})
@@ -67,19 +66,21 @@ func PostUserRegister(c *gin.Context, req *RegisterRequire) (*RegisterResponse, 
 		"username":       ur.Username,
 		"password":       getpsw,
 	}
-
+	
 	// 新增缓存
-	err = myRedis.RedisAddUserInfo(c, req.Username, res1)
+	err = myRedis.RedisUserRegister(c, req.Username, res1)
+	
 	if err != nil {
 		logger.SugarLogger.Error(err)
 		return nil, err
 	}
+	
 	// 使用缓存
-	cathe := utils.RDB0.HGetAll(c, req.Username).Val()
+	cathe := utils.RDB1.HGetAll(c, req.Username).Val()
 	identity, _ := strconv.Atoi(cathe["identity"])
-
+	
 	res2 := models.UserBasic{Identity: (uint64)(identity), Username: cathe["username"], Password: cathe["password"]}
-
+	
 	//更新数据
 	err = mysql.AddUserBasic(&res2)
 	if err != nil {

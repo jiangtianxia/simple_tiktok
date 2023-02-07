@@ -8,7 +8,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"simple_tiktok/service"
 
@@ -19,9 +18,6 @@ func UserRegister(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
 
-
-	fmt.Print(username)
-	fmt.Print(password)
 	req := service.RegisterRequire{
 		Username: string(username),
 		Password: string(password),

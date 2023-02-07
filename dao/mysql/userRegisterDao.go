@@ -8,7 +8,6 @@
 package mysql
 
 import (
-	"errors"
 	"simple_tiktok/models"
 	"simple_tiktok/utils"
 )
@@ -16,15 +15,12 @@ import (
 //查询是否存在
 func IsExist(username string) bool {
 	var user models.UserBasic
-	utils.DB.Model(&models.UserBasic{}).Select("username").Where("username = ?", username).Scan(&user)
-	return user.Identity != 0
+	var size int64
+	utils.DB.Model(&models.UserBasic{}).Select("username").Where("username = ?", username).Scan(&user).Count(&size)
+	return size != 0
 }
 
 // 用户增加
 func AddUserBasic(userbasic *models.UserBasic) error {
-	if userbasic == nil {
-		return errors.New("空指针")
-	}
-	utils.DB.Create(&userbasic)
-	return nil
+	return utils.DB.Create(&userbasic).Error
 }
