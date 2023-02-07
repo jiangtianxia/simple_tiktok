@@ -26,8 +26,8 @@ redis:
     KeyPublishListPrefix: "list:publish:"
     KeyVideoInfoHashPrefix: "videoinfo:"
     KetFavoriteSetPrefix: "favorite:"
-
-
+    KeyUserMessageHashPrefix: "message:"
+    KeyUserMessageListPrefix: ":message:"
 
 
 md5:

@@ -39,6 +39,12 @@ func Router() *gin.Engine {
 
 		// 视频投稿
 		v1.POST("/publish/action/", controller.Publish)
+
+		// 发送消息
+		v1.POST("/message/action", controller.SendMessage)
+
+		// 聊天记录
+		v1.GET("/message/chat", controller.MessageRecord)
 	}
 
 	r.GET("/test", controller.Test)
