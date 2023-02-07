@@ -47,7 +47,6 @@ type ChanMsg struct {
 
 var publishChan chan ChanMsg = make(chan ChanMsg, 100)
 
-// var LoginChan chan ChanMsg = make(chan ChanMsg, 100)
 var userInfoChan chan ChanMsg = make(chan ChanMsg, 100)
 var loginChan chan ChanMsg = make(chan ChanMsg, 100)
 

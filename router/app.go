@@ -41,6 +41,8 @@ func Router() *gin.Engine {
 
 		// 视频投稿
 		v1.POST("/publish/action/", controller.Publish)
+		//赞操作
+		v1.POST("/favorite/action/", controller.Favourite)
 	}
 
 	r.GET("/test", controller.Test)

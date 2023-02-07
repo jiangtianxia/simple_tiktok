@@ -30,16 +30,6 @@ func UserInfo(c *gin.Context) {
 		return
 	}
 
-	////布隆过滤器
-	//filterRes, _ := utils.BloomFilterCheck(userId)
-	//if !filterRes {
-	//	c.JSON(http.StatusInternalServerError, gin.H{
-	//		"status_code": -1,
-	//		"status_msg":  "no such user",
-	//	})
-	//	return
-	//}
-
 	// 把参数传给service层
 	res, err := service.UserInfo(c, userId)
 	if err != nil {
