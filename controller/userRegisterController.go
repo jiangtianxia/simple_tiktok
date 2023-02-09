@@ -1,10 +1,3 @@
-/*
- * @Description:
- * @Author: liuxin
- * @Date: 2023-01-28 09:17:53
- * @LastEditTime: 2023-01-29 13:47:58
- * @LastEditors:
- */
 package controller
 
 import (
@@ -28,11 +21,15 @@ func UserRegister(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"status_code": -1,
 			"status_msg":  err.Error(),
+			"user_id": -1,
+			"token": "-1",
 		})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"status_code": 0,
-		"Identity":    &registerResponse.Identity,
+		"status_msg": "success",
+		"user_id": &registerResponse.Identity,
+		"token": &registerResponse.Token,
 	})
 }

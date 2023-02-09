@@ -1,16 +1,20 @@
-/*
- * @Description:
- * @Author: liuxin
- * @Date: 2023-01-28 10:22:09
- * @LastEditTime: 2023-01-29 13:46:00
- * @LastEditors:
- */
 package mysql
 
 import (
 	"simple_tiktok/models"
 	"simple_tiktok/utils"
 )
+
+//请求体
+type RegisterRequire struct {
+	Username string 
+	Password    string 
+}
+
+type RegisterResponse struct {
+	Identity uint64 `json:"identity"`
+	Token    string `json:"token"`
+}
 
 // 查询是否存在
 func IsExist(username string) bool {

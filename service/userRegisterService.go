@@ -1,10 +1,3 @@
-/*
- * @Description:
- * @Author: liuxin
- * @Date: 2023-01-28 09:33:15
- * @LastEditTime: 2023-01-29 13:45:24
- * @LastEditors:
- */
 package service
 
 import (
@@ -21,16 +14,17 @@ import (
 
 //请求体
 type RegisterRequire struct {
-	Username string 
+	Username 	string 
 	Password    string 
 }
 
 type RegisterResponse struct {
-	Identity uint64 `json:"identity"`
-	Token    string `json:"token"`
+	Identity uint64
+	Token    string
 }
 
 // 注册得到token和id
+// TODO 请求体应该写在controller  这底下的一系列check应该写在dao层，忘记修改了，需要稍微移动一下
 func PostUserRegister(c *gin.Context, req *RegisterRequire) (*RegisterResponse, error) {
 	//验证合法性
 	if req.Username == "" {
