@@ -42,6 +42,9 @@ func Router() *gin.Engine {
 
 		// 发布列表
 		v1.GET("/publish/list/", controller.GetPublishList)
+
+		// 喜欢列表
+		v1.GET("/favorite/list/", controller.GetFavoriteList)
 	}
 
 	r.GET("/test", controller.Test)
