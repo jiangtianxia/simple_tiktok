@@ -21,33 +21,24 @@ import (
 // 	return "comment_video"
 // }
 
-// 使用video id查询Comment数量
-func CountComment(identity int64) (int64, error) {
-	var count int64
-	err := utils.DB.Model(models.CommentVideo{}).Where(map[string]interface{}{"identity": identity}).Count(&count).Error
-	if err != nil {
-		return -1, errors.New("查询评论数量失败")
-	}
-	return count, nil
-}
-
 // 发表评论
-func AddComment(comment models.CommentVideo) (models.CommentVideo, error) {
+func AddComment(comment models.CommentVideo) error {
 	err := utils.DB.Model(models.CommentVideo{}).Create(&comment).Error
 	if err != nil {
-		return models.CommentVideo{}, errors.New("发表评论失败")
+		return errors.New("发表评论失败")
 	}
-	return comment, nil
+	return nil
 }
 
 // 删除评论，传入评论id
-func DelComment(identity int64) error {
+func DelComment(identity uint64) error {
 	var commentInfo models.CommentVideo
-	result := utils.DB.Model(models.CommentVideo{}).Where(map[string]interface{}{}).First(&commentInfo)
+	result := utils.DB.Model(models.CommentVideo{}).Where("identity = ?", identity).First(&commentInfo)
 	if result.RowsAffected == 0 {
 		return errors.New("该评论不存在")
 	}
-	err := utils.DB.Model(models.CommentVideo{}).Where("identity = ?", identity)//.Update( ).Error
+
+	err := utils.DB.Delete(commentInfo).Error
 	if err != nil {
 		return errors.New("删除评论失败")
 	}

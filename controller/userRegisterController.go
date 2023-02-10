@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// 用户注册 /register
 func UserRegister(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
