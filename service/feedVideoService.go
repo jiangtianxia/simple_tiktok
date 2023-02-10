@@ -50,8 +50,13 @@ func FeedVideo(c *gin.Context, latestTime int64) ([]VideoInfo, int64, error) {
 			video, err := mysql.FindVideoById(uint64(id))
 			if err != nil {
 				logger.SugarLogger.Error(err)
+				return nil, 0, err
 			}
-			myredis.RedisAddVideoInfo(*video) // 将数据库查询出的数据写入redis
+			err = myredis.RedisAddVideoInfo(*video) // 将数据库查询出的数据写入redis
+			if err != nil {
+				logger.SugarLogger.Error(err)
+				return nil, 0, err
+			}
 			fmt.Println("数据库")
 		}
 

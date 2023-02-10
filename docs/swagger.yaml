@@ -1,6 +1,25 @@
 info:
   contact: {}
 paths:
+  /feed:
+    get:
+      parameters:
+      - description: latest_time
+        in: query
+        name: latest_time
+        type: string
+      - description: token
+        in: query
+        name: token
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 视频流
+      tags:
+      - 基础接口
   /hello:
     get:
       responses:

@@ -9,6 +9,13 @@ import (
 	"time"
 )
 
+// FeedVideo
+// @Summary 视频流
+// @Tags 基础接口
+// @Param latest_time query string false "latest_time"
+// @Param token query string false "token"
+// @Success 200 {string} status_code status_msg
+// @Router /feed [get]
 func FeedVideo(c *gin.Context) {
 
 	// 接收参数
@@ -37,7 +44,7 @@ func FeedVideo(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status_code": -1,
-			"status_msg":  err.Error(),
+			"status_msg":  "获取视频失败",
 		})
 		return
 	}
