@@ -18,4 +18,6 @@ func main() {
 	db.AutoMigrate(&models.VideoBasic{})
 	db.AutoMigrate(&models.CommentVideo{})
 	db.AutoMigrate(&models.FavouriteVideo{})
+	db.AutoMigrate(&models.UserFollow{})
+	db.AutoMigrate(&models.UserMessage{})
 }
