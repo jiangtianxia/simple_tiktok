@@ -4,6 +4,36 @@
         "contact": {}
     },
     "paths": {
+        "/feed": {
+            "get": {
+                "tags": [
+                    "基础接口"
+                ],
+                "summary": "视频流",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "latest_time",
+                        "name": "latest_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/hello": {
             "get": {
                 "tags": [

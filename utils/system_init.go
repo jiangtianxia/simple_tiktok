@@ -140,7 +140,7 @@ func InitRedis() {
 		MinIdleConns: viper.GetInt("redis.minIdleConn"),
 	})
 
-	// RDB2存储上传视频列表
+	// RDB2存储上传视频zset
 	RDB2 = redis.NewClient(&redis.Options{
 		Addr:         viper.GetString("redis.addr"),
 		Password:     viper.GetString("redis.password"),

@@ -34,6 +34,10 @@ func Router() *gin.Engine {
 		/*
 		* 基础接口
 		 */
+
+		// 视频流接口
+		v1.GET("/feed", controller.FeedVideo)
+    
 		v1.GET("/user", controller.UserInfo)
 		v1.POST("/register", controller.UserRegister)
 		// 视频投稿
@@ -41,6 +45,7 @@ func Router() *gin.Engine {
 
 		// 发布列表
 		v1.GET("/publish/list/", controller.GetPublishList)
+
 	}
 
 	r.GET("/test", controller.Test)
