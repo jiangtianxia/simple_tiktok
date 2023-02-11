@@ -40,7 +40,7 @@ type FollowReqStruct struct {
  * 答：删除缓存时可能会删除失败从而导致数据不一致，因此可以用重试机制，重试删除缓存，如果次数过多需要人工介入。
  *
  * 如何实现重试机制？
- * 答：使用rocketmq来实现重试机制，发送延迟消息。
+ * 答：使用rocketmq来实现重试机制。
  **/
 func FollowService(msgid string, data []byte) {
 	followInfo := &FollowReqStruct{}
