@@ -62,6 +62,11 @@ rocketmq:
     retrySize:   2
 
 
+    followGroupName: "FollowGroup"
+    serverFollowTag: "ServerFollow"
+    
+
+
 cos:
     addr: "https://tiktok-1310814941.cos.ap-guangzhou.myqcloud.com"
     SecretId: "AKID2vc5LM9h03sZ0Nn3cO6rcATXNzNXSDjx"

@@ -10,7 +10,6 @@ import (
 	"simple_tiktok/dao/mysql"
 	"simple_tiktok/logger"
 	"simple_tiktok/models"
-	rocket "simple_tiktok/rocketmq"
 	"simple_tiktok/utils"
 	"strconv"
 	"time"
@@ -126,7 +125,7 @@ func UploadCOS(c *gin.Context, srcFile multipart.File, head *multipart.FileHeade
 	Producer := viper.GetString("rocketmq.redisProducer")
 	tag := viper.GetString("rocketmq.publishActionTag")
 	data, _ := json.Marshal(videoInfo)
-	rocket.SendMsg(c, Producer, redisTopic, tag, data)
+	utils.SendMsg(c, Producer, redisTopic, tag, data)
 
 	return 0, "投稿成功"
 }

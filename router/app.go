@@ -42,6 +42,12 @@ func Router() *gin.Engine {
 
 		// 视频流接口
 		v1.GET("/feed", controller.FeedVideo)
+
+		/*
+		* 社交接口
+		 */
+		// 关注操作
+		v1.POST("/relation/action/", controller.Follow)
 	}
 
 	r.GET("/test", controller.Test)

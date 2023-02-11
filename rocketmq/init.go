@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"simple_tiktok/models"
+	"simple_tiktok/service"
 
 	"github.com/spf13/viper"
 )
@@ -24,6 +25,13 @@ func InitRocketmq() {
 	redisTags := viper.GetString("rocketmq.redisTags")
 
 	go CreateConsumer(redisGroupName, redisTopic, redisTags)
+
+	// 关注操作的消费者组
+	followTopic := viper.GetString("rocketmq.ServerTopic")
+	followTag := viper.GetString("rocketmq.serverFollowTag")
+	followGroupName := viper.GetString("rocketmq.followGroupName")
+	go CreateConsumer(followGroupName, followTopic, followTag)
+
 	fmt.Println("rocketmq inited ...... ")
 }
 
@@ -40,6 +48,7 @@ type ChanMsg struct {
 
 var publishChan chan ChanMsg = make(chan ChanMsg, 100)
 var LoginChan chan ChanMsg = make(chan ChanMsg, 100)
+var FollowChan chan ChanMsg = make(chan ChanMsg, 100)
 
 func ReceiveChan() {
 	for {
@@ -50,6 +59,9 @@ func ReceiveChan() {
 			json.Unmarshal(data.Data, videoinfo)
 			// fmt.Println(videoinfo)
 			PublishAction(*videoinfo)
+		case data := <-FollowChan:
+			// 关注操作
+			service.FollowService(data.Msgid, data.Data)
 		}
 	}
 }

@@ -1,0 +1,18 @@
+2023-02-11T14:57:01.082+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
+2023-02-11T14:57:01.083+0800	INFO	simple_tiktok/main.go:57	配置路由完成
+2023-02-11T15:37:46.561+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
+2023-02-11T15:37:46.561+0800	INFO	simple_tiktok/main.go:57	配置路由完成
+2023-02-11T15:41:15.187+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
+2023-02-11T15:41:15.187+0800	INFO	simple_tiktok/main.go:57	配置路由完成
+2023-02-11T15:41:23.961+0800	ERROR	mysql/userDao.go:13	record not found
+2023-02-11T15:41:23.962+0800	ERROR	middlewares/authUser.go:33	User Invalid&{10 test { 1676533283  0 simple_tiktok 0 }}
+2023-02-11T15:42:12.170+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
+2023-02-11T15:42:12.180+0800	INFO	simple_tiktok/main.go:57	配置路由完成
+2023-02-11T15:43:12.258+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
+2023-02-11T15:43:12.259+0800	INFO	simple_tiktok/main.go:57	配置路由完成
+2023-02-11T15:43:21.442+0800	ERROR	mysql/userDao.go:13	record not found
+2023-02-11T15:43:21.442+0800	ERROR	middlewares/authUser.go:33	User Invalid&{100 test { 1676533401  0 simple_tiktok 0 }}
+2023-02-11T15:44:14.792+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
+2023-02-11T15:44:14.792+0800	INFO	simple_tiktok/main.go:57	配置路由完成
+2023-02-11T16:05:36.997+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
+2023-02-11T16:05:36.997+0800	INFO	simple_tiktok/main.go:57	配置路由完成

@@ -37,7 +37,7 @@ func UploadResp(c *gin.Context, code int, msg string) {
 // @Param token formData string true "token"
 // @Param data formData file true "文件"
 // @Param title formData string true "标题"
-// @Success 200 {string} status_code status_msg
+// @Success 200 {object} UploadRespStruct
 // @Router /publish/action/ [post]
 func Publish(c *gin.Context) {
 	// 1、获取参数
