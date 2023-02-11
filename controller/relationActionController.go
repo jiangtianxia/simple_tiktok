@@ -48,7 +48,7 @@ type FollowReqStruct struct {
 // @Param token query string true "token"
 // @Param to_user_id query string true "用户id"
 // @Param action_type query string true "关注操作"
-// @Success 200 {object} RelationRespStruct
+// @Success 200 {object} FollowRespStruct
 // @Router /relation/action/ [post]
 func Follow(c *gin.Context) {
 	// 1、获取参数
@@ -90,7 +90,7 @@ func Follow(c *gin.Context) {
 
 	// 4、将消息发送到消息队列
 	Info := FollowReqStruct{
-		UserId:     UserClaims.Id,
+		UserId:     strconv.Itoa(int(UserClaims.Identity)),
 		ToUserId:   to_user_id,
 		ActionType: actionType,
 	}
@@ -103,12 +103,12 @@ func Follow(c *gin.Context) {
 	res, err := utils.SendMsg(c, producer, topic, tag, data)
 	if err != nil {
 		logger.SugarLogger.Error("发送消息失败， error:", err.Error())
-		FollowResp(c, -1, "关注失败")
+		FollowResp(c, -1, "操作失败")
 		return
 	}
 
 	if res.Status == 0 {
-		for i := 0; i < 15; i++ {
+		for i := 0; i < 300; i++ {
 			// hash msgid req
 			// 根据msgid，查询redis缓存中是否存在数据，如果存在则将结果返回
 			key := res.MsgID
@@ -121,13 +121,13 @@ func Follow(c *gin.Context) {
 				return
 			}
 
-			time.Sleep(time.Second)
+			time.Sleep(time.Second / 15)
 		}
 
-		// 15秒后，还是没有结果，则返回请求超时
+		// 20秒后，还是没有结果，则返回请求超时
 		FollowResp(c, -1, "请求超时！！！")
 		return
 	}
 
-	FollowResp(c, -1, "关注失败")
+	FollowResp(c, -1, "操作失败")
 }

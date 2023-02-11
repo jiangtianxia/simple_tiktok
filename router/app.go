@@ -31,17 +31,19 @@ func Router() *gin.Engine {
 		* 公共接口
 		 */
 		v1.GET("/hello", controller.Hello)
-
 		/*
 		* 基础接口
 		 */
-		v1.GET("/user", controller.UserInfo1)
-
-		// 视频投稿
-		v1.POST("/publish/action/", controller.Publish)
 
 		// 视频流接口
 		v1.GET("/feed", controller.FeedVideo)
+		v1.GET("/user", controller.UserInfo)
+		v1.POST("/register", controller.UserRegister)
+		// 视频投稿
+		v1.POST("/publish/action/", controller.Publish)
+
+		// 发布列表
+		v1.GET("/publish/list/", controller.GetPublishList)
 
 		/*
 		* 社交接口

@@ -2,28 +2,29 @@ package service
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis/v9"
-	"github.com/spf13/viper"
 	"simple_tiktok/dao/mysql"
 	myredis "simple_tiktok/dao/redis"
 	"simple_tiktok/logger"
 	"simple_tiktok/utils"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v9"
+	"github.com/spf13/viper"
 )
 
 type VideoInfo struct {
-	Identity      uint64 `json:"id"`        // 视频唯一标识
-	Author        Author `json:"author"`    // 作者信息
-	PlayUrl       string `json:"play_url"`  // 视频路径
-	CoverUrl      string `json:"cover_url"` // 封面路径
-	FavoriteCount int    `json:"favorite_count"`
-	CommentCount  int    `json:"comment_count"`
-	IsFavorite    bool   `json:"is_favorite"`
-	Title         string `json:"title"` // 视频标题
+	Identity      uint64  `json:"id"`        // 视频唯一标识
+	Author        Author1 `json:"author"`    // 作者信息
+	PlayUrl       string  `json:"play_url"`  // 视频路径
+	CoverUrl      string  `json:"cover_url"` // 封面路径
+	FavoriteCount int     `json:"favorite_count"`
+	CommentCount  int     `json:"comment_count"`
+	IsFavorite    bool    `json:"is_favorite"`
+	Title         string  `json:"title"` // 视频标题
 }
 
-type Author struct {
+type Author1 struct {
 	Id            uint64 `json:"id"`
 	Name          string `json:"name"`
 	FollowCount   int    `json:"follow_count"`
@@ -50,8 +51,13 @@ func FeedVideo(c *gin.Context, latestTime int64) ([]VideoInfo, int64, error) {
 			video, err := mysql.FindVideoById(uint64(id))
 			if err != nil {
 				logger.SugarLogger.Error(err)
+				return nil, 0, err
 			}
-			myredis.RedisAddVideoInfo(*video) // 将数据库查询出的数据写入redis
+			err = myredis.RedisAddVideoInfo(*video) // 将数据库查询出的数据写入redis
+			if err != nil {
+				logger.SugarLogger.Error(err)
+				return nil, 0, err
+			}
 			fmt.Println("数据库")
 		}
 
@@ -61,7 +67,7 @@ func FeedVideo(c *gin.Context, latestTime int64) ([]VideoInfo, int64, error) {
 		videoInfos[i].Identity, _ = strconv.ParseUint(video["id"], 10, 64)
 		userId, _ := strconv.ParseUint(video["author_id"], 10, 64)
 		user, _ := mysql.FindUserByIdentity(userId)
-		videoInfos[i].Author = Author{
+		videoInfos[i].Author = Author1{
 			Id:            user.Identity,
 			Name:          user.Username,
 			FollowCount:   0,

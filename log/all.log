@@ -1,18 +1,24 @@
-2023-02-11T14:57:01.082+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
-2023-02-11T14:57:01.083+0800	INFO	simple_tiktok/main.go:57	配置路由完成
-2023-02-11T15:37:46.561+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
-2023-02-11T15:37:46.561+0800	INFO	simple_tiktok/main.go:57	配置路由完成
-2023-02-11T15:41:15.187+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
-2023-02-11T15:41:15.187+0800	INFO	simple_tiktok/main.go:57	配置路由完成
-2023-02-11T15:41:23.961+0800	ERROR	mysql/userDao.go:13	record not found
-2023-02-11T15:41:23.962+0800	ERROR	middlewares/authUser.go:33	User Invalid&{10 test { 1676533283  0 simple_tiktok 0 }}
-2023-02-11T15:42:12.170+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
-2023-02-11T15:42:12.180+0800	INFO	simple_tiktok/main.go:57	配置路由完成
-2023-02-11T15:43:12.258+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
-2023-02-11T15:43:12.259+0800	INFO	simple_tiktok/main.go:57	配置路由完成
-2023-02-11T15:43:21.442+0800	ERROR	mysql/userDao.go:13	record not found
-2023-02-11T15:43:21.442+0800	ERROR	middlewares/authUser.go:33	User Invalid&{100 test { 1676533401  0 simple_tiktok 0 }}
-2023-02-11T15:44:14.792+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
-2023-02-11T15:44:14.792+0800	INFO	simple_tiktok/main.go:57	配置路由完成
-2023-02-11T16:05:36.997+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
-2023-02-11T16:05:36.997+0800	INFO	simple_tiktok/main.go:57	配置路由完成
+2023-02-11T19:26:34.766+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
+2023-02-11T19:26:34.767+0800	INFO	simple_tiktok/main.go:57	配置路由完成
+2023-02-11T19:30:39.449+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
+2023-02-11T19:30:39.450+0800	INFO	simple_tiktok/main.go:57	配置路由完成
+2023-02-11T19:31:26.370+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
+2023-02-11T19:31:26.371+0800	INFO	simple_tiktok/main.go:57	配置路由完成
+2023-02-11T19:34:24.832+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
+2023-02-11T19:34:24.833+0800	INFO	simple_tiktok/main.go:57	配置路由完成
+2023-02-11T19:36:01.417+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
+2023-02-11T19:36:01.418+0800	INFO	simple_tiktok/main.go:57	配置路由完成
+2023-02-11T19:38:18.443+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
+2023-02-11T19:38:18.444+0800	INFO	simple_tiktok/main.go:57	配置路由完成
+2023-02-11T19:39:51.559+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
+2023-02-11T19:39:51.560+0800	INFO	simple_tiktok/main.go:57	配置路由完成
+2023-02-11T19:42:31.255+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
+2023-02-11T19:42:31.256+0800	INFO	simple_tiktok/main.go:57	配置路由完成
+2023-02-11T19:44:43.206+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
+2023-02-11T19:44:43.207+0800	INFO	simple_tiktok/main.go:57	配置路由完成
+2023-02-11T19:45:41.705+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
+2023-02-11T19:45:41.706+0800	INFO	simple_tiktok/main.go:57	配置路由完成
+2023-02-11T19:48:10.646+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
+2023-02-11T19:48:10.647+0800	INFO	simple_tiktok/main.go:57	配置路由完成
+2023-02-11T19:49:35.630+0800	INFO	simple_tiktok/main.go:53	初始化配置完成
+2023-02-11T19:49:35.631+0800	INFO	simple_tiktok/main.go:57	配置路由完成

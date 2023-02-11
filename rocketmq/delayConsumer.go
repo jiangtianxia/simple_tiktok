@@ -14,16 +14,10 @@ import (
 
 /**
  * @Author jiang
- * @Description 消费者组接收消息
- * @Date 15:00 2023/1/23
+ * @Description 接收延迟消息，删除缓存
+ * @Date 20:00 2023/2/11
  **/
-/**
- * 此次共有两个消息费者组。
- * 1）服务的消息者，获取服务消息队列的数据，同时根据tag进行筛选。
- * 2）缓存的消息者，获取缓存消息队列的数据，同时根据tag进行筛选。
- * 注：为了防止数据丢失，一个消费者组接收一个topic的消息
- **/
-func CreateConsumer(groupName string, topic string, tags string) {
+func CreateDelayConsumer(groupName string, topic string, tags string) {
 	// 服务地址
 	endPoint := []string{viper.GetString("rocketmq.addr")}
 
@@ -50,11 +44,11 @@ func CreateConsumer(groupName string, topic string, tags string) {
 
 	// 接收消息
 	for {
-		ReceiveMsg(newPushConsumer, topic, tags)
+		ReceiveDelayMsg(newPushConsumer, topic, tags)
 	}
 }
 
-func ReceiveMsg(newPushConsumer rocketmq.PushConsumer, topic string, tags string) {
+func ReceiveDelayMsg(newPushConsumer rocketmq.PushConsumer, topic string, tags string) {
 	// 过滤器，只接收主题为topic，标签为tag的数据
 	selector := consumer.MessageSelector{
 		Type:       consumer.TAG,
@@ -70,27 +64,10 @@ func ReceiveMsg(newPushConsumer rocketmq.PushConsumer, topic string, tags string
 				* 选择器，根据tag判断要将数据发送至哪条通道
 				 */
 				switch msg.GetTags() {
-				case "publishAction":
-					// 把msgid，也发到到通道
-					publishChan <- ChanMsg{
-						Msgid: msg.MsgId,
-						Data:  msg.Body,
-					}
-				case "loginredis":
-					LoginChan <- ChanMsg{
-						Msgid: msg.MsgId,
-						Data:  msg.Body,
-					}
-				case "userInfo":
-					userInfoChan <- ChanMsg{
-						Msgid: msg.MsgId,
-						Data:  msg.Body,
-					}
-				case "ServerFollow":
-					FollowChan <- ChanMsg{
-						Msgid: msg.MsgId,
-						Data:  msg.Body,
-					}
+				case "DeleteFollowRedis":
+					// 删除缓存
+					fmt.Println("接收到消息")
+					return consumer.ConsumeSuccess, nil
 				}
 			}
 			return consumer.ConsumeSuccess, nil

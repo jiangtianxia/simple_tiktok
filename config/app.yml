@@ -23,13 +23,16 @@ redis:
     minIdleConn: 100
     RedisExpireTime: 120 # 单位h
     KeyVideoList: "zset:video"
+    defaultErrorIdentity: -1
     KeyUserHashPrefix: "userinfo:"
     KeyPublishListPrefix: "list:publish:"
     KeyVideoInfoHashPrefix: "videoinfo:"
-    KetFavoriteSetPrefix: "favorite:"
+    KeyCommentInfoHashPrefix: "commentinfo:"
+    KeyFavoriteUserSortSetPrefix: "favorite:user:"
+    KeyCommentListPrefix: "list:comment:"
 
 
-    
+
 
 md5:
     salt: "tiktokGi0I0R1tC#%"
@@ -56,14 +59,21 @@ rocketmq:
     redisProducer: "RedisProducer"
     redisTopic:  "RedisTopic"
     redisGroupName:  "RedisGroup"
-    redisTags: "publishAction||login||loginredis"
+    redisTags: "publishAction||login||loginredis||userInfo"
     publishActionTag: "publishAction"
     ReidsloginTag: "loginredis"
+    userInfoTag: "userInfo"
     retrySize:   2
 
 
     followGroupName: "FollowGroup"
     serverFollowTag: "ServerFollow"
+
+    RetryTopic: "RetryTopic"
+    RetryGroupName: "RetryGroup"
+    RetryQueueRetrySize: 5
+    RetryTags: "DeleteFollowRedis"
+    DeleteFollowRedisTag: "DeleteFollowRedis"
     
 
 
@@ -76,4 +86,3 @@ cos:
 CircuitBreaker:
     roundInterval:  15 # 熔断周期，单位s
     recoverInterval: 5 # 冷却周期，单位s
-        

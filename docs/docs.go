@@ -16,6 +16,36 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/feed": {
+            "get": {
+                "tags": [
+                    "基础接口"
+                ],
+                "summary": "视频流",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "latest_time",
+                        "name": "latest_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/hello": {
             "get": {
                 "tags": [
@@ -71,6 +101,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/publish/list/": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "视频发布列表接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "登录用户的token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "查找目标用户的id",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "status_msg为成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.GetPublishListResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/relation/action/": {
             "post": {
                 "tags": [
@@ -104,7 +166,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controller.RelationRespStruct"
+                            "$ref": "#/definitions/controller.FollowRespStruct"
                         }
                     }
                 }
@@ -112,7 +174,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "controller.RelationRespStruct": {
+        "controller.FollowRespStruct": {
             "type": "object",
             "properties": {
                 "status_code": {
@@ -123,6 +185,23 @@ const docTemplate = `{
                 }
             }
         },
+        "controller.GetPublishListResponse": {
+            "type": "object",
+            "properties": {
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                },
+                "video_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/service.Video"
+                    }
+                }
+            }
+        },
         "controller.UploadRespStruct": {
             "type": "object",
             "properties": {
@@ -130,6 +209,58 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "status_msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "service.Author": {
+            "type": "object",
+            "properties": {
+                "follow_count": {
+                    "description": "default",
+                    "type": "integer"
+                },
+                "follower_count": {
+                    "description": "default",
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_follow": {
+                    "description": "defalut",
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "service.Video": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "$ref": "#/definitions/service.Author"
+                },
+                "comment_count": {
+                    "type": "integer"
+                },
+                "cover_url": {
+                    "type": "string"
+                },
+                "favorite_count": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_favorite": {
+                    "type": "boolean"
+                },
+                "play_url": {
+                    "type": "string"
+                },
+                "title": {
                     "type": "string"
                 }
             }

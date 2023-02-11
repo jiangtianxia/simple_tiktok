@@ -3,6 +3,7 @@ package rocket
 import (
 	"encoding/json"
 	"fmt"
+	"simple_tiktok/logger"
 	"simple_tiktok/models"
 	"simple_tiktok/service"
 
@@ -32,6 +33,12 @@ func InitRocketmq() {
 	followGroupName := viper.GetString("rocketmq.followGroupName")
 	go CreateConsumer(followGroupName, followTopic, followTag)
 
+	// 重试机制
+	RetryTopic := viper.GetString("rocketmq.RetryTopic")
+	// DeleteFollowRedisTag := viper.GetString("rocketmq.DeleteFollowRedisTag")
+	RetryTags := viper.GetString("rocketmq.RetryTags")
+	RetryGroupName := viper.GetString("rocketmq.RetryGroupName")
+	go CreateDelayConsumer(RetryGroupName, RetryTopic, RetryTags)
 	fmt.Println("rocketmq inited ...... ")
 }
 
@@ -48,6 +55,7 @@ type ChanMsg struct {
 
 var publishChan chan ChanMsg = make(chan ChanMsg, 100)
 var LoginChan chan ChanMsg = make(chan ChanMsg, 100)
+var userInfoChan chan ChanMsg = make(chan ChanMsg, 100)
 var FollowChan chan ChanMsg = make(chan ChanMsg, 100)
 
 func ReceiveChan() {
@@ -58,10 +66,17 @@ func ReceiveChan() {
 			videoinfo := &models.VideoBasic{}
 			json.Unmarshal(data.Data, videoinfo)
 			// fmt.Println(videoinfo)
-			PublishAction(*videoinfo)
+			go PublishAction(*videoinfo)
+		case data := <-userInfoChan:
+			userInfo := &models.UserBasic{}
+			err := json.Unmarshal(data.Data, userInfo)
+			if err != nil {
+				logger.SugarLogger.Error(err)
+			}
+			go UserInfoAction(*userInfo)
 		case data := <-FollowChan:
 			// 关注操作
-			service.FollowService(data.Msgid, data.Data)
+			go service.FollowService(data.Msgid, data.Data)
 		}
 	}
 }

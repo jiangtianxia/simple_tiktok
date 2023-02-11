@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"context"
 	"fmt"
 	"simple_tiktok/logger"
 	"time"
@@ -69,4 +70,53 @@ func SendMsg(c *gin.Context, groupname string, topic string, tag string, data []
 	nowStr := time.Now().Format("2006-01-02 15:04:05")
 	fmt.Printf("%s: 消息: %s发送成功 \n", nowStr, res.String())
 	return res, nil
+}
+
+/**
+ * 发送延迟消息
+ **/
+func SendDelayMsg(topic string, tag string, data []byte) error {
+	// 服务器地址
+	endPoint := []string{viper.GetString("rocketmq.addr")}
+
+	// 消息消费失败重试两次
+	ProducerMq, err := rocketmq.NewProducer(
+		producer.WithNameServer(endPoint),
+		producer.WithRetry(viper.GetInt("rocketmq.RetryQueueRetrySize")),
+		producer.WithQueueSelector(producer.NewRandomQueueSelector()),
+	)
+
+	defer func(Producer rocketmq.Producer) {
+		err := Producer.Shutdown()
+		if err != nil {
+			fmt.Println("关闭producer失败， error：", err.Error())
+			logger.SugarLogger.Error("关闭producer失败，error：", err.Error())
+		}
+	}(ProducerMq)
+	if err != nil {
+		fmt.Println("生成producer失败， error：", err.Error())
+		logger.SugarLogger.Error("生成producer失败，error：", err.Error())
+		return err
+	}
+
+	if err := ProducerMq.Start(); err != nil {
+		fmt.Println("启动producer失败")
+		logger.SugarLogger.Error("启动producer失败，error：", err.Error())
+		return err
+	}
+
+	msg := primitive.NewMessage(topic, data)
+	msg.WithTag(tag)
+	msg.WithDelayTimeLevel(1)
+	ProducerMq.SendSync(context.Background(), msg)
+	// if err != nil {
+	// 	fmt.Println("消息发送失败， error：", err.Error())
+	// 	logger.SugarLogger.Error("消息发送失败，error：", err.Error())
+	// 	return nil, err
+	// }
+
+	// nowStr := time.Now().Format("2006-01-02 15:04:05")
+	// fmt.Printf("%s: 消息: %s发送成功 \n", nowStr, res.String())
+	// return res, nil
+	return nil
 }
