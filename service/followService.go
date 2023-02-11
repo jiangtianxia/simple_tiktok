@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 )
 
@@ -61,7 +62,9 @@ func FollowService(msgid string, data []byte) {
 	}
 
 	// 2、发送延迟消息，删除缓存
-
+	RetryTopic := viper.GetString("rocketmq.RetryTopic")
+	DeleteFollowRedisTag := viper.GetString("rocketmq.DeleteFollowRedisTag")
+	utils.SendDelayMsg(RetryTopic, DeleteFollowRedisTag, data)
 	SaveRedisResp(msgid, 0, "操作成功")
 }
 

@@ -94,8 +94,8 @@ func ReceiveMsg() {
 	newPushConsumer, err := rocketmq.NewPushConsumer(
 		consumer.WithNameServer(endPoint),
 		consumer.WithGroupName("RetryGroup"),
-		consumer.WithPullBatchSize(2),
-		consumer.WithConsumeMessageBatchMaxSize(2),
+		consumer.WithPullBatchSize(16),
+		consumer.WithConsumeMessageBatchMaxSize(16),
 	)
 	if err != nil {
 		fmt.Println("创建消费者失败")
@@ -109,7 +109,6 @@ func ReceiveMsg() {
 
 	err = newPushConsumer.Subscribe("RetryTopic", consumer.MessageSelector{},
 		func(ctx context.Context, msgs ...*primitive.MessageExt) (consumer.ConsumeResult, error) {
-			fmt.Println("1")
 			for _, msg := range msgs {
 				nowStr := time.Now().Format("2006-01-02 15:04:05")
 				fmt.Printf("%s 读取到一条消息,消息内容: %s Tags: %s msgId: %s \n", nowStr, string(msg.Body), msg.GetTags(), msg.MsgId)
@@ -118,7 +117,6 @@ func ReceiveMsg() {
 				// time.Sleep(time.Second * 10)
 				return consumer.ConsumeRetryLater, nil
 			}
-			fmt.Println("2")
 			return consumer.ConsumeSuccess, nil
 		})
 

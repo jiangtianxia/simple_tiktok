@@ -215,7 +215,7 @@ func InitRedis() {
 	})
 
 	// RDB10存储用户的关注用户列表
-	RDB8 = redis.NewClient(&redis.Options{
+	RDB10 = redis.NewClient(&redis.Options{
 		Addr:         viper.GetString("redis.addr"),
 		Password:     viper.GetString("redis.password"),
 		DB:           10,
@@ -223,7 +223,7 @@ func InitRedis() {
 		MinIdleConns: viper.GetInt("redis.minIdleConn"),
 	})
 
-	// RDB11存储关注用户sorted set
+	// RDB11存储粉丝sorted set
 	RDB11 = redis.NewClient(&redis.Options{
 		Addr:         viper.GetString("redis.addr"),
 		Password:     viper.GetString("redis.password"),

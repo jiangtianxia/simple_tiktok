@@ -73,7 +73,7 @@ func SendMsg(c *gin.Context, groupname string, topic string, tag string, data []
 }
 
 /**
- * 发送延迟消息
+ * 发送消息
  **/
 func SendDelayMsg(topic string, tag string, data []byte) error {
 	// 服务器地址
@@ -108,15 +108,6 @@ func SendDelayMsg(topic string, tag string, data []byte) error {
 
 	msg := primitive.NewMessage(topic, data)
 	msg.WithTag(tag)
-	ProducerMq.SendSync(context.Background(), msg)
-	// if err != nil {
-	// 	fmt.Println("消息发送失败， error：", err.Error())
-	// 	logger.SugarLogger.Error("消息发送失败，error：", err.Error())
-	// 	return nil, err
-	// }
-
-	// nowStr := time.Now().Format("2006-01-02 15:04:05")
-	// fmt.Printf("%s: 消息: %s发送成功 \n", nowStr, res.String())
-	// return res, nil
+	ProducerMq.SendOneWay(context.Background(), msg)
 	return nil
 }

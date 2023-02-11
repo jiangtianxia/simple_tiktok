@@ -30,7 +30,8 @@ redis:
     KeyCommentInfoHashPrefix: "commentinfo:"
     KeyFavoriteUserSortSetPrefix: "favorite:user:"
     KeyCommentListPrefix: "list:comment:"
-
+    KeyFollowListPrefix: "list:follow:"
+    KeyFollowerSortSetPrefix: "follower:"
 
 
 
