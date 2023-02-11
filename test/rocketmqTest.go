@@ -10,22 +10,25 @@ import (
 	"github.com/apache/rocketmq-client-go/v2/consumer"
 	"github.com/apache/rocketmq-client-go/v2/primitive"
 	"github.com/apache/rocketmq-client-go/v2/producer"
+	"github.com/apache/rocketmq-client-go/v2/rlog"
 )
 
-func main1() {
+func main() {
 	// // 创建主题
 	// CreateTopic("SimpleTopic")
 	// fmt.Println("创建主题成功")
 
 	// 发送消息
-	for i := 0; i < 100; i++ {
-		SendMsg()
-	}
-
-	// // 接收消息
-	// for {
-	// 	ReceiveMsg()
+	// for i := 0; i < 100; i++ {
+	// 	SendMsg()
 	// }
+	rlog.SetLogLevel("error") // 控制台只打印rocketmq的error日志
+	SendMsg()
+
+	// 接收消息
+	for {
+		ReceiveMsg()
+	}
 }
 
 func CreateTopic(topicName string) {
@@ -47,7 +50,7 @@ func CreateTopic(topicName string) {
 // 发送消息
 func SendMsg() {
 	// 发送消息
-	endPoint := []string{"127.0.0.1:9876"}
+	endPoint := []string{"101.43.157.116:9876"}
 
 	// 消息消费失败重试两次
 	newProducer, err := rocketmq.NewProducer(
@@ -70,27 +73,27 @@ func SendMsg() {
 		panic("启动producer失败")
 	}
 
-	msg := primitive.NewMessage("SimpleTopic", []byte("大家好"))
+	msg := primitive.NewMessage("RetryTopic", []byte("大家好"))
 	msg.WithTag("test")
-	res, err := newProducer.SendSync(context.Background(), msg)
-
-	if err != nil {
-		panic("消息发送失败" + err.Error())
-	}
-	fmt.Println("***************")
-	nowStr := time.Now().Format("2006-01-02 15:04:05")
-	fmt.Printf("%s: 消息: %s发送成功 \n", nowStr, res.String())
+	// res, err := newProducer.SendSync(context.Background(), msg)
+	newProducer.SendOneWay(context.Background(), msg)
+	// if err != nil {
+	// 	panic("消息发送失败" + err.Error())
+	// }
+	// fmt.Println("***************")
+	// nowStr := time.Now().Format("2006-01-02 15:04:05")
+	// fmt.Printf("%s: 消息: %s发送成功 \n", nowStr, res.String())
 }
 
 // 接收消息
 func ReceiveMsg() {
 	// 发送消息
-	endPoint := []string{"127.0.0.1:9876"}
+	endPoint := []string{"101.43.157.116:9876"}
 
 	// 消息消费失败重试两次
 	newPushConsumer, err := rocketmq.NewPushConsumer(
 		consumer.WithNameServer(endPoint),
-		consumer.WithGroupName("Test"),
+		consumer.WithGroupName("RetryGroup"),
 		consumer.WithPullBatchSize(2),
 		consumer.WithConsumeMessageBatchMaxSize(2),
 	)
@@ -104,15 +107,16 @@ func ReceiveMsg() {
 		}
 	}(newPushConsumer)
 
-	err = newPushConsumer.Subscribe("SimpleTopic", consumer.MessageSelector{},
+	err = newPushConsumer.Subscribe("RetryTopic", consumer.MessageSelector{},
 		func(ctx context.Context, msgs ...*primitive.MessageExt) (consumer.ConsumeResult, error) {
 			fmt.Println("1")
 			for _, msg := range msgs {
 				nowStr := time.Now().Format("2006-01-02 15:04:05")
 				fmt.Printf("%s 读取到一条消息,消息内容: %s Tags: %s msgId: %s \n", nowStr, string(msg.Body), msg.GetTags(), msg.MsgId)
-				fmt.Println("睡眠")
-
-				time.Sleep(time.Second * 10)
+				fmt.Println("重试")
+				fmt.Println("次数：", msg.ReconsumeTimes)
+				// time.Sleep(time.Second * 10)
+				return consumer.ConsumeRetryLater, nil
 			}
 			fmt.Println("2")
 			return consumer.ConsumeSuccess, nil

@@ -21,12 +21,12 @@ func CreateDelayConsumer(groupName string, topic string, tags string) {
 	// 服务地址
 	endPoint := []string{viper.GetString("rocketmq.addr")}
 
-	// 每次拉取16条消息，每次处理16条消息，每隔0.5秒钟拉取一次
+	// 每次拉取1条消息，每次处理1条消息，每隔0.5秒钟拉取一次
 	newPushConsumer, err := rocketmq.NewPushConsumer(
 		consumer.WithNameServer(endPoint),
 		consumer.WithGroupName(groupName),
-		consumer.WithPullBatchSize(16),
-		consumer.WithConsumeMessageBatchMaxSize(16),
+		consumer.WithPullBatchSize(1),
+		consumer.WithConsumeMessageBatchMaxSize(1),
 		consumer.WithPullInterval(time.Second/2),
 	)
 
@@ -67,7 +67,7 @@ func ReceiveDelayMsg(newPushConsumer rocketmq.PushConsumer, topic string, tags s
 				case "DeleteFollowRedis":
 					// 删除缓存
 					fmt.Println("接收到消息")
-					return consumer.ConsumeSuccess, nil
+					return consumer.ConsumeRetryLater, nil
 				}
 			}
 			return consumer.ConsumeSuccess, nil

@@ -84,6 +84,7 @@ func SendDelayMsg(topic string, tag string, data []byte) error {
 		producer.WithNameServer(endPoint),
 		producer.WithRetry(viper.GetInt("rocketmq.RetryQueueRetrySize")),
 		producer.WithQueueSelector(producer.NewRandomQueueSelector()),
+		producer.WithSendMsgTimeout(time.Second*10),
 	)
 
 	defer func(Producer rocketmq.Producer) {
@@ -107,7 +108,6 @@ func SendDelayMsg(topic string, tag string, data []byte) error {
 
 	msg := primitive.NewMessage(topic, data)
 	msg.WithTag(tag)
-	msg.WithDelayTimeLevel(1)
 	ProducerMq.SendSync(context.Background(), msg)
 	// if err != nil {
 	// 	fmt.Println("消息发送失败， error：", err.Error())
