@@ -86,15 +86,6 @@ func SendMessage(c *gin.Context) {
 		})
 		return
 	}
-	//// 把参数传给service层
-	//err = service.SendMessage(c, fromUserId, toUserId, actionType, content)
-	//if err != nil {
-	//	c.JSON(http.StatusInternalServerError, gin.H{
-	//		"status_code": -1,
-	//		"status_msg":  "发送消息失败",
-	//	})
-	//	return
-	//}
 
 	c.JSON(http.StatusOK, gin.H{
 		"status_code": -1,
