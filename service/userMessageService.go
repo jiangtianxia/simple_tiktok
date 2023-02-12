@@ -1,10 +1,12 @@
 package service
 
 import (
-	"errors"
+	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+
 	"simple_tiktok/dao/mysql"
 	myRedis "simple_tiktok/dao/redis"
 	"simple_tiktok/logger"
@@ -14,56 +16,19 @@ import (
 	"time"
 )
 
+// 发送消息接收参数结构体
+type SendMessageReqStruct struct {
+	FromUserId uint64
+	ToUserId   string
+	ActionType string
+	Content    string
+}
+
 // 聊天记录返回结构体
 type MessageList struct {
 	Identity   uint64 `json:"id"`
 	Content    string `json:"content"`
 	CreateTime string `json:"create_time"`
-}
-
-func SendMessage(c *gin.Context, fromUserId uint64, toUserId string, actionType string, content string) error {
-	if actionType == "1" {
-		// 雪花算法生成identity
-		identity, err := utils.GetID()
-		if err != nil {
-			logger.SugarLogger.Error(err)
-			return err
-		}
-
-		// 类型转化
-		toIdInt64, err := strconv.ParseInt(toUserId, 10, 64)
-		if err != nil {
-			logger.SugarLogger.Error(err)
-			return err
-		}
-		toIdUint64 := uint64(toIdInt64)
-
-		userMessage := models.UserMessage{
-			Identity:         identity,
-			ToUserIdentity:   toIdUint64,
-			FromUserIdentity: fromUserId,
-			Content:          content,
-			CreateTime:       time.Now().Format("2006-01-02 15:04:05"),
-		}
-
-		// 删除缓存
-		setKey := strconv.FormatUint(fromUserId, 10) + viper.GetString("redis.KeyUserMessageListPrefix") + toUserId
-		utils.RDB12.Del(c, setKey)
-
-		// 存入数据库
-		err = mysql.CreateUserMessage(userMessage)
-		if err != nil {
-			logger.SugarLogger.Error(err)
-			return err
-		}
-
-		// 延时双删
-		time.Sleep(1 * time.Second)
-		utils.RDB12.Del(c, setKey)
-
-		return nil
-	}
-	return errors.New("发送消息失败")
 }
 
 func MessageRecord(c *gin.Context, fromUserId uint64, toUserId string) ([]MessageList, error) {
@@ -147,4 +112,76 @@ func MessageRecord(c *gin.Context, fromUserId uint64, toUserId string) ([]Messag
 
 	fmt.Println("缓存")
 	return messageList, nil
+}
+
+func SendMessage(msgid string, data []byte) {
+	SendMessageReqStruct := SendMessageReqStruct{}
+	json.Unmarshal(data, &SendMessageReqStruct)
+
+	fromUserId := SendMessageReqStruct.FromUserId
+	toUserId := SendMessageReqStruct.ToUserId
+	actionType := SendMessageReqStruct.ActionType
+	content := SendMessageReqStruct.Content
+
+	if actionType == "1" {
+		// 雪花算法生成identity
+		identity, err := utils.GetID()
+		if err != nil {
+			logger.SugarLogger.Error(err)
+			SaveRedisResp(msgid, -1, "操作失败")
+			return
+		}
+
+		// 类型转化
+		toIdInt64, err := strconv.ParseInt(toUserId, 10, 64)
+		if err != nil {
+			logger.SugarLogger.Error(err)
+			SaveRedisResp(msgid, -1, "操作失败")
+			return
+		}
+		toIdUint64 := uint64(toIdInt64)
+
+		userMessage := models.UserMessage{
+			Identity:         identity,
+			ToUserIdentity:   toIdUint64,
+			FromUserIdentity: fromUserId,
+			Content:          content,
+			CreateTime:       time.Now().Format("2006-01-02 15:04:05"),
+		}
+
+		// 删除缓存
+		var c = context.Background()
+		setKey := strconv.FormatUint(fromUserId, 10) + viper.GetString("redis.KeyUserMessageListPrefix") + toUserId
+		utils.RDB12.Del(c, setKey)
+
+		// 存入数据库
+		err = mysql.CreateUserMessage(userMessage)
+		if err != nil {
+			logger.SugarLogger.Error(err)
+			SaveRedisResp(msgid, -1, "操作失败")
+			return
+		}
+
+		// 延时双删
+		time.Sleep(1 * time.Second)
+		utils.RDB12.Del(c, setKey)
+
+		SaveRedisResp(msgid, 0, "操作成功")
+		return
+	}
+	SaveRedisResp(msgid, -1, "操作失败")
+}
+
+// 将结果存入redis缓存
+func SaveRedisResp(msgid string, code int, msg string) {
+	info := map[string]interface{}{
+		"status_code": code,
+		"status_msg":  msg,
+	}
+
+	var ctx = context.Background()
+	pipeline := utils.RDB0.Pipeline()
+	pipeline.HSet(ctx, msgid, info)
+	pipeline.Expire(ctx, msgid, time.Second*70)
+	pipeline.Exec(ctx)
 }

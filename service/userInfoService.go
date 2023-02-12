@@ -7,7 +7,6 @@ import (
 	myRedis "simple_tiktok/dao/redis"
 	"simple_tiktok/logger"
 	"simple_tiktok/models"
-	rocket "simple_tiktok/rocketmq"
 	"simple_tiktok/utils"
 	"strconv"
 
@@ -53,7 +52,8 @@ func UserInfo(c *gin.Context, userId string) (map[string]interface{}, error) {
 		redisTopic := viper.GetString("rocketmq.redisTopic")
 		Producer := viper.GetString("rocketmq.redisProducer")
 		tag := viper.GetString("rocketmq.userInfoTag")
-		msg, err := rocket.SendMsg(c, Producer, redisTopic, tag, data)
+
+		msg, err := utils.SendMsg(c, Producer, redisTopic, tag, data)
 		if err != nil {
 			return nil, err
 		}

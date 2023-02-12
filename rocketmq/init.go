@@ -3,10 +3,10 @@ package rocket
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/spf13/viper"
 	"simple_tiktok/logger"
 	"simple_tiktok/models"
-
-	"github.com/spf13/viper"
+	"simple_tiktok/service"
 )
 
 /**
@@ -25,6 +25,13 @@ func InitRocketmq() {
 	redisTags := viper.GetString("rocketmq.redisTags")
 
 	go CreateConsumer(redisGroupName, redisTopic, redisTags)
+
+	// 发送消息的消费者组
+	messageTopic := viper.GetString("rocketmq.serverTopic")
+	sendMessageGroupName := viper.GetString("rocketmq.sendMessageGroupName")
+	sendMessageTags := viper.GetString("rocketmq.serverSendMessageTags")
+
+	go CreateConsumer(sendMessageGroupName, messageTopic, sendMessageTags)
 	fmt.Println("rocketmq inited ...... ")
 }
 
@@ -42,6 +49,7 @@ type ChanMsg struct {
 var publishChan chan ChanMsg = make(chan ChanMsg, 100)
 var LoginChan chan ChanMsg = make(chan ChanMsg, 100)
 var userInfoChan chan ChanMsg = make(chan ChanMsg, 100)
+var sendMessageChan chan ChanMsg = make(chan ChanMsg, 100)
 
 func ReceiveChan() {
 	for {
@@ -59,6 +67,8 @@ func ReceiveChan() {
 				logger.SugarLogger.Error(err)
 			}
 			UserInfoAction(*userInfo)
+		case data := <-sendMessageChan:
+			go service.SendMessage(data.Msgid, data.Data)
 		}
 	}
 }

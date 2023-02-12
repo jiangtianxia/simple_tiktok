@@ -59,6 +59,10 @@ rocketmq:
     publishActionTag: "publishAction"
     ReidsloginTag: "loginredis"
     userInfoTag: "userInfo"
+
+    sendMessageGroupName: "SendMessageGroup"
+    serverSendMessageTags: "SendMessage"
+
     retrySize:   2
 
 
