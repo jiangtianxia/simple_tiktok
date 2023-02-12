@@ -1,0 +1,6 @@
+*.sum
+*.mod
+upload/*
+log/*
+simple_tiktok
+.vscode/*

@@ -2,7 +2,9 @@
 uplaodBase: "./upload/"
 uploadAddr: "http://101.43.157.116"
 
-logger: 
+feedVideoCnt: 30
+
+logger:
   path: "/log"
 
 
@@ -20,11 +22,14 @@ redis:
     poolSize: 1000
     minIdleConn: 100
     RedisExpireTime: 120 # 单位h
-    KeyVideoList: "list:video"
+    KeyVideoList: "zset:video"
+    defaultErrorIdentity: -1
     KeyUserHashPrefix: "userinfo:"
     KeyPublishListPrefix: "list:publish:"
     KeyVideoInfoHashPrefix: "videoinfo:"
-    KetFavoriteSetPrefix: "favorite:"
+    KeyCommentInfoHashPrefix: "commentinfo:"
+    KeyFavoriteUserSortSetPrefix: "favorite:user:"
+    KeyCommentListPrefix: "list:comment:"
 
 
 

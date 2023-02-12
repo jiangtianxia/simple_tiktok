@@ -55,5 +55,5 @@ func main() {
 	// 配置路由
 	r := router.Router()
 	logger.SugarLogger.Info("配置路由完成")
-	r.Run("127.0.0.1:8080")
+	r.Run("127.0.0.1:8084")
 }
