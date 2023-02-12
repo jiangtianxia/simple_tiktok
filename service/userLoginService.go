@@ -68,6 +68,9 @@ func Login(c *gin.Context, username string, password string) (map[string]interfa
 	Producer := viper.GetString("rocketmq.redisProducer")
 	tag := viper.GetString("rocketmq.userLoginTag")
 	data, _ := json.Marshal(userLogin)
-	rocket.SendMsg(c, Producer, redisTopic, tag, data)
+	_, err = rocket.SendMsg(c, Producer, redisTopic, tag, data)
+	if err != nil {
+		return nil, err
+	}
 	return userLogin, nil
 }
