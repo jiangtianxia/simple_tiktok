@@ -50,6 +50,9 @@ func Router() *gin.Engine {
 		 */
 		// 关注操作
 		v1.POST("/relation/action/", controller.Follow)
+
+		// 关注列表
+		v1.GET("/relation/follow/list/", controller.FollowList)
 	}
 
 	r.GET("/test", controller.Test)

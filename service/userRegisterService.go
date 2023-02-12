@@ -21,8 +21,8 @@ import (
 
 //请求体
 type RegisterRequire struct {
-	Username string 
-	Password    string 
+	Username string
+	Password string
 }
 
 type RegisterResponse struct {
@@ -52,7 +52,7 @@ func PostUserRegister(c *gin.Context, req *RegisterRequire) (*RegisterResponse, 
 		logger.SugarLogger.Error()
 		return nil, redisErr
 	}
-	
+
 	//雪花算法生成id
 	getid, err := utils.GetID()
 	getpsw := utils.MakePassword(req.Password)
@@ -62,25 +62,25 @@ func PostUserRegister(c *gin.Context, req *RegisterRequire) (*RegisterResponse, 
 
 	ur := models.UserBasic{Identity: getid, Username: req.Username, Password: getpsw}
 	var res1 = map[string]interface{}{
-		"identity":       getid,
-		"username":       ur.Username,
-		"password":       getpsw,
+		"identity": getid,
+		"username": ur.Username,
+		"password": getpsw,
 	}
-	
+
 	// 新增缓存
 	err = myRedis.RedisUserRegister(c, req.Username, res1)
-	
+
 	if err != nil {
 		logger.SugarLogger.Error(err)
 		return nil, err
 	}
-	
+
 	// 使用缓存
 	cathe := utils.RDB1.HGetAll(c, req.Username).Val()
 	identity, _ := strconv.Atoi(cathe["identity"])
-	
+
 	res2 := models.UserBasic{Identity: (uint64)(identity), Username: cathe["username"], Password: cathe["password"]}
-	
+
 	// 更新数据
 	err = mysql.AddUserBasic(&res2)
 	if err != nil {
