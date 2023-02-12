@@ -60,12 +60,16 @@ rocketmq:
     redisProducer: "RedisProducer"
     redisTopic:  "RedisTopic"
     redisGroupName:  "RedisGroup"
-    redisTags: "publishAction||login||loginredis||userInfo"
+    redisTags: "publishAction||userInfo"
     publishActionTag: "publishAction"
-    ReidsloginTag: "loginredis"
     userInfoTag: "userInfo"
     retrySize:   2
 
+    addr1:  "101.43.157.116:9999"
+    redisTopic1:  "LoginTopic"
+    redisGroupName1:  "login"
+    redisTags1: "userLogin"
+    userLoginTag: "userLogin"
 
     followGroupName: "FollowGroup"
     serverFollowTag: "ServerFollow"

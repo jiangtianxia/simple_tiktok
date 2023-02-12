@@ -25,7 +25,12 @@ func InitRocketmq() {
 	redisGroupName := viper.GetString("rocketmq.redisGroupName")
 	redisTags := viper.GetString("rocketmq.redisTags")
 
+	redisTopic1 := viper.GetString("rocketmq.redisTopic1")
+	redisGroupName1 := viper.GetString("rocketmq.redisGroupName1")
+	redisTags1 := viper.GetString("rocketmq.redisTags1")
+
 	go CreateConsumer(redisGroupName, redisTopic, redisTags)
+	go CreateConsumer(redisGroupName1, redisTopic1, redisTags1)
 
 	// 关注操作的消费者组
 	followTopic := viper.GetString("rocketmq.ServerTopic")
@@ -54,9 +59,8 @@ type ChanMsg struct {
 }
 
 var publishChan chan ChanMsg = make(chan ChanMsg, 100)
-var LoginChan chan ChanMsg = make(chan ChanMsg, 100)
+
 var userInfoChan chan ChanMsg = make(chan ChanMsg, 100)
-var FollowChan chan ChanMsg = make(chan ChanMsg, 100)
 
 func ReceiveChan() {
 	for {
@@ -66,7 +70,7 @@ func ReceiveChan() {
 			videoinfo := &models.VideoBasic{}
 			json.Unmarshal(data.Data, videoinfo)
 			// fmt.Println(videoinfo)
-			go PublishAction(*videoinfo)
+			PublishAction(*videoinfo)
 		case data := <-userInfoChan:
 			userInfo := &models.UserBasic{}
 			err := json.Unmarshal(data.Data, userInfo)
