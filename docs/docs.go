@@ -171,9 +171,58 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/relation/follow/list/": {
+            "get": {
+                "tags": [
+                    "社交接口"
+                ],
+                "summary": "关注列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.FollowListRespStruct"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "controller.FollowListRespStruct": {
+            "type": "object",
+            "properties": {
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                },
+                "user_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/service.User"
+                    }
+                }
+            }
+        },
         "controller.FollowRespStruct": {
             "type": "object",
             "properties": {
@@ -229,6 +278,26 @@ const docTemplate = `{
                 },
                 "is_follow": {
                     "description": "defalut",
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "service.User": {
+            "type": "object",
+            "properties": {
+                "follow_count": {
+                    "type": "integer"
+                },
+                "follower_count": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_follow": {
                     "type": "boolean"
                 },
                 "name": {

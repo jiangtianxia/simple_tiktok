@@ -49,19 +49,24 @@ func FollowList(c *gin.Context) {
 
 	// 2、验证参数
 	if token == "" || userId == "" {
-		FollowListResp(c, -1, "请求参数错误", nil)
+		FollowListResp(c, -1, "请求参数错误", []service.User{})
 		return
 	}
 
 	user_id, _ := strconv.Atoi(userId)
+	if user_id == 0 {
+		FollowListResp(c, -1, "请求参数错误", []service.User{})
+		return
+	}
+
 	cnt, err := mysql.FindUserByIdentityCount(uint64(user_id))
 	if err != nil {
 		logger.SugarLogger.Error("FindUserByIdentityCount Error：", err.Error())
-		FollowListResp(c, -1, "请求参数错误", nil)
+		FollowListResp(c, -1, "请求参数错误", []service.User{})
 		return
 	}
 	if cnt == 0 {
-		FollowListResp(c, -1, "非法用户", nil)
+		FollowListResp(c, -1, "非法用户", []service.User{})
 		return
 	}
 
@@ -69,14 +74,14 @@ func FollowList(c *gin.Context) {
 	t, _ := utils.GenerateToken(1, "test")
 	_, err = middlewares.AuthUserCheck(t)
 	if err != nil {
-		FollowListResp(c, -1, "无效token", nil)
+		FollowListResp(c, -1, "无效token", []service.User{})
 		return
 	}
 
 	// 4、将数据传入service层
 	data, err := service.FollowListService(c, uint64(user_id))
 	if err != nil {
-		FollowListResp(c, -1, "获取关注列表失败", nil)
+		FollowListResp(c, -1, "获取关注列表失败", []service.User{})
 		return
 	}
 

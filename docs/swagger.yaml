@@ -1,4 +1,15 @@
 definitions:
+  controller.FollowListRespStruct:
+    properties:
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+      user_list:
+        items:
+          $ref: '#/definitions/service.User'
+        type: array
+    type: object
   controller.FollowRespStruct:
     properties:
       status_code:
@@ -36,6 +47,19 @@ definitions:
         type: integer
       is_follow:
         description: defalut
+        type: boolean
+      name:
+        type: string
+    type: object
+  service.User:
+    properties:
+      follow_count:
+        type: integer
+      follower_count:
+        type: integer
+      id:
+        type: integer
+      is_follow:
         type: boolean
       name:
         type: string
@@ -162,6 +186,27 @@ paths:
           schema:
             $ref: '#/definitions/controller.FollowRespStruct'
       summary: 关注操作
+      tags:
+      - 社交接口
+  /relation/follow/list/:
+    get:
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.FollowListRespStruct'
+      summary: 关注列表
       tags:
       - 社交接口
 swagger: "2.0"
