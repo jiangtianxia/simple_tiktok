@@ -60,7 +60,6 @@ func Login(c *gin.Context, username string, password string) (map[string]interfa
 	var userLogin = map[string]interface{}{
 		"identity": user.Identity,
 		"username": username,
-		"password": user.Password,
 		"token":    token,
 	}
 

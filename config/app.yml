@@ -59,7 +59,6 @@ rocketmq:
     userInfoTag: "userInfo"
     retrySize:   2
 
-#问题出在 9999 接口连接不上
     addr1:  "101.43.157.116:9999"
     redisTopic1:  "LoginTopic"
     redisGroupName1:  "login"

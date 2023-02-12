@@ -30,11 +30,10 @@ func RedisLogin(userLogin models.UserBasic) error {
 	value := map[string]interface{}{
 		"id":       userLogin.Identity,
 		"username": userLogin.Username,
-		"password": userLogin.Password,
 	}
 	fmt.Printf("进入")
 	// 开启事务
-	pipeline := utils.RDB3.Pipeline()
+	pipeline := utils.RDB1.Pipeline()
 	pipeline.HSet(ctx, key, value)
 	pipeline.Expire(ctx, key, time.Duration(viper.GetInt("redis.RedisExpireTime"))*time.Hour)
 
