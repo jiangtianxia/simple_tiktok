@@ -52,7 +52,13 @@ func Router() *gin.Engine {
 		v1.POST("/relation/action/", controller.Follow)
 
 		// 关注列表
-		v1.GET("/relation/follow/list/", controller.FollowList)
+		v1.GET("/relation/follow/list/", controller.GetFollowList)
+
+		// 粉丝列表
+		v1.GET("/relation/follower/list/", controller.GetFollowerList)
+
+		// 好友列表
+		v1.GET("/relation/friend/list/", controller.GetFriendList)
 	}
 
 	r.GET("/test", controller.Test)

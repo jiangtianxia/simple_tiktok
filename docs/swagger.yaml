@@ -1,4 +1,15 @@
 definitions:
+  controller.FirendListRespStruct:
+    properties:
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+      user_list:
+        items:
+          $ref: '#/definitions/service.User'
+        type: array
+    type: object
   controller.FollowListRespStruct:
     properties:
       status_code:
@@ -16,6 +27,17 @@ definitions:
         type: integer
       status_msg:
         type: string
+    type: object
+  controller.FollowerListRespStruct:
+    properties:
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+      user_list:
+        items:
+          $ref: '#/definitions/service.User'
+        type: array
     type: object
   controller.GetPublishListResponse:
     properties:
@@ -207,6 +229,48 @@ paths:
           schema:
             $ref: '#/definitions/controller.FollowListRespStruct'
       summary: 关注列表
+      tags:
+      - 社交接口
+  /relation/follower/list/:
+    get:
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.FollowerListRespStruct'
+      summary: 粉丝列表
+      tags:
+      - 社交接口
+  /relation/friend/list/:
+    get:
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.FirendListRespStruct'
+      summary: 好友列表
       tags:
       - 社交接口
 swagger: "2.0"

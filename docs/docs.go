@@ -203,9 +203,90 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/relation/follower/list/": {
+            "get": {
+                "tags": [
+                    "社交接口"
+                ],
+                "summary": "粉丝列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.FollowerListRespStruct"
+                        }
+                    }
+                }
+            }
+        },
+        "/relation/friend/list/": {
+            "get": {
+                "tags": [
+                    "社交接口"
+                ],
+                "summary": "好友列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.FirendListRespStruct"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "controller.FirendListRespStruct": {
+            "type": "object",
+            "properties": {
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                },
+                "user_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/service.User"
+                    }
+                }
+            }
+        },
         "controller.FollowListRespStruct": {
             "type": "object",
             "properties": {
@@ -231,6 +312,23 @@ const docTemplate = `{
                 },
                 "status_msg": {
                     "type": "string"
+                }
+            }
+        },
+        "controller.FollowerListRespStruct": {
+            "type": "object",
+            "properties": {
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                },
+                "user_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/service.User"
+                    }
                 }
             }
         },

@@ -67,18 +67,18 @@ func FollowListService(c *gin.Context, userId uint64) ([]User, error) {
 			}
 
 			// 判断是否互关
-			isFollow, err := IsFollow(c, strconv.Itoa(int(follower.UserIdentity)), strconv.Itoa(int(follower.FollowerIdentity)))
-			if err != nil {
-				logger.SugarLogger.Error("IsFollow Error：", err.Error())
-				return nil, err
-			}
-
+			// isFollow, err := IsFollow(c, strconv.Itoa(int(follower.UserIdentity)), strconv.Itoa(int(follower.FollowerIdentity)))
+			// if err != nil {
+			// 	logger.SugarLogger.Error("IsFollow Error：", err.Error())
+			// 	return nil, err
+			// }
+			// 关注列表接口，因此已经关注该用户了
 			userInfo := User{
 				Id:            follower.FollowerIdentity,
 				Name:          username,
 				FollowCount:   followCount,
 				FollowerCount: followerCount,
-				IsFollow:      isFollow,
+				IsFollow:      true,
 			}
 			// 头部插入数据到key当中
 			// LPUSH KEY_NAME VALUE1.. VALUEN
@@ -89,6 +89,7 @@ func FollowListService(c *gin.Context, userId uint64) ([]User, error) {
 		_, err = pipeline.Exec(c)
 		if err != nil {
 			logger.SugarLogger.Error(err.Error())
+			return nil, err
 		}
 		return data, nil
 	}
@@ -125,11 +126,11 @@ func FollowListService(c *gin.Context, userId uint64) ([]User, error) {
 		}
 
 		// 判断是否互关
-		isFollow, err := IsFollow(c, strconv.Itoa(int(userId)), followIdentity)
-		if err != nil {
-			logger.SugarLogger.Error("IsFollow Error：", err.Error())
-			return nil, err
-		}
+		// isFollow, err := IsFollow(c, strconv.Itoa(int(userId)), followIdentity)
+		// if err != nil {
+		// 	logger.SugarLogger.Error("IsFollow Error：", err.Error())
+		// 	return nil, err
+		// }
 
 		id, _ := strconv.Atoi(followIdentity)
 		userInfo := User{
@@ -137,7 +138,7 @@ func FollowListService(c *gin.Context, userId uint64) ([]User, error) {
 			Name:          username,
 			FollowCount:   followCount,
 			FollowerCount: followerCount,
-			IsFollow:      isFollow,
+			IsFollow:      true,
 		}
 		data = append(data, userInfo)
 	}
@@ -231,10 +232,9 @@ func GetFollowerCount(c *gin.Context, identity string) (int64, error) {
 
 	// 存在，则获取，并返回
 	return utils.RDB11.ZCount(c, key, "1", "1").Result()
-
 }
 
-// 判断是否互关
+// 判断是否关注该用户
 func IsFollow(c *gin.Context, identity string, follower string) (bool, error) {
 	// 先查询缓存
 	key := viper.GetString("redis.KeyFollowerSortSetPrefix") + identity
