@@ -11,9 +11,20 @@ func Favourite(c *gin.Context) {
 	video_id := c.Query("video_id")
 	action_type := c.Query("action_type")
 
-	// 2、验证token
+	// 验证token
 	if token == "" {
-		UploadResp(c, -1, "无效的Token")
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status_code": -1,
+			"status_msg":  "无效的Token",
+		})
+		return
+	}
+
+	if action_type != "2" && action_type != "1" {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status_code": -1,
+			"status_msg":  "无效的action_type",
+		})
 		return
 	}
 	err := service.DealFavourite(token, video_id, action_type)

@@ -16,7 +16,7 @@ func DealFavourite(token string, video_id string, action_type string) error {
 	}
 	exist := mysql.IsFavourite(userClaim.Identity, video_id)
 	//key := viper.GetString("redis.KetFavoriteSetPrefix") + video_id
-	if exist && action_type == "1" {
+	if exist && action_type == "2" {
 		//删除缓存
 		err := redis.RedisDeleteFavoriteUser(video_id, userClaim.Identity)
 		if err != nil {
@@ -38,7 +38,7 @@ func DealFavourite(token string, video_id string, action_type string) error {
 			return err
 		}
 
-	} else if !exist && action_type == "0" {
+	} else if !exist && action_type == "1" {
 		//删除缓存
 		err := redis.RedisDeleteFavoriteUser(video_id, userClaim.Identity)
 		if err != nil {
