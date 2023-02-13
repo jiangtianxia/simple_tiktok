@@ -6,8 +6,14 @@ import (
 	"simple_tiktok/utils"
 )
 
+/**
+ * Creator: lx
+ * Last Editor: lx
+ * Description: dao层-使用数据库中的结构体，添加/删除评论信息
+ **/
+
+// 结构体
 // Comment
-// 评论信息-数据库中的结构体-dao层使用
 // type CommentVideo struct {
 // 	gorm.Model
 // 	Identity      uint64 `gorm:"column:identity;type:int;"`            // 评论唯一标识
@@ -21,7 +27,7 @@ import (
 // 	return "comment_video"
 // }
 
-// 发表评论
+// 发表评论，传入评论结构体
 func AddComment(comment models.CommentVideo) error {
 	err := utils.DB.Model(models.CommentVideo{}).Create(&comment).Error
 	if err != nil {

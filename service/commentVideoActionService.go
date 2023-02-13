@@ -7,6 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+/**
+ * Creator: lx
+ * Last Editor: lx
+ * Description: service层，接受controller层参数-调用dao层函数
+ **/
+
 // 请求体
 type CommentActionRequire struct {
 	Model 		models.CommentVideo

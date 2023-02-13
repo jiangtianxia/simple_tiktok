@@ -43,6 +43,8 @@ func main() {
 	// 初始化rocketmq
 	rocket.InitRocketmq()
 	rlog.SetLogLevel("error") // 控制台只打印rocketmq的error日志
+	//初始化Comment的消息队列，并开启消费
+	//rocket.Initcommentactionmq() //初始化CommentAction的消息队列，并开启消费
 
 	// 初始化COS客户端
 	utils.InitCos()

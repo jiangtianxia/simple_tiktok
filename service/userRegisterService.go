@@ -12,6 +12,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+/**
+ * Creator: lx
+ * Last Editor: lx
+ * Description: service层，接受controller层参数-调用dao层函数
+ **/
+
 //请求体
 type RegisterRequire struct {
 	Username 	string 
@@ -24,16 +30,7 @@ type RegisterResponse struct {
 }
 
 // 注册得到token和id
-// TODO 请求体应该写在controller  这底下的一系列check应该写在dao层，忘记修改了，需要稍微移动一下
 func PostUserRegister(c *gin.Context, req *RegisterRequire) (*RegisterResponse, error) {
-	//验证合法性
-	if req.Username == "" {
-		return nil, errors.New("用户名为空")
-	}
-	if req.Password == "" {
-		return nil, errors.New("密码为空")
-	}
-
 	//判断用户名
 	if mysql.IsExist(req.Username) {
 		return nil, errors.New("用户名已存在")

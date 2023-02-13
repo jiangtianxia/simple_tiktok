@@ -2,7 +2,9 @@ package controller
 
 import (
 	"net/http"
-	//"simple_tiktok/middlewares"
+
+	"simple_tiktok/logger"
+	"simple_tiktok/middlewares"
 	"simple_tiktok/models"
 	"simple_tiktok/service"
 	"strconv"
@@ -10,6 +12,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
+/**
+ * Creator: lx
+ * Last Editor: lx
+ * Description: controller层，解析参数，处理参数，并打包传给service层
+ **/
 
 // 返回体
 type CommentActionResponse struct {
@@ -21,16 +29,23 @@ type CommentActionResponse struct {
 // 发表，删除评论 /comment/action
 func CommentAction(c *gin.Context) {
 	//参数获取
-	//token := c.Query("token")
+	token := c.Query("token")
 	video_id := c.Query("video_id")
 	action_type := c.Query("action_type")
 	comment_text := c.Query("comment_text")
 	comment_id := c.Query("comment_id")
 
-	//参数处理
-	//验证用户token
-	//user, err := middlewares.AuthUserCheck(token)
-
+	// 参数处理
+	// 验证用户token
+	user, err := middlewares.AuthUserCheck(token)
+	if user == nil || user.Identity == 0 || user.Issuer != "simple_tiktok" || user.Username == "" || err != nil{
+		logger.SugarLogger.Error("Unauthorized User")
+		c.JSON(http.StatusOK, CommentActionResponse{
+			StatusCode: -1,
+			StatusMsg:  "用户错误",
+		})
+		return
+	}
 
 	videoidentity, err := strconv.Atoi(video_id)
 	if err != nil {

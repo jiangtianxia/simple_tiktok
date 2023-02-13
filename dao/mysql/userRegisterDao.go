@@ -5,16 +5,11 @@ import (
 	"simple_tiktok/utils"
 )
 
-//请求体
-type RegisterRequire struct {
-	Username string 
-	Password    string 
-}
-
-type RegisterResponse struct {
-	Identity uint64 `json:"identity"`
-	Token    string `json:"token"`
-}
+/**
+ * Creator: lx
+ * Last Editor: lx
+ * Description: dao层-使用数据库中的结构体，查询用户是否存在，添加用户信息
+ **/
 
 // 查询是否存在
 func IsExist(username string) bool {
