@@ -2,33 +2,22 @@ package service
 
 import (
 	"simple_tiktok/dao/mysql"
-	Myredis "simple_tiktok/dao/redis"
 	"simple_tiktok/logger"
 	"simple_tiktok/utils"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis/v9"
 	"github.com/spf13/viper"
 )
-
-// 用户参数
-type User struct {
-	Id            uint64 `json:"id"`
-	Name          string `json:"name"`
-	FollowCount   int64  `json:"follow_count"`
-	FollowerCount int64  `json:"follower_count"`
-	IsFollow      bool   `json:"is_follow"`
-}
 
 /**
  * @Author jiang
  * @Description 关注列表
  * @Date 12:00 2023/2/12
  **/
-func FollowListService(c *gin.Context, userId uint64) ([]User, error) {
-	data := make([]User, 0)
+func FollowListService(c *gin.Context, userId uint64) ([]Author, error) {
+	data := make([]Author, 0)
 
 	// 1、判断缓存中是否存在数据
 	key := viper.GetString("redis.KeyFollowListPrefix") + strconv.Itoa(int(userId))
@@ -73,7 +62,7 @@ func FollowListService(c *gin.Context, userId uint64) ([]User, error) {
 			// 	return nil, err
 			// }
 			// 关注列表接口，因此已经关注该用户了
-			userInfo := User{
+			userInfo := Author{
 				Id:            follower.FollowerIdentity,
 				Name:          username,
 				FollowCount:   followCount,
@@ -133,7 +122,7 @@ func FollowListService(c *gin.Context, userId uint64) ([]User, error) {
 		// }
 
 		id, _ := strconv.Atoi(followIdentity)
-		userInfo := User{
+		userInfo := Author{
 			Id:            uint64(id),
 			Name:          username,
 			FollowCount:   followCount,
@@ -143,120 +132,4 @@ func FollowListService(c *gin.Context, userId uint64) ([]User, error) {
 		data = append(data, userInfo)
 	}
 	return data, nil
-}
-
-// 获取用户名
-func GetUsername(c *gin.Context, identity string) (string, error) {
-	// 先查询缓存
-	key := viper.GetString("redis.KeyUserHashPrefix") + identity
-
-	if utils.RDB1.Exists(c, key).Val() == 0 {
-		// 不存在，则在数据库中获取，同时将数据存入缓存
-		username, err := mysql.FindUserName(identity)
-		if err != nil {
-			return "", err
-		}
-
-		err = Myredis.RedisAddUserInfoHash(c, key, map[string]interface{}{
-			"identity": identity,
-			"username": username,
-		})
-		if err != nil {
-			return "", err
-		}
-		return username, err
-	}
-
-	// 存在，则获取，并返回
-	userName, err := utils.RDB1.HGet(c, key, "username").Result()
-	if err != nil {
-		return "", err
-	}
-	return userName, nil
-}
-
-// 获取关注数
-func GetFollowCount(c *gin.Context, identity string) (int64, error) {
-	// 先查询缓存
-	key := viper.GetString("redis.KeyFollowListPrefix") + identity
-
-	if utils.RDB10.Exists(c, key).Val() == 0 {
-		// 不存在，则在数据库中获取，同时将数据存入缓存
-		user_id, _ := strconv.Atoi(identity)
-		followerList, err := mysql.FindUserFollowByIdentity(uint64(user_id))
-		if err != nil {
-			logger.SugarLogger.Error("FindUserFollowByIdentity Error：", err.Error())
-			return 0, err
-		}
-
-		// 将数据存入缓存
-		// 头部插入数据到key当中
-		// LPUSH KEY_NAME VALUE1.. VALUEN
-		pipeline := utils.RDB10.Pipeline()
-		for _, follower := range followerList {
-			pipeline.LPush(c, key, follower.FollowerIdentity)
-		}
-		pipeline.Expire(c, key, time.Duration(viper.GetInt("redis.RedisExpireTime"))*time.Hour)
-		_, err = pipeline.Exec(c)
-		return int64(len(followerList)), err
-	}
-
-	// 存在，则获取，并返回
-	return utils.RDB10.LLen(c, key).Result()
-}
-
-// 获取粉丝数
-func GetFollowerCount(c *gin.Context, identity string) (int64, error) {
-	// 先查询缓存
-	key := viper.GetString("redis.KeyFollowerSortSetPrefix") + identity
-
-	if utils.RDB11.Exists(c, key).Val() == 0 {
-		// 不存在，则查询数据库，将数据存入缓存，并返回
-		followerList, err := mysql.FindFollower(identity)
-		if err != nil {
-			return 0, nil
-		}
-
-		//  ZADD KEY_NAME SCORE1 VALUE1.. SCOREN VALUEN
-		pipeline := utils.RDB11.Pipeline()
-		for _, follower := range followerList {
-			pipeline.ZAdd(c, key, redis.Z{
-				Member: follower.UserIdentity,
-				Score:  1,
-			})
-		}
-		pipeline.Expire(c, key, time.Duration(viper.GetInt("redis.RedisExpireTime"))*time.Hour)
-		_, err = pipeline.Exec(c)
-		return int64(len(followerList)), err
-	}
-
-	// 存在，则获取，并返回
-	return utils.RDB11.ZCount(c, key, "1", "1").Result()
-}
-
-// 判断是否关注该用户
-func IsFollow(c *gin.Context, identity string, follower string) (bool, error) {
-	// 先查询缓存
-	key := viper.GetString("redis.KeyFollowerSortSetPrefix") + identity
-
-	if utils.RDB11.Exists(c, key).Val() == 0 {
-		// 不存在，则查询数据库
-		cnt, err := mysql.IsFollow(follower, identity)
-		if err != nil {
-			return false, err
-		}
-
-		if cnt <= 0 {
-			return false, nil
-		}
-
-		return true, nil
-	}
-
-	// 存在，则获取，并返回
-	cnt := utils.RDB11.ZScore(c, key, follower).Val()
-	if cnt != 1 {
-		return false, nil
-	}
-	return true, nil
 }

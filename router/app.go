@@ -31,15 +31,21 @@ func Router() *gin.Engine {
 		* 公共接口
 		 */
 		v1.GET("/hello", controller.Hello)
+
 		/*
 		* 基础接口
 		 */
-
 		// 视频流接口
 		v1.GET("/feed", controller.FeedVideo)
-		v1.GET("/user", controller.UserInfo)
-		v1.POST("/register", controller.UserRegister) //用户操作
+
+		// 用户注册接口
+		v1.POST("/user/register", controller.UserRegister)
+
+		// 用户登录接口
 		v1.POST("/user/login", controller.Userlogin)
+
+		// 用户信息接口
+		v1.GET("/user", controller.GetUserInfo)
 
 		// 视频投稿
 		v1.POST("/publish/action/", controller.Publish)
@@ -51,7 +57,7 @@ func Router() *gin.Engine {
 		* 社交接口
 		 */
 		// 关注操作
-		v1.POST("/relation/action/", controller.Follow)
+		v1.POST("/relation/action/", controller.UserFollow)
 
 		// 关注列表
 		v1.GET("/relation/follow/list/", controller.GetFollowList)
@@ -61,11 +67,6 @@ func Router() *gin.Engine {
 
 		// 好友列表
 		v1.GET("/relation/friend/list/", controller.GetFriendList)
-		//赞操作
-		v1.POST("/favorite/action/", controller.Favourite)
 	}
-
-	r.GET("/test", controller.Test)
-
 	return r
 }

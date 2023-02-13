@@ -1,10 +1,7 @@
 package rocket
 
 import (
-	"encoding/json"
 	"fmt"
-	"simple_tiktok/logger"
-	"simple_tiktok/models"
 	"simple_tiktok/service"
 
 	"github.com/spf13/viper"
@@ -20,18 +17,6 @@ func InitRocketmq() {
 	// 打开通道协程，一个通道接收一个接口的数据
 	go ReceiveChan()
 
-	// 创建消费者组
-	redisTopic := viper.GetString("rocketmq.redisTopic")
-	redisGroupName := viper.GetString("rocketmq.redisGroupName")
-	redisTags := viper.GetString("rocketmq.redisTags")
-
-	redisTopic1 := viper.GetString("rocketmq.redisTopic1")
-	redisGroupName1 := viper.GetString("rocketmq.redisGroupName1")
-	redisTags1 := viper.GetString("rocketmq.redisTags1")
-
-	go CreateConsumer(redisGroupName, redisTopic, redisTags)
-	go CreateConsumer(redisGroupName1, redisTopic1, redisTags1)
-
 	// 关注操作的消费者组
 	followTopic := viper.GetString("rocketmq.ServerTopic")
 	followTag := viper.GetString("rocketmq.serverFollowTag")
@@ -40,10 +25,10 @@ func InitRocketmq() {
 
 	// 重试机制
 	RetryTopic := viper.GetString("rocketmq.RetryTopic")
-	// DeleteFollowRedisTag := viper.GetString("rocketmq.DeleteFollowRedisTag")
 	RetryTags := viper.GetString("rocketmq.RetryTags")
 	RetryGroupName := viper.GetString("rocketmq.RetryGroupName")
 	go CreateDelayConsumer(RetryGroupName, RetryTopic, RetryTags)
+
 	fmt.Println("rocketmq inited ...... ")
 }
 
@@ -58,29 +43,14 @@ type ChanMsg struct {
 	Data  []byte
 }
 
-var publishChan chan ChanMsg = make(chan ChanMsg, 100)
-
-var userInfoChan chan ChanMsg = make(chan ChanMsg, 100)
+var FollowChan chan ChanMsg = make(chan ChanMsg, 100)
 
 func ReceiveChan() {
 	for {
 		select {
-		case data := <-publishChan:
-			// 用户上传视频时，发送videobasic到消息队列，将信息缓存到redis
-			videoinfo := &models.VideoBasic{}
-			json.Unmarshal(data.Data, videoinfo)
-			// fmt.Println(videoinfo)
-			PublishAction(*videoinfo)
-		case data := <-userInfoChan:
-			userInfo := &models.UserBasic{}
-			err := json.Unmarshal(data.Data, userInfo)
-			if err != nil {
-				logger.SugarLogger.Error(err)
-			}
-			go UserInfoAction(*userInfo)
 		case data := <-FollowChan:
 			// 关注操作
-			go service.FollowService(data.Msgid, data.Data)
+			service.FollowService(data.Msgid, data.Data)
 		}
 	}
 }

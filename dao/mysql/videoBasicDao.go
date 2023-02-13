@@ -1,12 +1,25 @@
 package mysql
 
 import (
-	"github.com/spf13/viper"
 	"simple_tiktok/logger"
 	"simple_tiktok/models"
 	"simple_tiktok/utils"
 	"time"
+
+	"github.com/spf13/viper"
 )
+
+// 将数据插入videoBasic
+func CreateVideoBasic(videoInfo models.VideoBasic) error {
+	return utils.DB.Create(&videoInfo).Error
+}
+
+// 根据identity查询用户上传的视频列表
+func FindVideoByUserIdentity(userid uint64) ([]models.VideoBasic, error) {
+	videoList := make([]models.VideoBasic, 0)
+	err := utils.DB.Table("video_basic").Where("user_identity = ?", userid).Order("publish_time asc").Find(&videoList).Error
+	return videoList, err
+}
 
 func FindVideosByLatestTime(latestTime time.Time) ([]models.VideoBasic, error) {
 	videos := make([]models.VideoBasic, viper.GetInt("feedVideoCnt"))
@@ -38,4 +51,18 @@ func FindVideoIdentityByLatestTime(latestTime time.Time) (*[]uint64, error) {
 	} else {
 		return &Ids, nil
 	}
+}
+
+// 查询视频列表
+func QueryVideoList(userId *uint64) (*[]models.VideoBasic, error) {
+	var videoInfoList []models.VideoBasic
+	utils.DB.Table("video_basic").Where("user_identity = ?", *userId).Find(&videoInfoList)
+	return &videoInfoList, nil
+}
+
+// 查询视频信息
+func QueryVideoInfoByVideoId(videoId *uint64) (*models.VideoBasic, error) {
+	var videoInfo models.VideoBasic
+	utils.DB.Table("video_basic").Where("identity = ?", *videoId).Find(&videoInfo)
+	return &videoInfo, nil
 }

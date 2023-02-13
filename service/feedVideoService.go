@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"simple_tiktok/dao/mysql"
 	myredis "simple_tiktok/dao/redis"
 	"simple_tiktok/logger"
@@ -13,26 +12,12 @@ import (
 	"github.com/spf13/viper"
 )
 
-type VideoInfo struct {
-	Identity      uint64  `json:"id"`        // 视频唯一标识
-	Author        Author1 `json:"author"`    // 作者信息
-	PlayUrl       string  `json:"play_url"`  // 视频路径
-	CoverUrl      string  `json:"cover_url"` // 封面路径
-	FavoriteCount int     `json:"favorite_count"`
-	CommentCount  int     `json:"comment_count"`
-	IsFavorite    bool    `json:"is_favorite"`
-	Title         string  `json:"title"` // 视频标题
-}
-
-type Author1 struct {
-	Id            uint64 `json:"id"`
-	Name          string `json:"name"`
-	FollowCount   int    `json:"follow_count"`
-	FollowerCount int    `json:"follower_count"`
-	IsFollow      bool   `json:"is_follow"`
-}
-
-func FeedVideo(c *gin.Context, latestTime int64) ([]VideoInfo, int64, error) {
+/**
+ * @Author
+ * @Description 视频流接口
+ * @Date 21:00 2023/2/11
+ **/
+func FeedVideo(c *gin.Context, user_id uint64, latestTime int64) ([]VideoInfo, int64, error) {
 
 	hashKey := viper.GetString("redis.KeyVideoList")
 	//先判断zset是否存在  zset没有设置过期时间
@@ -53,34 +38,84 @@ func FeedVideo(c *gin.Context, latestTime int64) ([]VideoInfo, int64, error) {
 				logger.SugarLogger.Error(err)
 				return nil, 0, err
 			}
-			err = myredis.RedisAddVideoInfo(*video) // 将数据库查询出的数据写入redis
+
+			// 将数据库查询出的数据写入redis
+			err = myredis.RedisAddVideoInfo(c, *video)
 			if err != nil {
 				logger.SugarLogger.Error(err)
 				return nil, 0, err
 			}
-			fmt.Println("数据库")
+			// fmt.Println("数据库")
 		}
 
 		// 使用缓存
 		video := utils.RDB3.HGetAll(c, viper.GetString("redis.KeyVideoInfoHashPrefix")+identity).Val()
 
-		videoInfos[i].Identity, _ = strconv.ParseUint(video["id"], 10, 64)
+		videoInfos[i].Id, _ = strconv.ParseUint(video["id"], 10, 64)
 		userId, _ := strconv.ParseUint(video["author_id"], 10, 64)
 		user, _ := mysql.FindUserByIdentity(userId)
-		videoInfos[i].Author = Author1{
+
+		// 获取关注数
+		followCount, err := GetFollowCount(c, strconv.Itoa(int(user.Identity)))
+		if err != nil {
+			logger.SugarLogger.Error("GetFollowCount Error：", err.Error())
+			return nil, 0, err
+		}
+
+		// 获取粉丝数
+		followerCount, err := GetFollowerCount(c, strconv.Itoa(int(user.Identity)))
+		if err != nil {
+			logger.SugarLogger.Error("GetFollowerCount Error：", err.Error())
+			return nil, 0, err
+		}
+
+		// 判断是否关注该粉丝
+		flag := false
+		if user_id != 0 {
+			flag, err = IsFollow(c, strconv.Itoa(int(user.Identity)), strconv.Itoa(int(user_id)))
+			// fmt.Println(flag)
+			if err != nil {
+				logger.SugarLogger.Error("IsFollow Error：", err.Error())
+				return nil, 0, err
+			}
+		}
+
+		// 获取赞数
+		favoriteCount, err := getVideoFavoriteCount(c, videoInfos[i].Id)
+		if err != nil {
+			logger.SugarLogger.Error("getVideoFavoriteCount Error：", err.Error())
+			return nil, 0, err
+		}
+
+		// 获取评论数
+		commentCount, err := getVideoCommentCount(c, videoInfos[i].Id)
+		if err != nil {
+			logger.SugarLogger.Error("getVideoCommentCount Error：", err.Error())
+			return nil, 0, err
+		}
+
+		// 判断使用者是否喜欢该视频
+		bIsFavorite, err := judgeLoginUserLoveVideo(c, videoInfos[i].Id, user_id)
+		isFavorite := *bIsFavorite
+		if err != nil {
+			logger.SugarLogger.Error("judgeLoginUserLoveVideo Error：", err.Error())
+			return nil, 0, err
+		}
+
+		videoInfos[i].Author = Author{
 			Id:            user.Identity,
 			Name:          user.Username,
-			FollowCount:   0,
-			FollowerCount: 0,
-			IsFollow:      false,
+			FollowCount:   followCount,
+			FollowerCount: followerCount,
+			IsFollow:      flag,
 		}
-		videoInfos[i].PlayUrl = video["play_url"]
-		videoInfos[i].CoverUrl = video["cover_url"]
-		videoInfos[i].CommentCount = 0
-		videoInfos[i].IsFavorite = false
+		videoInfos[i].PlayUrl = viper.GetString("cos.addr") + video["play_url"]
+		videoInfos[i].CoverUrl = viper.GetString("uploadAddr") + video["cover_url"]
+		videoInfos[i].CommentCount = *commentCount
+		videoInfos[i].FavoriteCount = *favoriteCount
+		videoInfos[i].IsFavorite = isFavorite
 		videoInfos[i].Title = video["title"]
 		nextTime, _ = strconv.ParseInt(video["publish_time"], 10, 64)
-		fmt.Println("缓存")
 	}
 
 	return videoInfos, nextTime, nil

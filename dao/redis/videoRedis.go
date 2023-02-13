@@ -1,25 +1,23 @@
 package redis
 
 import (
-	"context"
 	"simple_tiktok/dao/mysql"
 	"simple_tiktok/models"
 	"simple_tiktok/utils"
 	"strconv"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v9"
 	"github.com/spf13/viper"
 )
-
-var ctx = context.Background()
 
 /**
  * @Author jiang
  * @Description 使用有序集合 按照视频发布时间降序存储视频的identity 和 发布时间
  * @Date 19:00 2023/1/29
  **/
-func RedisAddVideoList(publishTime int64, datavideoId string) error {
+func RedisAddVideoList(ctx *gin.Context, publishTime int64, datavideoId string) error {
 	// 1、获取key
 	key := viper.GetString("redis.KeyVideoList")
 
@@ -34,7 +32,7 @@ func RedisAddVideoList(publishTime int64, datavideoId string) error {
  * @Description 存储视频信息到hash集合
  * @Date 19:00 2023/1/29
  **/
-func RedisAddVideoInfo(videoInfo models.VideoBasic) error {
+func RedisAddVideoInfo(ctx *gin.Context, videoInfo models.VideoBasic) error {
 	// 1、获取前缀，拼接key
 	key := viper.GetString("redis.KeyVideoInfoHashPrefix") + strconv.Itoa(int(videoInfo.Identity))
 
@@ -61,7 +59,7 @@ func RedisAddVideoInfo(videoInfo models.VideoBasic) error {
  * @Description 使用列表按照用户发布时间降序存储视频的identity
  * @Date 19:00 2023/1/29
  **/
-func RedisAddPublishList(userId string, videoId string) error {
+func RedisAddPublishList(ctx *gin.Context, userId string, videoId string) error {
 	// 1、获取前缀，拼接key
 	key := viper.GetString("redis.KeyPublishListPrefix") + userId
 
@@ -100,9 +98,9 @@ func RedisAddPublishList(userId string, videoId string) error {
  * @Description 使用有序集合存储视频的点赞用户sorted set
  * @Date 19:00 2023/1/29
  **/
-func RedisAddFavoriteUser(videoId string, userId string, score int) error {
+func RedisAddFavoriteUser(ctx *gin.Context, videoId string, userId string, score int) error {
 	// 1、获取前缀，拼接key
-	key := viper.GetString("redis.KetFavoriteSetPrefix") + videoId
+	key := viper.GetString("redis.KeyFavoriteUserSortSetPrefix") + videoId
 
 	// 2、创建成员并添加数据
 	//  ZADD KEY_NAME SCORE1 VALUE1.. SCOREN VALUEN

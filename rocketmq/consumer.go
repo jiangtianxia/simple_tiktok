@@ -70,22 +70,6 @@ func ReceiveMsg(newPushConsumer rocketmq.PushConsumer, topic string, tags string
 				* 选择器，根据tag判断要将数据发送至哪条通道
 				 */
 				switch msg.GetTags() {
-				case "publishAction":
-					// 把msgid，也发到到通道
-					publishChan <- ChanMsg{
-						Msgid: msg.MsgId,
-						Data:  msg.Body,
-					}
-				case "userLogin":
-					loginChan <- ChanMsg{
-						Msgid: msg.MsgId,
-						Data:  msg.Body,
-					}
-				case "userInfo":
-					userInfoChan <- ChanMsg{
-						Msgid: msg.MsgId,
-						Data:  msg.Body,
-					}
 				case "ServerFollow":
 					FollowChan <- ChanMsg{
 						Msgid: msg.MsgId,

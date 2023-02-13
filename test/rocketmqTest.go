@@ -114,8 +114,8 @@ func ReceiveMsg() {
 				fmt.Printf("%s 读取到一条消息,消息内容: %s Tags: %s msgId: %s \n", nowStr, string(msg.Body), msg.GetTags(), msg.MsgId)
 				fmt.Println("重试")
 				fmt.Println("次数：", msg.ReconsumeTimes)
-				// time.Sleep(time.Second * 10)
-				return consumer.ConsumeRetryLater, nil
+				// // time.Sleep(time.Second * 10)
+				// return consumer.ConsumeRetryLater, nil
 			}
 			return consumer.ConsumeSuccess, nil
 		})

@@ -64,8 +64,6 @@ func Publish(c *gin.Context) {
 		UploadResp(c, -1, err.Error())
 		return
 	}
-	// fmt.Println("token：", token)
-	// fmt.Println("title：", title)
 
 	// 3、将数据传到service层
 	code, msg := service.UploadCOS(c, srcFile, head, title, userClaim.Identity)

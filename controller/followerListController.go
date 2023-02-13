@@ -6,7 +6,6 @@ import (
 	"simple_tiktok/logger"
 	"simple_tiktok/middlewares"
 	"simple_tiktok/service"
-	"simple_tiktok/utils"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -19,13 +18,13 @@ import (
  **/
 // 返回结构体
 type FollowerListRespStruct struct {
-	Code     int            `json:"status_code"`
-	Msg      string         `json:"status_msg"`
-	UserList []service.User `json:"user_list"`
+	Code     int              `json:"status_code"`
+	Msg      string           `json:"status_msg"`
+	UserList []service.Author `json:"user_list"`
 }
 
 // 传入参数返回
-func FollowerListResp(c *gin.Context, code int, msg string, userList []service.User) {
+func FollowerListResp(c *gin.Context, code int, msg string, userList []service.Author) {
 	h := &FollowerListRespStruct{
 		Code:     code,
 		Msg:      msg,
@@ -49,39 +48,39 @@ func GetFollowerList(c *gin.Context) {
 
 	// 2、验证参数
 	if token == "" || userId == "" {
-		FollowerListResp(c, -1, "请求参数错误", []service.User{})
+		FollowerListResp(c, -1, "请求参数错误", []service.Author{})
 		return
 	}
 
 	user_id, _ := strconv.Atoi(userId)
 	if user_id == 0 {
-		FollowerListResp(c, -1, "请求参数错误", []service.User{})
+		FollowerListResp(c, -1, "请求参数错误", []service.Author{})
 		return
 	}
 
 	cnt, err := mysql.FindUserByIdentityCount(uint64(user_id))
 	if err != nil {
 		logger.SugarLogger.Error("FindUserByIdentityCount Error：", err.Error())
-		FollowerListResp(c, -1, "请求参数错误", []service.User{})
+		FollowerListResp(c, -1, "请求参数错误", []service.Author{})
 		return
 	}
 	if cnt == 0 {
-		FollowerListResp(c, -1, "非法用户", []service.User{})
+		FollowerListResp(c, -1, "非法用户", []service.Author{})
 		return
 	}
 
 	// 3、验证token
-	t, _ := utils.GenerateToken(1, "test")
-	_, err = middlewares.AuthUserCheck(t)
+	// t, _ := utils.GenerateToken(1, "test")
+	_, err = middlewares.AuthUserCheck(token)
 	if err != nil {
-		FollowerListResp(c, -1, "无效token", []service.User{})
+		FollowerListResp(c, -1, "无效token", []service.Author{})
 		return
 	}
 
 	// 4、将数据传入service层
 	data, err := service.FollowerListService(c, uint64(user_id))
 	if err != nil {
-		FollowerListResp(c, -1, "获取粉丝列表失败", []service.User{})
+		FollowerListResp(c, -1, "获取粉丝列表失败", []service.Author{})
 		return
 	}
 
