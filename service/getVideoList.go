@@ -20,7 +20,9 @@ import (
 var ctx *gin.Context
 
 func GetVideoListByUserId(c *gin.Context, authorId *uint64, loginUserId *uint64) (*[]Video, error){
-	ctx = c
+	if ctx == nil {
+		ctx = c
+	}
 
 	// 1. 获取作者用户名
 	authorName,err := getAuthorName(authorId)
