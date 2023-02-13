@@ -26,7 +26,7 @@ func FeedVideo(c *gin.Context, user_id uint64, latestTime int64) ([]VideoInfo, i
 	}
 
 	// 使用缓存 查询出发布时间小于latestTime的30条记录  记录中包含视频的identity
-	identityList := utils.RDB2.ZRevRangeByScore(c, hashKey, &redis.ZRangeBy{Min: strconv.Itoa(0), Max: strconv.FormatInt(latestTime, 10), Count: viper.GetInt64("feedVideoCnt")}).Val()
+	identityList := utils.RDB2.ZRevRangeByScore(c, hashKey, &redis.ZRangeBy{Min: strconv.Itoa(0), Max: strconv.FormatInt(latestTime-1, 10), Count: viper.GetInt64("feedVideoCnt")}).Val()
 	var nextTime int64
 
 	videoInfos := make([]VideoInfo, len(identityList))
