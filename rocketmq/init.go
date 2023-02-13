@@ -32,6 +32,13 @@ func InitRocketmq() {
 	sendMessageTags := viper.GetString("rocketmq.serverSendMessageTags")
 
 	go CreateConsumer(sendMessageGroupName, messageTopic, sendMessageTags)
+
+	// 重试机制
+	RetryTopic := viper.GetString("rocketmq.RetryTopic")
+	// DeleteFollowRedisTag := viper.GetString("rocketmq.DeleteFollowRedisTag")
+	RetryTags := viper.GetString("rocketmq.RetryTags")
+	RetryGroupName := viper.GetString("rocketmq.RetryGroupName")
+	go CreateDelayConsumer(RetryGroupName, RetryTopic, RetryTags)
 	fmt.Println("rocketmq inited ...... ")
 }
 

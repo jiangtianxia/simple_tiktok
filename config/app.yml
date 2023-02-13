@@ -63,6 +63,13 @@ rocketmq:
     sendMessageGroupName: "SendMessageGroup"
     serverSendMessageTags: "SendMessage"
 
+    RetryTopic: "RetryTopic"
+    RetryGroupName: "RetryGroup"
+    RetryQueueRetrySize: 5
+    RetryTags: "DeleteFollowRedis||DeleteMessageRedis"
+    DeleteFollowRedisTag: "DeleteFollowRedis"
+    DeleteMessageRedisTag: "DeleteMessageRedis"
+
     retrySize:   2
 
 

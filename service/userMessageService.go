@@ -149,11 +149,6 @@ func SendMessage(msgid string, data []byte) {
 			CreateTime:       time.Now().Format("2006-01-02 15:04:05"),
 		}
 
-		// 删除缓存
-		var c = context.Background()
-		setKey := strconv.FormatUint(fromUserId, 10) + viper.GetString("redis.KeyUserMessageListPrefix") + toUserId
-		utils.RDB12.Del(c, setKey)
-
 		// 存入数据库
 		err = mysql.CreateUserMessage(userMessage)
 		if err != nil {
@@ -162,10 +157,10 @@ func SendMessage(msgid string, data []byte) {
 			return
 		}
 
-		// 延时双删
-		time.Sleep(1 * time.Second)
-		utils.RDB12.Del(c, setKey)
-
+		// 发送延迟消息，删除缓存
+		RetryTopic := viper.GetString("rocketmq.RetryTopic")
+		DeleteMssageRedisTag := viper.GetString("rocketmq.DeleteMessageRedisTag")
+		utils.SendDelayMsg(RetryTopic, DeleteMssageRedisTag, data)
 		SaveRedisResp(msgid, 0, "操作成功")
 		return
 	}
