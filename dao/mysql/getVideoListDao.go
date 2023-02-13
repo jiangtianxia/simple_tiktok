@@ -33,23 +33,6 @@ func QueryVideoFavoriteCount (videoId *uint64) (*[]models.FavouriteVideo, error)
 	return &videoFavoriteList, nil
 }
 
-// 查询视频的评论数
-func QueryCommentCount (videoId *uint64) (*int64, error) {
-	var commentVideo models.CommentVideo
-	result := utils.DB.Table("comment_video").Where("video_identity = ?", *videoId).Find(&commentVideo)
-	return &result.RowsAffected, nil
-}
-
-// 查询登录者是否喜欢该视频
-func QueryIsFavorite(videoId *uint64, userId *uint64) (bool, error) {
-	var videoFavorite models.FavouriteVideo
-	result := utils.DB.Table("video_favorite").Where("video_identity = ? AND user_identity = ?", *videoId, *userId).Find(&videoFavorite)
-	if result.RowsAffected == 0 {
-		return false, nil
-	}
-	return true, nil
-}
-
 // 查询视频信息
 func QueryVideoInfoByVideoId(videoId *uint64) (*models.VideoBasic, error) {
 	var videoInfo models.VideoBasic
@@ -65,8 +48,8 @@ func QueryVideoCommentInfo(videoId *uint64) (*[]models.CommentVideo, error) {
 }
 
 // 获取点赞信息
-func QueryFavoriteInfo(videoId *uint64) (*[]models.FavouriteVideo, error) {
+func QueryFavoriteHistoryByUserId(userId *uint64) (*[]models.FavouriteVideo, error) {
 	var favoriteList []models.FavouriteVideo
-	utils.DB.Table("comment_video").Where("video_identity = ?", *videoId).Find(&favoriteList)
+	utils.DB.Table("video_favorite").Where("user_identity = ?", *userId).Find(&favoriteList)
 	return &favoriteList, nil
 }
