@@ -88,6 +88,11 @@ func UserFollow(c *gin.Context) {
 		return
 	}
 
+	if UserClaims.Identity == uint64(user_id) {
+		FollowResp(c, -1, "您无法关注或取消关注自己")
+		return
+	}
+
 	// 4、将消息发送到消息队列
 	Info := FollowReqStruct{
 		UserId:     strconv.Itoa(int(UserClaims.Identity)),

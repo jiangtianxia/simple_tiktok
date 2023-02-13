@@ -39,7 +39,7 @@ func Router() *gin.Engine {
 		* 基础接口
 		 */
 		// 视频流接口
-		v1.GET("/feed", controller.FeedVideo)
+		v1.GET("/feed/", controller.FeedVideo)
 
 		// 用户注册接口
 		v1.POST("/user/register/", controller.UserRegister)
@@ -48,7 +48,7 @@ func Router() *gin.Engine {
 		v1.POST("/user/login/", controller.Userlogin)
 
 		// 用户信息接口
-		v1.GET("/user", controller.GetUserInfo)
+		v1.GET("/user/", controller.GetUserInfo)
 
 		// 视频投稿
 		v1.POST("/publish/action/", controller.Publish)
