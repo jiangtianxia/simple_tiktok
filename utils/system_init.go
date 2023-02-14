@@ -189,8 +189,8 @@ func InitRedis() {
 		MinIdleConns: viper.GetInt("redis.minIdleConn"),
 	})
 
-	// RDB7存储评论信息hash集合
 	RDB7 = redis.NewClient(&redis.Options{
+		// RDB7存储评论信息hash集合
 		Addr:         viper.GetString("redis.addr"),
 		Password:     viper.GetString("redis.password"),
 		DB:           7,

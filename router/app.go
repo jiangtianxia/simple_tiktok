@@ -52,7 +52,8 @@ func Router() *gin.Engine {
 
 		// 视频投稿
 		v1.POST("/publish/action/", controller.Publish)
-
+		// 评论
+		v1.POST("/comment/action/", controller.CommentAction)
 		// 发布列表
 		v1.GET("/publish/list/", controller.GetPublishList)
 
