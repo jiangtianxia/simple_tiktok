@@ -38,7 +38,7 @@ func main() {
 	utils.InitCurrentLimit()
 
 	// 初始化布隆过滤器
-	//utils.InitBloomFilter()
+	utils.InitBloomFilter()
 
 	// 初始化rocketmq
 	rocket.InitRocketmq()
@@ -55,5 +55,5 @@ func main() {
 	// 配置路由
 	r := router.Router()
 	logger.SugarLogger.Info("配置路由完成")
-	r.Run("127.0.0.1:8084")
+	r.Run()
 }

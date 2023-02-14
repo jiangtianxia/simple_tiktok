@@ -1,6 +1,196 @@
+definitions:
+  controller.FeedVideoRespStruct:
+    properties:
+      next_time:
+        type: integer
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+      video_list:
+        items:
+          $ref: '#/definitions/service.VideoInfo'
+        type: array
+    type: object
+  controller.FirendListRespStruct:
+    properties:
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+      user_list:
+        items:
+          $ref: '#/definitions/service.Author'
+        type: array
+    type: object
+  controller.FollowListRespStruct:
+    properties:
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+      user_list:
+        items:
+          $ref: '#/definitions/service.Author'
+        type: array
+    type: object
+  controller.FollowRespStruct:
+    properties:
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+    type: object
+  controller.FollowerListRespStruct:
+    properties:
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+      user_list:
+        items:
+          $ref: '#/definitions/service.Author'
+        type: array
+    type: object
+  controller.GetPublishListResponse:
+    properties:
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+      video_list:
+        items:
+          $ref: '#/definitions/service.VideoInfo'
+        type: array
+    type: object
+  controller.MessageRecordRespStruct:
+    properties:
+      message_list:
+        items:
+          $ref: '#/definitions/service.Message'
+        type: array
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+    type: object
+  controller.SendMessageRespStruct:
+    properties:
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+    type: object
+  controller.UploadRespStruct:
+    properties:
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+    type: object
+  controller.UserInfoRespStruct:
+    properties:
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+      user:
+        $ref: '#/definitions/service.Author'
+    type: object
+  controller.UserLoginRespStruct:
+    properties:
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+      token:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  service.Author:
+    properties:
+      follow_count:
+        type: integer
+      follower_count:
+        type: integer
+      id:
+        type: integer
+      is_follow:
+        type: boolean
+      name:
+        type: string
+    type: object
+  service.Message:
+    properties:
+      content:
+        type: string
+      create_time:
+        type: string
+      id:
+        type: integer
+    type: object
+  service.VideoInfo:
+    properties:
+      author:
+        allOf:
+        - $ref: '#/definitions/service.Author'
+        description: 作者信息
+      comment_count:
+        description: 评论数
+        type: integer
+      cover_url:
+        description: 封面路径
+        type: string
+      favorite_count:
+        description: 点赞数
+        type: integer
+      id:
+        description: 视频唯一标识
+        type: integer
+      is_favorite:
+        description: 是否点赞
+        type: boolean
+      play_url:
+        description: 视频路径
+        type: string
+      title:
+        description: 视频标题
+        type: string
+    type: object
 info:
   contact: {}
 paths:
+  /comment/action/:
+    post:
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 视频id
+        in: query
+        name: video_id
+        required: true
+        type: string
+      - description: 评论操作
+        in: query
+        name: action_type
+        required: true
+        type: string
+      - description: 评论内容
+        in: query
+        name: comment_text
+        type: string
+      - description: 评论id
+        in: query
+        name: comment_id
+        type: string
+      responses: {}
+      summary: 评论操作
+      tags:
+      - 互动接口
   /feed:
     get:
       parameters:
@@ -16,8 +206,8 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
-      summary: 视频流
+            $ref: '#/definitions/controller.FeedVideoRespStruct'
+      summary: 视频流接口
       tags:
       - 基础接口
   /hello:
@@ -30,6 +220,58 @@ paths:
       summary: 首页
       tags:
       - 公共接口
+  /message/action/:
+    post:
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: to_user_id
+        required: true
+        type: string
+      - description: 1-发送消息
+        in: query
+        name: action_type
+        required: true
+        type: string
+      - description: 消息内容
+        in: query
+        name: content
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.SendMessageRespStruct'
+      summary: 发送消息
+      tags:
+      - 社交接口
+  /message/chat/:
+    get:
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: to_user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.MessageRecordRespStruct'
+      summary: 聊天记录
+      tags:
+      - 社交接口
   /publish/action/:
     post:
       parameters:
@@ -52,8 +294,183 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
+            $ref: '#/definitions/controller.UploadRespStruct'
       summary: 视频投稿
+      tags:
+      - 基础接口
+  /publish/list/:
+    get:
+      parameters:
+      - description: 登录用户的token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 查找目标用户的id
+        in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: status_msg为成功
+          schema:
+            $ref: '#/definitions/controller.GetPublishListResponse'
+      summary: 发布列表
+      tags:
+      - 基础接口
+  /relation/action/:
+    post:
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: to_user_id
+        required: true
+        type: string
+      - description: 关注操作
+        in: query
+        name: action_type
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.FollowRespStruct'
+      summary: 关注操作
+      tags:
+      - 社交接口
+  /relation/follow/list/:
+    get:
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.FollowListRespStruct'
+      summary: 关注列表
+      tags:
+      - 社交接口
+  /relation/follower/list/:
+    get:
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.FollowerListRespStruct'
+      summary: 粉丝列表
+      tags:
+      - 社交接口
+  /relation/friend/list/:
+    get:
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.FirendListRespStruct'
+      summary: 好友列表
+      tags:
+      - 社交接口
+  /user/:
+    get:
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.UserInfoRespStruct'
+      summary: 用户信息
+      tags:
+      - 基础接口
+  /user/login/:
+    post:
+      parameters:
+      - description: username
+        in: query
+        name: username
+        required: true
+        type: string
+      - description: password
+        in: query
+        name: password
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.UserLoginRespStruct'
+      summary: 用户登录
+      tags:
+      - 基础接口
+  /user/register/:
+    post:
+      parameters:
+      - description: username
+        in: query
+        name: username
+        required: true
+        type: string
+      - description: password
+        in: query
+        name: password
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 用户注册
       tags:
       - 基础接口
 swagger: "2.0"

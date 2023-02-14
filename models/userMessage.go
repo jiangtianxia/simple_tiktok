@@ -10,7 +10,7 @@ type UserMessage struct {
 	ToUserIdentity   uint64 `gorm:"column:to_user_identity;type:int;"`   // 接收者ID
 	FromUserIdentity uint64 `gorm:"column:from_user_identity;type:int;"` // 发送者ID
 	Content          string `gorm:"column:text;type:text;"`              // 消息内容
-	CreateTime       string `gorm:"column:create_time;type:varchar(36)"` //发送时间
+	CreateTime       int64  `gorm:"column:create_time;type:int;"`        //发送时间
 }
 
 func (table *UserMessage) TableName() string {
