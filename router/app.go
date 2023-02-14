@@ -53,6 +53,7 @@ func Router() *gin.Engine {
 		// 视频投稿
 		v1.POST("/publish/action/", controller.Publish)
 
+<<<<<<< HEAD
 		// 发布列表
 		v1.GET("/publish/list/", controller.GetPublishList)
 
@@ -70,6 +71,13 @@ func Router() *gin.Engine {
 
 		// 好友列表
 		v1.GET("/relation/friend/list/", controller.GetFriendList)
+=======
+		// 发送消息
+		v1.POST("/message/action", controller.SendMessage)
+
+		// 聊天记录
+		v1.GET("/message/chat", controller.MessageRecord)
+>>>>>>> zxy
 	}
 	return r
 }

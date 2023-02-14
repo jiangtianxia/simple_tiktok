@@ -75,6 +75,11 @@ func ReceiveMsg(newPushConsumer rocketmq.PushConsumer, topic string, tags string
 						Msgid: msg.MsgId,
 						Data:  msg.Body,
 					}
+				case "SendMessage":
+					sendMessageChan <- ChanMsg{
+						Msgid: msg.MsgId,
+						Data:  msg.Body,
+					}
 				}
 			}
 			return consumer.ConsumeSuccess, nil

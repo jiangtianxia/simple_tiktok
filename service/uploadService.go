@@ -109,8 +109,18 @@ func UploadCOS(c *gin.Context, srcFile multipart.File, head *multipart.FileHeade
 		return -1, "投稿失败"
 	}
 
+<<<<<<< HEAD
 	// 5、将数据存入缓存
 	SaveVideoCache(c, videoInfo)
+=======
+	// 5、将数据发送到消息队列
+	redisTopic := viper.GetString("rocketmq.redisTopic")
+	Producer := viper.GetString("rocketmq.redisProducer")
+	tag := viper.GetString("rocketmq.publishActionTag")
+	data, _ := json.Marshal(videoInfo)
+	utils.SendMsg(c, Producer, redisTopic, tag, data)
+
+>>>>>>> zxy
 	return 0, "投稿成功"
 }
 

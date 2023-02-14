@@ -5,6 +5,10 @@ import (
 	"simple_tiktok/dao/mysql"
 	myRedis "simple_tiktok/dao/redis"
 	"simple_tiktok/logger"
+<<<<<<< HEAD
+=======
+	"simple_tiktok/models"
+>>>>>>> zxy
 	"simple_tiktok/utils"
 	"strconv"
 
@@ -46,8 +50,17 @@ func UserInfo(c *gin.Context, loginUser uint64, userId string) (Author, error) {
 			"identity": user.Identity,
 			"username": user.Username,
 		}
+<<<<<<< HEAD
 
 		err = myRedis.RedisAddUserInfo(c, hashKey, newCathe)
+=======
+		data, _ := json.Marshal(userInfo)
+		redisTopic := viper.GetString("rocketmq.redisTopic")
+		Producer := viper.GetString("rocketmq.redisProducer")
+		tag := viper.GetString("rocketmq.userInfoTag")
+
+		msg, err := utils.SendMsg(c, Producer, redisTopic, tag, data)
+>>>>>>> zxy
 		if err != nil {
 			logger.SugarLogger.Error(err)
 		}
