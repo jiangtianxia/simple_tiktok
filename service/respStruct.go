@@ -48,3 +48,14 @@ type LoginResponse struct {
 	Identity uint64 `json:"identity"`
 	Token    string `json:"token"`
 }
+
+/**
+ * @Author
+ * @Description 聊天记录返回结构体
+ * @Date 21:00 2023/2/11
+ **/
+type Message struct {
+	Identity   uint64 `json:"id"`
+	Content    string `json:"content"`
+	CreateTime string `json:"create_time"`
+}

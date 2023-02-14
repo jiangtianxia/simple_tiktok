@@ -62,6 +62,84 @@ const docTemplate = `{
                 }
             }
         },
+        "/message/action/": {
+            "post": {
+                "tags": [
+                    "社交接口"
+                ],
+                "summary": "发送消息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "to_user_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "1-发送消息",
+                        "name": "action_type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "消息内容",
+                        "name": "content",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.SendMessageRespStruct"
+                        }
+                    }
+                }
+            }
+        },
+        "/message/chat/": {
+            "get": {
+                "tags": [
+                    "社交接口"
+                ],
+                "summary": "聊天记录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "to_user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.MessageRecordRespStruct"
+                        }
+                    }
+                }
+            }
+        },
         "/publish/action/": {
             "post": {
                 "tags": [
@@ -401,7 +479,7 @@ const docTemplate = `{
                 "user_list": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/service.User"
+                        "$ref": "#/definitions/service.Author"
                     }
                 }
             }
@@ -418,7 +496,7 @@ const docTemplate = `{
                 "user_list": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/service.User"
+                        "$ref": "#/definitions/service.Author"
                     }
                 }
             }
@@ -446,7 +524,7 @@ const docTemplate = `{
                 "user_list": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/service.User"
+                        "$ref": "#/definitions/service.Author"
                     }
                 }
             }
@@ -465,6 +543,34 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/service.VideoInfo"
                     }
+                }
+            }
+        },
+        "controller.MessageRecordRespStruct": {
+            "type": "object",
+            "properties": {
+                "message_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/service.Message"
+                    }
+                },
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.SendMessageRespStruct": {
+            "type": "object",
+            "properties": {
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
                 }
             }
         },
@@ -530,23 +636,17 @@ const docTemplate = `{
                 }
             }
         },
-        "service.User": {
+        "service.Message": {
             "type": "object",
             "properties": {
-                "follow_count": {
-                    "type": "integer"
+                "content": {
+                    "type": "string"
                 },
-                "follower_count": {
-                    "type": "integer"
+                "create_time": {
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"
-                },
-                "is_follow": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
                 }
             }
         },

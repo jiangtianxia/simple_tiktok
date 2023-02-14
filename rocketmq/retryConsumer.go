@@ -6,11 +6,8 @@ import (
 	"fmt"
 	"simple_tiktok/dao/redis"
 	"simple_tiktok/logger"
-<<<<<<< HEAD
-=======
 	"simple_tiktok/utils"
 	"strconv"
->>>>>>> zxy
 	"time"
 
 	"github.com/apache/rocketmq-client-go/v2"
@@ -95,16 +92,17 @@ func ReceiveDelayMsg(newPushConsumer rocketmq.PushConsumer, topic string, tags s
 						return consumer.ConsumeRetryLater, nil
 					}
 					// fmt.Println("消息执行成功")
-<<<<<<< HEAD
-=======
 				case "DeleteMessageRedis":
 					messageInfo := &SendMessageReqStruct{}
 					json.Unmarshal(msg.Body, messageInfo)
 
 					var c = context.Background()
 					setKey := strconv.FormatUint(messageInfo.FromUserId, 10) + viper.GetString("redis.KeyUserMessageListPrefix") + messageInfo.ToUserId
-					utils.RDB12.Del(c, setKey)
->>>>>>> zxy
+					err := utils.RDB12.Del(c, setKey).Err()
+					if err != nil {
+						logger.SugarLogger.Error("DeleteMessage Error：", err.Error())
+						return consumer.ConsumeRetryLater, nil
+					}
 				}
 			}
 			return consumer.ConsumeSuccess, nil
@@ -130,8 +128,6 @@ type FollowReqStruct struct {
 	ToUserId   string
 	ActionType int
 }
-<<<<<<< HEAD
-=======
 
 // 发送消息接收参数结构体
 type SendMessageReqStruct struct {
@@ -140,4 +136,3 @@ type SendMessageReqStruct struct {
 	ActionType string
 	Content    string
 }
->>>>>>> zxy

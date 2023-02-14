@@ -1,16 +1,18 @@
 package redis
 
 import (
-	"github.com/go-redis/redis/v9"
-	"github.com/spf13/viper"
 	"simple_tiktok/logger"
 	"simple_tiktok/models"
 	"simple_tiktok/utils"
 	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v9"
+	"github.com/spf13/viper"
 )
 
-func RedisAddUserMessageHash(list []models.UserMessage) error {
+func RedisAddUserMessageHash(ctx *gin.Context, list []models.UserMessage) error {
 	hashKey := viper.GetString("redis.KeyUserMessageHashPrefix")
 
 	var key string
@@ -32,12 +34,12 @@ func RedisAddUserMessageHash(list []models.UserMessage) error {
 	return err
 }
 
-func RedisAddUserMessageSet(key string, list []models.UserMessage) error {
+func RedisAddUserMessageSet(ctx *gin.Context, key string, list []models.UserMessage) error {
 	// 开启事务
 	pipeline := utils.RDB12.TxPipeline()
 
 	for i := 0; i < len(list); i++ {
-		createTime, err := time.Parse("2006-01-02 15:04:05", list[0].CreateTime)
+		createTime, err := time.Parse("2006-01-02 15:04:05", list[i].CreateTime)
 		if err != nil {
 			logger.SugarLogger.Error(err)
 			return err

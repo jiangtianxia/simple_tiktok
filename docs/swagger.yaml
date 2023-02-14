@@ -20,7 +20,7 @@ definitions:
         type: string
       user_list:
         items:
-          $ref: '#/definitions/service.User'
+          $ref: '#/definitions/service.Author'
         type: array
     type: object
   controller.FollowListRespStruct:
@@ -31,7 +31,7 @@ definitions:
         type: string
       user_list:
         items:
-          $ref: '#/definitions/service.User'
+          $ref: '#/definitions/service.Author'
         type: array
     type: object
   controller.FollowRespStruct:
@@ -49,7 +49,7 @@ definitions:
         type: string
       user_list:
         items:
-          $ref: '#/definitions/service.User'
+          $ref: '#/definitions/service.Author'
         type: array
     type: object
   controller.GetPublishListResponse:
@@ -62,6 +62,24 @@ definitions:
         items:
           $ref: '#/definitions/service.VideoInfo'
         type: array
+    type: object
+  controller.MessageRecordRespStruct:
+    properties:
+      message_list:
+        items:
+          $ref: '#/definitions/service.Message'
+        type: array
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+    type: object
+  controller.SendMessageRespStruct:
+    properties:
+      status_code:
+        type: integer
+      status_msg:
+        type: string
     type: object
   controller.UploadRespStruct:
     properties:
@@ -103,18 +121,14 @@ definitions:
       name:
         type: string
     type: object
-  service.User:
+  service.Message:
     properties:
-      follow_count:
-        type: integer
-      follower_count:
-        type: integer
+      content:
+        type: string
+      create_time:
+        type: string
       id:
         type: integer
-      is_follow:
-        type: boolean
-      name:
-        type: string
     type: object
   service.VideoInfo:
     properties:
@@ -176,6 +190,58 @@ paths:
       summary: 首页
       tags:
       - 公共接口
+  /message/action/:
+    post:
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: to_user_id
+        required: true
+        type: string
+      - description: 1-发送消息
+        in: query
+        name: action_type
+        required: true
+        type: string
+      - description: 消息内容
+        in: query
+        name: content
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.SendMessageRespStruct'
+      summary: 发送消息
+      tags:
+      - 社交接口
+  /message/chat/:
+    get:
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: to_user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.MessageRecordRespStruct'
+      summary: 聊天记录
+      tags:
+      - 社交接口
   /publish/action/:
     post:
       parameters:

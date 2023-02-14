@@ -28,18 +28,14 @@ redis:
     KeyUserHashPrefix: "userinfo:"
     KeyPublishListPrefix: "list:publish:"
     KeyVideoInfoHashPrefix: "videoinfo:"
-<<<<<<< HEAD
     KeyCommentInfoHashPrefix: "commentinfo:"
-    KeyFavoriteUserSortSetPrefix: "favorite:"
+    # KeyFavoriteUserSortSetPrefix: "favorite:"
     KeyCommentListPrefix: "list:comment:"
     KeyFollowListPrefix: "list:follow:"
     KeyFollowerSortSetPrefix: "follower:"
-
-=======
     KetFavoriteSetPrefix: "favorite:"
     KeyUserMessageHashPrefix: "message:"
     KeyUserMessageListPrefix: ":message:"
->>>>>>> zxy
 
 
 md5:
@@ -63,40 +59,23 @@ rocketmq:
     # 服务的消息队列信息
     serverProducer: "ServerProducer"
     serverTopic:  "ServerTopic"
-<<<<<<< HEAD
-=======
-    serverTags: "test||login"
+    retrySize:   2
 
-    redisProducer: "RedisProducer"
-    redisTopic:  "RedisTopic"
-    redisGroupName:  "RedisGroup"
-    redisTags: "publishAction||login||loginredis||userInfo"
-    publishActionTag: "publishAction"
-    ReidsloginTag: "loginredis"
-    userInfoTag: "userInfo"
-
+    # 发送消息服务的消费者信息
     sendMessageGroupName: "SendMessageGroup"
     serverSendMessageTags: "SendMessage"
 
+    # 关注服务的消费者信息
+    followGroupName: "FollowGroup"
+    serverFollowTag: "ServerFollow"
+
+    # 重试机制的消息队列信息
     RetryTopic: "RetryTopic"
     RetryGroupName: "RetryGroup"
     RetryQueueRetrySize: 5
     RetryTags: "DeleteFollowRedis||DeleteMessageRedis"
     DeleteFollowRedisTag: "DeleteFollowRedis"
     DeleteMessageRedisTag: "DeleteMessageRedis"
-
->>>>>>> zxy
-    retrySize:   2
-    followGroupName: "FollowGroup"
-    serverFollowTag: "ServerFollow"
-
-
-    # 重试机制的消息队列信息
-    RetryTopic: "RetryTopic"
-    RetryGroupName: "RetryGroup"
-    RetryQueueRetrySize: 5
-    RetryTags: "DeleteFollowRedis"
-    DeleteFollowRedisTag: "DeleteFollowRedis"
     
 
 

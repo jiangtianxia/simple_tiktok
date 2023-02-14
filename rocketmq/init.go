@@ -2,16 +2,9 @@ package rocket
 
 import (
 	"fmt"
-<<<<<<< HEAD
 	"simple_tiktok/service"
 
 	"github.com/spf13/viper"
-=======
-	"github.com/spf13/viper"
-	"simple_tiktok/logger"
-	"simple_tiktok/models"
-	"simple_tiktok/service"
->>>>>>> zxy
 )
 
 /**
@@ -30,30 +23,18 @@ func InitRocketmq() {
 	followGroupName := viper.GetString("rocketmq.followGroupName")
 	go CreateConsumer(followGroupName, followTopic, followTag)
 
-	// 重试机制
-	RetryTopic := viper.GetString("rocketmq.RetryTopic")
-	RetryTags := viper.GetString("rocketmq.RetryTags")
-	RetryGroupName := viper.GetString("rocketmq.RetryGroupName")
-	go CreateDelayConsumer(RetryGroupName, RetryTopic, RetryTags)
-
-<<<<<<< HEAD
-=======
-	go CreateConsumer(redisGroupName, redisTopic, redisTags)
-
 	// 发送消息的消费者组
 	messageTopic := viper.GetString("rocketmq.serverTopic")
 	sendMessageGroupName := viper.GetString("rocketmq.sendMessageGroupName")
 	sendMessageTags := viper.GetString("rocketmq.serverSendMessageTags")
-
 	go CreateConsumer(sendMessageGroupName, messageTopic, sendMessageTags)
 
 	// 重试机制
 	RetryTopic := viper.GetString("rocketmq.RetryTopic")
-	// DeleteFollowRedisTag := viper.GetString("rocketmq.DeleteFollowRedisTag")
 	RetryTags := viper.GetString("rocketmq.RetryTags")
 	RetryGroupName := viper.GetString("rocketmq.RetryGroupName")
 	go CreateDelayConsumer(RetryGroupName, RetryTopic, RetryTags)
->>>>>>> zxy
+
 	fmt.Println("rocketmq inited ...... ")
 }
 
@@ -68,39 +49,18 @@ type ChanMsg struct {
 	Data  []byte
 }
 
-<<<<<<< HEAD
 var FollowChan chan ChanMsg = make(chan ChanMsg, 100)
-=======
-var publishChan chan ChanMsg = make(chan ChanMsg, 100)
-var LoginChan chan ChanMsg = make(chan ChanMsg, 100)
-var userInfoChan chan ChanMsg = make(chan ChanMsg, 100)
 var sendMessageChan chan ChanMsg = make(chan ChanMsg, 100)
->>>>>>> zxy
 
 func ReceiveChan() {
 	for {
 		select {
-<<<<<<< HEAD
 		case data := <-FollowChan:
 			// 关注操作
-			service.FollowService(data.Msgid, data.Data)
-=======
-		case data := <-publishChan:
-			// 用户上传视频时，发送videobasic到消息队列，将信息缓存到redis
-			videoinfo := &models.VideoBasic{}
-			json.Unmarshal(data.Data, videoinfo)
-			// fmt.Println(videoinfo)
-			PublishAction(*videoinfo)
-		case data := <-userInfoChan:
-			userInfo := &models.UserBasic{}
-			err := json.Unmarshal(data.Data, userInfo)
-			if err != nil {
-				logger.SugarLogger.Error(err)
-			}
-			UserInfoAction(*userInfo)
+			go service.FollowService(data.Msgid, data.Data)
 		case data := <-sendMessageChan:
+			// 发送消息
 			go service.SendMessage(data.Msgid, data.Data)
->>>>>>> zxy
 		}
 	}
 }

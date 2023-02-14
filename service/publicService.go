@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"simple_tiktok/dao/mysql"
 	Myredis "simple_tiktok/dao/redis"
@@ -57,7 +58,7 @@ func getAuthorName(ctx *gin.Context, authorId *uint64) (*string, error) {
 // 获取视频赞数的函数
 func getVideoFavoriteCount(ctx *gin.Context, videoId uint64) (*int64, error) {
 	favoriteCount := new(int64)
-	key := fmt.Sprintf("%s%d", viper.GetString("redis.KeyFavoriteUserSortSetPrefix"), videoId)
+	key := fmt.Sprintf("%s%d", viper.GetString("redis.KetFavoriteSetPrefix"), videoId)
 	// 先从RDB5中查看键值对是否存在
 	n, err := utils.RDB5.Exists(ctx, key).Result()
 	if err != nil {
@@ -395,4 +396,18 @@ func IsFollow(c *gin.Context, identity string, follower string) (bool, error) {
 		return false, nil
 	}
 	return true, nil
+}
+
+// 将结果存入redis缓存
+func SaveRedisResp(msgid string, code int, msg string) {
+	info := map[string]interface{}{
+		"status_code": code,
+		"status_msg":  msg,
+	}
+
+	var ctx = context.Background()
+	pipeline := utils.RDB0.Pipeline()
+	pipeline.HSet(ctx, msgid, info)
+	pipeline.Expire(ctx, msgid, time.Second*70)
+	pipeline.Exec(ctx)
 }

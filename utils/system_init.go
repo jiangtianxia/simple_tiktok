@@ -121,11 +121,8 @@ var RDB8 *redis.Client
 var RDB9 *redis.Client
 var RDB10 *redis.Client
 var RDB11 *redis.Client
-<<<<<<< HEAD
-=======
 var RDB12 *redis.Client
 var RDB13 *redis.Client
->>>>>>> zxy
 
 // 初始化Redis连接
 func InitRedis() {
@@ -237,8 +234,6 @@ func InitRedis() {
 		MinIdleConns: viper.GetInt("redis.minIdleConn"),
 	})
 
-<<<<<<< HEAD
-=======
 	// RDB12存储发送信息sorted set
 	RDB12 = redis.NewClient(&redis.Options{
 		Addr:         viper.GetString("redis.addr"),
@@ -257,7 +252,6 @@ func InitRedis() {
 		MinIdleConns: viper.GetInt("redis.minIdleConn"),
 	})
 
->>>>>>> zxy
 	fmt.Println("redis inited ......")
 }
 
@@ -274,11 +268,8 @@ func ReidsClose() {
 	RDB9.Close()
 	RDB10.Close()
 	RDB11.Close()
-<<<<<<< HEAD
-=======
 	RDB12.Close()
 	RDB13.Close()
->>>>>>> zxy
 }
 
 /**

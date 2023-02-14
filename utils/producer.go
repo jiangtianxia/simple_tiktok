@@ -108,15 +108,11 @@ func SendDelayMsg(topic string, tag string, data []byte) error {
 
 	msg := primitive.NewMessage(topic, data)
 	msg.WithTag(tag)
-<<<<<<< HEAD
 	err = ProducerMq.SendOneWay(context.Background(), msg)
 	if err != nil {
 		fmt.Println("消息发送失败， error：", err.Error())
 		logger.SugarLogger.Error("消息发送失败，error：", err.Error())
 		return err
 	}
-=======
-	ProducerMq.SendOneWay(context.Background(), msg)
->>>>>>> zxy
 	return nil
 }

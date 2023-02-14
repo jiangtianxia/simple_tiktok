@@ -2,8 +2,7 @@ package controller
 
 import (
 	"encoding/json"
-	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
+	"fmt"
 	"net/http"
 	"simple_tiktok/logger"
 	"simple_tiktok/middlewares"
@@ -11,7 +10,26 @@ import (
 	"simple_tiktok/utils"
 	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
+
+// 返回结构体
+type SendMessageRespStruct struct {
+	Code int    `json:"status_code"`
+	Msg  string `json:"status_msg"`
+}
+
+// 传入参数返回
+func SendMessageResp(c *gin.Context, code int, msg string) {
+	h := &SendMessageRespStruct{
+		Code: code,
+		Msg:  msg,
+	}
+
+	c.JSON(http.StatusOK, h)
+}
 
 // 发送消息接收参数结构体
 type SendMessageReqStruct struct {
@@ -21,24 +39,29 @@ type SendMessageReqStruct struct {
 	Content    string
 }
 
+// SendMessage
+// @Summary 发送消息
+// @Tags 社交接口
+// @Param token query string true "token"
+// @Param to_user_id query string true "用户id"
+// @Param action_type query string true "1-发送消息"
+// @Param content query string true "消息内容"
+// @Success 200 {object} SendMessageRespStruct
+// @Router /message/action/ [post]
 func SendMessage(c *gin.Context) {
-	//token := c.DefaultQuery("token", "")
-	tmp, _ := utils.GenerateToken(1, "jack")
+	token := c.DefaultQuery("token", "")
 	// 验证token
-	UserClaims, err := middlewares.AuthUserCheck(tmp)
+	UserClaims, err := middlewares.AuthUserCheck(token)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status_code": -1,
-			"status_msg":  err.Error(),
-		})
+		SendMessageResp(c, -1, "无效token")
 		return
 	}
 	fromUserId := UserClaims.Identity
 
 	// 接受参数
-	toUserId := c.DefaultPostForm("to_user_id", "0")
-	actionType := c.DefaultPostForm("action_type", "0")
-	content := c.DefaultPostForm("content", "")
+	toUserId := c.DefaultQuery("to_user_id", "0")
+	actionType := c.DefaultQuery("action_type", "0")
+	content := c.DefaultQuery("content", "")
 
 	info := SendMessageReqStruct{
 		FromUserId: fromUserId,
@@ -54,7 +77,8 @@ func SendMessage(c *gin.Context) {
 	// 发送消息
 	res, err := utils.SendMsg(c, producer, topic, tag, data)
 	if err != nil {
-		logger.SugarLogger.Error("发送消息失败， error:", err.Error())
+		logger.SugarLogger.Error("发送失败， error:", err.Error())
+		SendMessageResp(c, -1, "发送失败")
 		return
 	}
 
@@ -68,11 +92,7 @@ func SendMessage(c *gin.Context) {
 				// 存在，则获取结果返回
 				info, _ := utils.RDB0.HGetAll(c, key).Result()
 				code, _ := strconv.Atoi(info["status_code"])
-
-				c.JSON(http.StatusOK, gin.H{
-					"status_code": code,
-					"status_msg":  info["status_msg"],
-				})
+				SendMessageResp(c, code, info["status_msg"])
 				return
 			}
 
@@ -80,29 +100,45 @@ func SendMessage(c *gin.Context) {
 		}
 
 		// 20秒后，还是没有结果，则返回请求超时
-		c.JSON(http.StatusOK, gin.H{
-			"status_code": -1,
-			"status_msg":  "请求超时",
-		})
+		SendMessageResp(c, -1, "请求超时")
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status_code": -1,
-		"status_msg":  "发送信息失败",
-	})
+	SendMessageResp(c, -1, "发送失败")
 }
 
+// 返回结构体
+type MessageRecordRespStruct struct {
+	Code        int               `json:"status_code"`
+	Msg         string            `json:"status_msg"`
+	MessageList []service.Message `json:"message_list"`
+}
+
+// 传入参数返回
+func MessageRecordResp(c *gin.Context, code int, msg string, messageList []service.Message) {
+	h := &MessageRecordRespStruct{
+		Code:        code,
+		Msg:         msg,
+		MessageList: messageList,
+	}
+
+	c.JSON(http.StatusOK, h)
+}
+
+// MessageRecord
+// @Summary 聊天记录
+// @Tags 社交接口
+// @Param token query string true "token"
+// @Param to_user_id query string true "用户id"
+// @Success 200 {object} MessageRecordRespStruct
+// @Router /message/chat/ [get]
 func MessageRecord(c *gin.Context) {
-	//token := c.DefaultQuery("token", "")
-	tmp, _ := utils.GenerateToken(1, "jack")
+	token := c.DefaultQuery("token", "")
+
 	// 验证token
-	UserClaims, err := middlewares.AuthUserCheck(tmp)
+	UserClaims, err := middlewares.AuthUserCheck(token)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status_code": -1,
-			"status_msg":  err.Error(),
-		})
+		MessageRecordResp(c, -1, "无效token", []service.Message{})
 		return
 	}
 	fromUserId := UserClaims.Identity
@@ -113,16 +149,15 @@ func MessageRecord(c *gin.Context) {
 	// 把参数传给service层
 	res, err := service.MessageRecord(c, fromUserId, toUserId)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status_code": -1,
-			"status_msg":  "查询聊天记录失败",
-		})
+		MessageRecordResp(c, -1, "查询聊天记录失败", []service.Message{})
 		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"status_code":  0,
-		"status_msg":   "查询聊天记录成功",
-		"message_list": res,
-	})
+	fmt.Println(res)
+	// messageList := make([]service.Message, 0)
+	// messageList = append(messageList, service.Message{
+	// 	Identity:   123,
+	// 	Content:    "12435",
+	// 	CreateTime: "2023/2",
+	// })
+	MessageRecordResp(c, 0, "查询聊天记录成功", res)
 }
