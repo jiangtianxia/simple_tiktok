@@ -33,7 +33,9 @@ redis:
     KeyCommentListPrefix: "list:comment:"
     KeyFollowListPrefix: "list:follow:"
     KeyFollowerSortSetPrefix: "follower:"
-
+    KetFavoriteSetPrefix: "favorite:"
+    KeyUserMessageHashPrefix: "message:"
+    KeyUserMessageListPrefix: ":message:"
 
 
 md5:
@@ -58,16 +60,32 @@ rocketmq:
     serverProducer: "ServerProducer"
     serverTopic:  "ServerTopic"
     retrySize:   2
+
+    # 赞服务的消费者信息
+    FavouriteGroupName: "FavouriteGroup"
+    serverFavouriteTag: "Favourite"
+
+    # 评论服务的消费者信息
+    SendCommentGroupName: "CommentGroup"
+    serverSendCommentTag: "SendComment"
+
+    # 关注服务的消费者信息
     followGroupName: "FollowGroup"
     serverFollowTag: "ServerFollow"
 
+    # 发送消息服务的消费者信息
+    sendMessageGroupName: "SendMessageGroup"
+    serverSendMessageTags: "SendMessage"
 
     # 重试机制的消息队列信息
     RetryTopic: "RetryTopic"
     RetryGroupName: "RetryGroup"
     RetryQueueRetrySize: 5
-    RetryTags: "DeleteFollowRedis"
+    RetryTags: "DeleteFollowRedis||DeleteMessageRedis||DeleteCommentRedis||DeleteFavouriteRedis"
     DeleteFollowRedisTag: "DeleteFollowRedis"
+    DeleteMessageRedisTag: "DeleteMessageRedis"
+    DeleteCommentRedisTag: "DeleteCommentRedis"
+    DeleteFavouriteRedisTag: "DeleteFavouriteRedis"
     
 
 

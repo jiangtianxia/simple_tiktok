@@ -16,6 +16,89 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/comment/action/": {
+            "post": {
+                "tags": [
+                    "互动接口"
+                ],
+                "summary": "评论操作",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "视频id",
+                        "name": "video_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "评论操作",
+                        "name": "action_type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "评论内容",
+                        "name": "comment_text",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "评论id",
+                        "name": "comment_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/favorite/action/": {
+            "post": {
+                "tags": [
+                    "互动接口"
+                ],
+                "summary": "赞操作",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "视频id",
+                        "name": "video_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "赞操作",
+                        "name": "action_type",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.FavouriteRespStruct"
+                        }
+                    }
+                }
+            }
+        },
         "/feed": {
             "get": {
                 "tags": [
@@ -57,6 +140,84 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/message/action/": {
+            "post": {
+                "tags": [
+                    "社交接口"
+                ],
+                "summary": "发送消息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "to_user_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "1-发送消息",
+                        "name": "action_type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "消息内容",
+                        "name": "content",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.SendMessageRespStruct"
+                        }
+                    }
+                }
+            }
+        },
+        "/message/chat/": {
+            "get": {
+                "tags": [
+                    "社交接口"
+                ],
+                "summary": "聊天记录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "to_user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.MessageRecordRespStruct"
                         }
                     }
                 }
@@ -369,6 +530,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "controller.FavouriteRespStruct": {
+            "type": "object",
+            "properties": {
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                }
+            }
+        },
         "controller.FeedVideoRespStruct": {
             "type": "object",
             "properties": {
@@ -401,7 +573,7 @@ const docTemplate = `{
                 "user_list": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/service.User"
+                        "$ref": "#/definitions/service.Friend"
                     }
                 }
             }
@@ -418,7 +590,7 @@ const docTemplate = `{
                 "user_list": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/service.User"
+                        "$ref": "#/definitions/service.Author"
                     }
                 }
             }
@@ -446,7 +618,7 @@ const docTemplate = `{
                 "user_list": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/service.User"
+                        "$ref": "#/definitions/service.Author"
                     }
                 }
             }
@@ -465,6 +637,34 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/service.VideoInfo"
                     }
+                }
+            }
+        },
+        "controller.MessageRecordRespStruct": {
+            "type": "object",
+            "properties": {
+                "message_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/service.Message"
+                    }
+                },
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.SendMessageRespStruct": {
+            "type": "object",
+            "properties": {
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
                 }
             }
         },
@@ -530,9 +730,12 @@ const docTemplate = `{
                 }
             }
         },
-        "service.User": {
+        "service.Friend": {
             "type": "object",
             "properties": {
+                "avatar": {
+                    "type": "string"
+                },
                 "follow_count": {
                     "type": "integer"
                 },
@@ -545,8 +748,28 @@ const docTemplate = `{
                 "is_follow": {
                     "type": "boolean"
                 },
+                "message": {
+                    "type": "string"
+                },
+                "msgType": {
+                    "type": "integer"
+                },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "service.Message": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "create_time": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
                 }
             }
         },

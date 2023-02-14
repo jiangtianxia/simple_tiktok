@@ -7,10 +7,8 @@ import (
 	"simple_tiktok/models"
 	"simple_tiktok/utils"
 	"strconv"
-	"time"
 
 	"github.com/spf13/viper"
-	"golang.org/x/net/context"
 )
 
 /**
@@ -60,8 +58,6 @@ func FollowService(msgid string, data []byte) {
 	err = utils.SendDelayMsg(RetryTopic, DeleteFollowRedisTag, data)
 	if err != nil {
 		logger.SugarLogger.Error("SendDelayMsg Error：", err.Error())
-		// SaveRedisResp(msgid, -1, "操作失败")
-		return
 	}
 	SaveRedisResp(msgid, 0, "操作成功")
 }
@@ -85,18 +81,4 @@ func UpdateUserFollow(identity uint64, followIdentity uint64, status int) error 
 	}
 	// 不存在，则创建
 	return mysql.CreateUserFollow(info)
-}
-
-// 将结果存入redis缓存
-func SaveRedisResp(msgid string, code int, msg string) {
-	info := map[string]interface{}{
-		"status_code": code,
-		"status_msg":  msg,
-	}
-
-	var ctx = context.Background()
-	pipeline := utils.RDB0.Pipeline()
-	pipeline.HSet(ctx, msgid, info)
-	pipeline.Expire(ctx, msgid, time.Second*70)
-	pipeline.Exec(ctx)
 }

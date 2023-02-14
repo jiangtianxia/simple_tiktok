@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"simple_tiktok/dao/mysql"
-	"simple_tiktok/dao/redis"
 	myRedis "simple_tiktok/dao/redis"
 	"simple_tiktok/logger"
 	"simple_tiktok/utils"
@@ -32,7 +31,7 @@ func Login(c *gin.Context, username string, password string) (LoginResponse, err
 	}
 
 	//判断用户1分钟内是否登录了5次。
-	flag, time := redis.ExceLoginBank(c, username)
+	flag, time := myRedis.ExceLoginBank(c, username)
 	if flag {
 		return LoginResponse{}, fmt.Errorf("1分钟内连续登录5次, 登录限制, 请 %f 分钟后重试", time)
 	}
@@ -47,7 +46,7 @@ func Login(c *gin.Context, username string, password string) (LoginResponse, err
 	//判断密码是否正确，不正确增加失败次数次数
 	if !utils.ValidPassword(password, user.Password) {
 		//不正确增加失败次数次数
-		if err := redis.AddLoginError(c, username); err != nil {
+		if err := myRedis.AddLoginError(c, username); err != nil {
 			logger.SugarLogger.Error("fail times Error:" + err.Error())
 			return LoginResponse{}, errors.New("登录失败")
 		}

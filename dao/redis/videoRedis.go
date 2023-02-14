@@ -92,26 +92,3 @@ func RedisAddPublishList(ctx *gin.Context, userId string, videoId string) error 
 	_, err := pipeline.Exec(ctx)
 	return err
 }
-
-/**
- * @Author jiang
- * @Description 使用有序集合存储视频的点赞用户sorted set
- * @Date 19:00 2023/1/29
- **/
-func RedisAddFavoriteUser(ctx *gin.Context, videoId string, userId string, score int) error {
-	// 1、获取前缀，拼接key
-	key := viper.GetString("redis.KeyFavoriteUserSortSetPrefix") + videoId
-
-	// 2、创建成员并添加数据
-	//  ZADD KEY_NAME SCORE1 VALUE1.. SCOREN VALUEN
-	// 开启事务
-	pipeline := utils.RDB5.Pipeline()
-	pipeline.ZAdd(ctx, key, redis.Z{
-		Score:  float64(score),
-		Member: userId,
-	})
-	pipeline.Expire(ctx, key, time.Duration(viper.GetInt("redis.RedisExpireTime"))*time.Hour)
-
-	_, err := pipeline.Exec(ctx)
-	return err
-}
