@@ -1,10 +1,10 @@
 package service
 
 import (
+	"encoding/json"
 	"simple_tiktok/dao/mysql"
+	"simple_tiktok/logger"
 	"simple_tiktok/models"
-
-	"github.com/gin-gonic/gin"
 )
 
 /**
@@ -19,19 +19,23 @@ type CommentActionRequire struct {
 	ActionType  int
 }
 
-func PostCommentVideoAction(c *gin.Context, req *CommentActionRequire) error {
+func PostCommentVideoAction(msgid string, data []byte) {
+	req := &CommentActionRequire{}
+	json.Unmarshal(data, req)
 	if(req.ActionType == 1) {
 		// 发表评论
 		err := mysql.AddComment(req.Model)
 		if err != nil {
-			return err
+			logger.SugarLogger.Error(err.Error())
+			return
 		}
 	} else {
 		// 删除评论
 		err := mysql.DelComment(req.Model.Identity)
 		if err != nil {
-			return err
+			logger.SugarLogger.Error(err.Error())
+			return
 		}
 	}
-	return nil
+	return
 }

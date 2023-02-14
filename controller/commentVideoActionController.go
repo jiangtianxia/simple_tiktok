@@ -1,16 +1,20 @@
 package controller
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"simple_tiktok/logger"
 	"simple_tiktok/middlewares"
 	"simple_tiktok/models"
+	rocket "simple_tiktok/rocketmq"
 	"simple_tiktok/service"
+	"simple_tiktok/utils"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 /**
@@ -38,7 +42,7 @@ func CommentAction(c *gin.Context) {
 	// 参数处理
 	// 验证用户token
 	user, err := middlewares.AuthUserCheck(token)
-	if user == nil || user.Identity == 0 || user.Issuer != "simple_tiktok" || user.Username == "" || err != nil{
+	if user == nil || user.Identity == 0 || user.Issuer != "simple_tiktok" || user.Username == "" || err != nil {
 		logger.SugarLogger.Error("Unauthorized User")
 		c.JSON(http.StatusOK, CommentActionResponse{
 			StatusCode: -1,
@@ -73,10 +77,10 @@ func CommentAction(c *gin.Context) {
 	}
 	// 处理时间格式
 	month := time.Now().Format("01")
-    day := time.Now().Format("02")
+	day := time.Now().Format("02")
 	timeNow := month + "-" + day
 
-	// 数据打包
+	// 数据打包，将消息发送到消息队列
 	pack := models.CommentVideo{
 		VideoIdentity: (uint64)(videoidentity),
 		UserIdentity:  (uint64)(commentidentity),
@@ -87,29 +91,52 @@ func CommentAction(c *gin.Context) {
 		Model:      pack,
 		ActionType: actiontype,
 	}
+	data, _ := json.Marshal(req)
 
-	//调用service层函数
-	err = service.PostCommentVideoAction(c, &req)
+	producer := viper.GetString("rocketmq.serverProducer")
+	topic := viper.GetString("rocketmq.ServerTopic")
+	tag := viper.GetString("rocketmq.serverCommentTag")
+	// 发送消息
+	res, err := rocket.SendMsg(c, producer, topic, tag, data)
+	if err != nil {
+		logger.SugarLogger.Error("发送消息失败， error:", err.Error())
+		if err != nil {
+			c.JSON(http.StatusOK, CommentActionResponse{
+				StatusCode: -1,
+				StatusMsg:  "操作失败",
+			})
+			return
+		}
+		return
+	}
 
+	if res.Status == 0 {
+		for i := 0; i < 300; i++ {
+			// hash msgid req
+			// 根据msgid，查询redis缓存中是否存在数据，如果存在则将结果返回
+			key := res.MsgID
+			// 判断当前key，是否存在
+			if utils.RDB7.Exists(c, key).Val() == 1 {
+				// 存在，则获取结果返回
+				info, _ := utils.RDB7.HGetAll(c, key).Result()
+				code, _ := strconv.Atoi(info["status_code"])
+				c.JSON(http.StatusOK, CommentActionResponse{
+					StatusCode: (int32)(code),
+					StatusMsg:  info["status_msg"],
+				})
+				return
+				FollowResp(c, code, info["status_msg"])
+				return
+			}
+
+			time.Sleep(time.Second / 15)
+		}
+	}
+	// 20秒后，还是没有结果，则返回
 	if err != nil {
 		c.JSON(http.StatusOK, CommentActionResponse{
 			StatusCode: -1,
-			StatusMsg: err.Error(),
-		})
-		return
-	}
-	if actiontype == 1 {
-		//发表评论
-		c.JSON(http.StatusOK, CommentActionResponse{
-			StatusCode: 0,
-			StatusMsg: "发表评论成功",
-		})
-		return
-	} else {
-		//删除评论
-		c.JSON(http.StatusOK, CommentActionResponse{
-			StatusCode: 0,
-			StatusMsg: "删除评论成功",
+			StatusMsg:  "请求超时",
 		})
 		return
 	}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"simple_tiktok/logger"
 	"simple_tiktok/models"
+	"simple_tiktok/service"
 
 	"github.com/spf13/viper"
 )
@@ -61,12 +62,7 @@ func ReceiveChan() {
 			}
 			UserInfoAction(*userInfo)
 		case data := <-commentActionChan:
-			CommentInfo := &models.CommentVideo{}
-			err := json.Unmarshal(data.Data, CommentInfo)
-			if err != nil {
-				logger.SugarLogger.Error(err)
-			}
-			CommentAction(*CommentInfo)
+			service.PostCommentVideoAction(data.Msgid, data.Data)
 		}
 	}
 }
