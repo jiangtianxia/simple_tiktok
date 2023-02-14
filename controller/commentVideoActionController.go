@@ -71,14 +71,17 @@ func CommentAction(c *gin.Context) {
 		})
 		return
 	}
-	timeNow := time.Now()
+	// 处理时间格式
+	month := time.Now().Format("01")
+    day := time.Now().Format("02")
+	timeNow := month + "-" + day
 
 	// 数据打包
 	pack := models.CommentVideo{
 		VideoIdentity: (uint64)(videoidentity),
 		UserIdentity:  (uint64)(commentidentity),
 		Text:          comment_text,
-		CommentTime:   timeNow.String(),
+		CommentTime:   timeNow,
 	}
 	req := service.CommentActionRequire{
 		Model:      pack,
