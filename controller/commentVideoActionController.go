@@ -7,7 +7,6 @@ import (
 	"simple_tiktok/logger"
 	"simple_tiktok/middlewares"
 	"simple_tiktok/models"
-	rocket "simple_tiktok/rocketmq"
 	"simple_tiktok/service"
 	"simple_tiktok/utils"
 	"strconv"
@@ -97,7 +96,7 @@ func CommentAction(c *gin.Context) {
 	topic := viper.GetString("rocketmq.ServerTopic")
 	tag := viper.GetString("rocketmq.serverCommentTag")
 	// 发送消息
-	res, err := rocket.SendMsg(c, producer, topic, tag, data)
+	res, err := xx.SendMsg(c, producer, topic, tag, data)
 	if err != nil {
 		logger.SugarLogger.Error("发送消息失败， error:", err.Error())
 		if err != nil {
@@ -124,8 +123,6 @@ func CommentAction(c *gin.Context) {
 					StatusCode: (int32)(code),
 					StatusMsg:  info["status_msg"],
 				})
-				return
-				FollowResp(c, code, info["status_msg"])
 				return
 			}
 
