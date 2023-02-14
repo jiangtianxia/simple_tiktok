@@ -12,13 +12,13 @@ import (
 	"simple_tiktok/utils"
 )
 
-// 查询是否存在
-func IsExist(username string) bool {
-	var user models.UserBasic
-	var size int64
-	utils.DB.Model(&models.UserBasic{}).Select("username").Where("username = ?", username).Scan(&user).Count(&size)
-	return size != 0
-}
+//// 查询是否存在
+//func IsExist(username string) bool {
+//	var user models.UserBasic
+//	var size int64
+//	utils.DB.Model(&models.UserBasic{}).Select("username").Where("username = ?", username).Scan(&user).Count(&size)
+//	return size != 0
+//}
 
 // 用户增加
 func AddUserBasic(userbasic *models.UserBasic) error {

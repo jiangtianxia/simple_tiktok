@@ -11,7 +11,6 @@ func RedisDeleteFavoriteUser(videoId string, userId uint64) error {
 	key := viper.GetString("redis.KetFavoriteSetPrefix") + videoId
 
 	// 2、删除成员及数据
-	//  ZADD KEY_NAME SCORE1 VALUE1.. SCOREN VALUEN
 	// 开启事务
 	pipeline := utils.RDB5.Pipeline()
 	pipeline.HDel(ctx, key, string(userId))
