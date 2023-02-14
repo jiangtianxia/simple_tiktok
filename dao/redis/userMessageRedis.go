@@ -1,7 +1,6 @@
 package redis
 
 import (
-	"simple_tiktok/logger"
 	"simple_tiktok/models"
 	"simple_tiktok/utils"
 	"strconv"
@@ -39,13 +38,13 @@ func RedisAddUserMessageSet(ctx *gin.Context, key string, list []models.UserMess
 	pipeline := utils.RDB12.TxPipeline()
 
 	for i := 0; i < len(list); i++ {
-		createTime, err := time.Parse("2006-01-02 15:04:05", list[i].CreateTime)
-		if err != nil {
-			logger.SugarLogger.Error(err)
-			return err
-		}
+		// // createTime, err := time.Parse("2006-01-02 15:04:05", list[i].CreateTime)
+		// if err != nil {
+		// 	logger.SugarLogger.Error(err)
+		// 	return err
+		// }
 		pipeline.ZAdd(ctx, key, redis.Z{
-			Score:  float64(createTime.Unix()),
+			Score:  float64(list[i].CreateTime),
 			Member: strconv.FormatUint(list[i].Identity, 10),
 		})
 		pipeline.Expire(ctx, key, time.Hour*time.Duration(viper.GetInt("redis.RedisExpireTime")))

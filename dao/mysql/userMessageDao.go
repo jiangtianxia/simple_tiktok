@@ -30,3 +30,13 @@ func QueryMessageByIdentity(identity uint64) ([]models.UserMessage, error) {
 	}
 	return messageList, nil
 }
+
+// 查询最新一条消息
+func QueryNewMessage(fromUserIdentity, toUserIdentity string) (models.UserMessage, error) {
+	var messageInfo models.UserMessage
+	if err := utils.DB.Table("user_message").Where("from_user_identity = ? And to_user_identity = ?", fromUserIdentity, toUserIdentity).Order("create_time desc").First(&messageInfo).Error; err != nil {
+		logger.SugarLogger.Error(err)
+		return messageInfo, err
+	}
+	return messageInfo, nil
+}

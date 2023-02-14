@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"simple_tiktok/logger"
 	"simple_tiktok/middlewares"
@@ -152,12 +151,5 @@ func MessageRecord(c *gin.Context) {
 		MessageRecordResp(c, -1, "查询聊天记录失败", []service.Message{})
 		return
 	}
-	fmt.Println(res)
-	// messageList := make([]service.Message, 0)
-	// messageList = append(messageList, service.Message{
-	// 	Identity:   123,
-	// 	Content:    "12435",
-	// 	CreateTime: "2023/2",
-	// })
 	MessageRecordResp(c, 0, "查询聊天记录成功", res)
 }

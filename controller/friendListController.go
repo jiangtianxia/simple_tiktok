@@ -20,11 +20,11 @@ import (
 type FirendListRespStruct struct {
 	Code     int              `json:"status_code"`
 	Msg      string           `json:"status_msg"`
-	UserList []service.Author `json:"user_list"`
+	UserList []service.Friend `json:"user_list"`
 }
 
 // 传入参数返回
-func FirendListResp(c *gin.Context, code int, msg string, userList []service.Author) {
+func FirendListResp(c *gin.Context, code int, msg string, userList []service.Friend) {
 	h := &FirendListRespStruct{
 		Code:     code,
 		Msg:      msg,
@@ -48,24 +48,24 @@ func GetFriendList(c *gin.Context) {
 
 	// 2、验证参数
 	if token == "" || userId == "" {
-		FirendListResp(c, -1, "请求参数错误", []service.Author{})
+		FirendListResp(c, -1, "请求参数错误", []service.Friend{})
 		return
 	}
 
 	user_id, _ := strconv.Atoi(userId)
 	if user_id == 0 {
-		FirendListResp(c, -1, "请求参数错误", []service.Author{})
+		FirendListResp(c, -1, "请求参数错误", []service.Friend{})
 		return
 	}
 
 	cnt, err := mysql.FindUserByIdentityCount(uint64(user_id))
 	if err != nil {
 		logger.SugarLogger.Error("FindUserByIdentityCount Error：", err.Error())
-		FirendListResp(c, -1, "请求参数错误", []service.Author{})
+		FirendListResp(c, -1, "请求参数错误", []service.Friend{})
 		return
 	}
 	if cnt == 0 {
-		FirendListResp(c, -1, "非法用户", []service.Author{})
+		FirendListResp(c, -1, "非法用户", []service.Friend{})
 		return
 	}
 
@@ -73,14 +73,14 @@ func GetFriendList(c *gin.Context) {
 	// t, _ := utils.GenerateToken(1, "test")
 	_, err = middlewares.AuthUserCheck(token)
 	if err != nil {
-		FirendListResp(c, -1, "无效token", []service.Author{})
+		FirendListResp(c, -1, "无效token", []service.Friend{})
 		return
 	}
 
 	// 4、将数据传入service层
 	data, err := service.FriendListService(c, uint64(user_id))
 	if err != nil {
-		FirendListResp(c, -1, "获取好友列表失败", []service.Author{})
+		FirendListResp(c, -1, "获取好友列表失败", []service.Friend{})
 		return
 	}
 

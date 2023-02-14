@@ -57,5 +57,21 @@ type LoginResponse struct {
 type Message struct {
 	Identity   uint64 `json:"id"`
 	Content    string `json:"content"`
-	CreateTime string `json:"create_time"`
+	CreateTime int64  `json:"create_time"`
+}
+
+/**
+ * @Author
+ * @Description 好友参数结构体
+ * @Date 21:00 2023/2/11
+ **/
+type Friend struct {
+	Id            uint64 `json:"id"`
+	Name          string `json:"name"`
+	FollowCount   int64  `json:"follow_count"`
+	FollowerCount int64  `json:"follower_count"`
+	IsFollow      bool   `json:"is_follow"`
+	Avatar        string `json:"avatar"`
+	Message       string `json:"message"`
+	MsgType       int64  `json:"msgType"`
 }

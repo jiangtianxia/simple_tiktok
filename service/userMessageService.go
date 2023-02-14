@@ -60,7 +60,7 @@ func SendMessage(msgid string, data []byte) {
 			ToUserIdentity:   toIdUint64,
 			FromUserIdentity: fromUserId,
 			Content:          content,
-			CreateTime:       time.Now().Format("2006-01-02 15:04:05"),
+			CreateTime:       time.Now().Unix(),
 		}
 
 		// 存入数据库
@@ -161,7 +161,8 @@ func MessageRecord(c *gin.Context, fromUserId uint64, toUserId string) ([]Messag
 		idUint64 := uint64(idInt64)
 		messageList[i].Identity = idUint64
 		messageList[i].Content = message["content"]
-		messageList[i].CreateTime = message["create_time"]
+		creareTime, _ := strconv.Atoi(message["create_time"])
+		messageList[i].CreateTime = int64(creareTime)
 	}
 
 	// fmt.Println("缓存")

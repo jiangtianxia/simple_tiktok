@@ -17,8 +17,8 @@ import (
  * @Description 好友列表
  * @Date 17:00 2023/2/12
  **/
-func FriendListService(c *gin.Context, userId uint64) ([]Author, error) {
-	data := make([]Author, 0)
+func FriendListService(c *gin.Context, userId uint64) ([]Friend, error) {
+	data := make([]Friend, 0)
 
 	// 1、判断缓存中是否存在数据
 	key := viper.GetString("redis.KeyFollowerSortSetPrefix") + strconv.Itoa(int(userId))
@@ -63,12 +63,22 @@ func FriendListService(c *gin.Context, userId uint64) ([]Author, error) {
 				return nil, err
 			}
 
-			userInfo := Author{
+			// 获取最新聊天记录
+			message, msgType, err := GetNewMessageInfo(c, strconv.Itoa(int(userId)), strconv.Itoa(int(follower.UserIdentity)))
+			if err != nil {
+				logger.SugarLogger.Error("GetNewMessageInfo Error：", err.Error())
+				return nil, err
+			}
+
+			userInfo := Friend{
 				Id:            follower.UserIdentity,
 				Name:          username,
 				FollowCount:   followCount,
 				FollowerCount: followerCount,
 				IsFollow:      isFollow,
+				Avatar:        viper.GetString("uploadAddr") + "/upload/avatar.jpeg",
+				Message:       message,
+				MsgType:       msgType,
 			}
 			pipeline.ZAdd(c, key, redis.Z{
 				Member: follower.UserIdentity,
@@ -125,15 +135,67 @@ func FriendListService(c *gin.Context, userId uint64) ([]Author, error) {
 			return nil, err
 		}
 
+		message, msgType, err := GetNewMessageInfo(c, strconv.Itoa(int(userId)), followerIdentity)
+		if err != nil {
+			logger.SugarLogger.Error("GetNewMessageInfo Error：", err.Error())
+			return nil, err
+		}
 		id, _ := strconv.Atoi(followerIdentity)
-		userInfo := Author{
+		userInfo := Friend{
 			Id:            uint64(id),
 			Name:          username,
 			FollowCount:   followCount,
 			FollowerCount: followerCount,
 			IsFollow:      isFollow,
+			Avatar:        viper.GetString("uploadAddr") + "/upload/avatar.jpeg",
+			Message:       message,
+			MsgType:       msgType,
 		}
 		data = append(data, userInfo)
 	}
 	return data, nil
+}
+
+/**
+ * @Author jiang
+ * @Description 获取最新聊天信息
+ * @Date 17:00 2023/2/14
+ **/
+func GetNewMessageInfo(c *gin.Context, userId string, to_userId string) (string, int64, error) {
+	// 为了方便，这里直接查询数据库，不再查询缓存
+	msg1, msg2 := true, true
+	sendMessage, err := mysql.QueryNewMessage(userId, to_userId)
+	if err != nil {
+		if err.Error() == "record not found" {
+			msg1 = false
+		} else {
+			return "", 0, err
+		}
+	}
+
+	RecMessage, err := mysql.QueryNewMessage(to_userId, userId)
+	if err != nil {
+		if err.Error() == "record not found" {
+			msg2 = false
+		} else {
+			return "", 0, err
+		}
+	}
+
+	if msg1 && msg2 {
+		if sendMessage.CreateTime > RecMessage.CreateTime {
+			return sendMessage.Content, 1, nil
+		}
+		return RecMessage.Content, 0, nil
+	}
+
+	if msg1 {
+		return sendMessage.Content, 1, nil
+	}
+
+	if msg2 {
+		return RecMessage.Content, 0, nil
+	}
+
+	return "", 1, nil
 }
