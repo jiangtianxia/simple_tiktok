@@ -3,13 +3,16 @@ package controller
 import (
 	"fmt"
 	"simple_tiktok/logger"
-	"simple_tiktok/service"
-	"github.com/gin-gonic/gin"
 	"simple_tiktok/middlewares"
+	"simple_tiktok/service"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
-// @Summary 视频发布列表接口
+// GetPublishList
+// @Summary 发布列表
+// @Tags 基础接口
 // @Produce json
 // @Param token query string true "登录用户的token"
 // @Param user_id query string true "查找目标用户的id"
@@ -46,11 +49,11 @@ func GetPublishList(c *gin.Context) {
 		GetPublishListReturn(c, -1, "获取用户视频失败", nil)
 		return
 	}
-	GetPublishListReturn(c, 0, "成功", videoList)
+	GetPublishListReturn(c, 0, "获取用户视频成功", videoList)
 }
 
 // 回传函数
-func GetPublishListReturn(c *gin.Context, status_code int, status_msg string, video_list *[]service.Video) {
+func GetPublishListReturn(c *gin.Context, status_code int, status_msg string, video_list *[]service.VideoInfo) {
 	// 构造
 	var response GetPublishListResponse
 	response.StatusCode = status_code
@@ -59,12 +62,12 @@ func GetPublishListReturn(c *gin.Context, status_code int, status_msg string, vi
 		response.VideoList = *video_list
 	}
 
-	c.JSON(200,  response)
+	c.JSON(200, response)
 }
 
 // 返回参数
 type GetPublishListResponse struct {
-	StatusCode int `json:"status_code"`
-	StatusMsg string `json:"status_msg"`
-	VideoList []service.Video `json:"video_list"`
+	StatusCode int                 `json:"status_code"`
+	StatusMsg  string              `json:"status_msg"`
+	VideoList  []service.VideoInfo `json:"video_list"`
 }

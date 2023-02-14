@@ -119,6 +119,8 @@ var RDB6 *redis.Client
 var RDB7 *redis.Client
 var RDB8 *redis.Client
 var RDB9 *redis.Client
+var RDB10 *redis.Client
+var RDB11 *redis.Client
 
 // 初始化Redis连接
 func InitRedis() {
@@ -212,6 +214,24 @@ func InitRedis() {
 		MinIdleConns: viper.GetInt("redis.minIdleConn"),
 	})
 
+	// RDB10存储用户的关注用户列表
+	RDB10 = redis.NewClient(&redis.Options{
+		Addr:         viper.GetString("redis.addr"),
+		Password:     viper.GetString("redis.password"),
+		DB:           10,
+		PoolSize:     viper.GetInt("redis.poolSize"),
+		MinIdleConns: viper.GetInt("redis.minIdleConn"),
+	})
+
+	// RDB11存储粉丝sorted set
+	RDB11 = redis.NewClient(&redis.Options{
+		Addr:         viper.GetString("redis.addr"),
+		Password:     viper.GetString("redis.password"),
+		DB:           11,
+		PoolSize:     viper.GetInt("redis.poolSize"),
+		MinIdleConns: viper.GetInt("redis.minIdleConn"),
+	})
+
 	fmt.Println("redis inited ......")
 }
 
@@ -226,6 +246,8 @@ func ReidsClose() {
 	RDB7.Close()
 	RDB8.Close()
 	RDB9.Close()
+	RDB10.Close()
+	RDB11.Close()
 }
 
 /**

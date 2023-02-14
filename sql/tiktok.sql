@@ -11,7 +11,7 @@
  Target Server Version : 80032
  File Encoding         : 65001
 
- Date: 04/02/2023 22:54:24
+ Date: 13/02/2023 16:08:57
 */
 
 SET NAMES utf8mb4;
@@ -33,7 +33,7 @@ CREATE TABLE `comment_video`  (
   `comment_time` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '评论时间，格式： mm-dd',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_comment_video_deleted_at`(`deleted_at`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for favourite_video
@@ -49,7 +49,7 @@ CREATE TABLE `favourite_video`  (
   `status` tinyint(1) NULL DEFAULT NULL COMMENT '状态（0：未点赞，1：已点赞）',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_favourite_video_deleted_at`(`deleted_at`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for user_basic
@@ -65,7 +65,7 @@ CREATE TABLE `user_basic`  (
   `password` varchar(36) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '密码',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_user_basic_deleted_at`(`deleted_at`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 48 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for user_follow
@@ -81,7 +81,7 @@ CREATE TABLE `user_follow`  (
   `status` tinyint(1) NULL DEFAULT NULL COMMENT '状态（0：未关注，1：已关注）',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_user_follow_deleted_at`(`deleted_at`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for user_message
@@ -99,7 +99,7 @@ CREATE TABLE `user_message`  (
   `create_time` varchar(36) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '发送时间，格式：yyyy-MM-dd HH:MM:ss',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_user_message_deleted_at`(`deleted_at`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for video_basic
@@ -118,6 +118,6 @@ CREATE TABLE `video_basic`  (
   `publish_time` bigint(0) NULL DEFAULT NULL COMMENT '发布时间，格式：时间戳',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_video_basic_deleted_at`(`deleted_at`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
