@@ -1,6 +1,7 @@
 
 uplaodBase: "./upload/"
 uploadAddr: "http://101.43.157.116"
+# uploadAddr: "http://192.168.1.69:8080"
 
 feedVideoCnt: 30
 
@@ -28,7 +29,7 @@ redis:
     KeyPublishListPrefix: "list:publish:"
     KeyVideoInfoHashPrefix: "videoinfo:"
     KeyCommentInfoHashPrefix: "commentinfo:"
-    KeyFavoriteUserSortSetPrefix: "favorite:user:"
+    KeyFavoriteUserSortSetPrefix: "favorite:"
     KeyCommentListPrefix: "list:comment:"
     KeyFollowListPrefix: "list:follow:"
     KeyFollowerSortSetPrefix: "follower:"
@@ -53,27 +54,15 @@ currentLimit:
 
 rocketmq:
     addr:  "101.43.157.116:9876"
+    # 服务的消息队列信息
     serverProducer: "ServerProducer"
     serverTopic:  "ServerTopic"
-    serverTags: "test||login"
-
-    redisProducer: "RedisProducer"
-    redisTopic:  "RedisTopic"
-    redisGroupName:  "RedisGroup"
-    redisTags: "publishAction||userInfo"
-    publishActionTag: "publishAction"
-    userInfoTag: "userInfo"
     retrySize:   2
-
-    addr1:  "101.43.157.116:9999"
-    redisTopic1:  "LoginTopic"
-    redisGroupName1:  "login"
-    redisTags1: "userLogin"
-    userLoginTag: "userLogin"
-
     followGroupName: "FollowGroup"
     serverFollowTag: "ServerFollow"
 
+
+    # 重试机制的消息队列信息
     RetryTopic: "RetryTopic"
     RetryGroupName: "RetryGroup"
     RetryQueueRetrySize: 5
@@ -84,8 +73,10 @@ rocketmq:
 
 cos:
     addr: "https://tiktok-1310814941.cos.ap-guangzhou.myqcloud.com"
-    SecretId: "AKID2vc5LM9h03sZ0Nn3cO6rcATXNzNXSDjx"
-    SecretKey: "NZcS5WgaFivrVuNbYjzANfrra4KXZNG1"
+    # SecretId: "AKID2vc5LM9h03sZ0Nn3cO6rcATXNzNXSDjx"
+    # SecretKey: "NZcS5WgaFivrVuNbYjzANfrra4KXZNG1"
+    SecretId: "AKIDBEaorhLlwrWynzxkKjwunX9Xp02CAwZ3"
+    SecretKey: "O62oMhw9C2e7OTKepmV6UgjlmeMtOjtr"
 
 
 CircuitBreaker:

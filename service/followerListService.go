@@ -17,8 +17,8 @@ import (
  * @Description 粉丝列表
  * @Date 17:00 2023/2/12
  **/
-func FollowerListService(c *gin.Context, userId uint64) ([]User, error) {
-	data := make([]User, 0)
+func FollowerListService(c *gin.Context, userId uint64) ([]Author, error) {
+	data := make([]Author, 0)
 
 	// 1、判断缓存中是否存在数据
 	key := viper.GetString("redis.KeyFollowerSortSetPrefix") + strconv.Itoa(int(userId))
@@ -63,7 +63,7 @@ func FollowerListService(c *gin.Context, userId uint64) ([]User, error) {
 				return nil, err
 			}
 
-			userInfo := User{
+			userInfo := Author{
 				Id:            follower.UserIdentity,
 				Name:          username,
 				FollowCount:   followCount,
@@ -126,7 +126,7 @@ func FollowerListService(c *gin.Context, userId uint64) ([]User, error) {
 		}
 
 		id, _ := strconv.Atoi(followerIdentity)
-		userInfo := User{
+		userInfo := Author{
 			Id:            uint64(id),
 			Name:          username,
 			FollowCount:   followCount,

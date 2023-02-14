@@ -1,4 +1,17 @@
 definitions:
+  controller.FeedVideoRespStruct:
+    properties:
+      next_time:
+        type: integer
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+      video_list:
+        items:
+          $ref: '#/definitions/service.VideoInfo'
+        type: array
+    type: object
   controller.FirendListRespStruct:
     properties:
       status_code:
@@ -47,7 +60,7 @@ definitions:
         type: string
       video_list:
         items:
-          $ref: '#/definitions/service.Video'
+          $ref: '#/definitions/service.VideoInfo'
         type: array
     type: object
   controller.UploadRespStruct:
@@ -57,18 +70,35 @@ definitions:
       status_msg:
         type: string
     type: object
+  controller.UserInfoRespStruct:
+    properties:
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+      user:
+        $ref: '#/definitions/service.Author'
+    type: object
+  controller.UserLoginRespStruct:
+    properties:
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+      token:
+        type: string
+      user_id:
+        type: integer
+    type: object
   service.Author:
     properties:
       follow_count:
-        description: default
         type: integer
       follower_count:
-        description: default
         type: integer
       id:
         type: integer
       is_follow:
-        description: defalut
         type: boolean
       name:
         type: string
@@ -86,23 +116,32 @@ definitions:
       name:
         type: string
     type: object
-  service.Video:
+  service.VideoInfo:
     properties:
       author:
-        $ref: '#/definitions/service.Author'
+        allOf:
+        - $ref: '#/definitions/service.Author'
+        description: 作者信息
       comment_count:
+        description: 评论数
         type: integer
       cover_url:
+        description: 封面路径
         type: string
       favorite_count:
+        description: 点赞数
         type: integer
       id:
+        description: 视频唯一标识
         type: integer
       is_favorite:
+        description: 是否点赞
         type: boolean
       play_url:
+        description: 视频路径
         type: string
       title:
+        description: 视频标题
         type: string
     type: object
 info:
@@ -123,8 +162,8 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
-      summary: 视频流
+            $ref: '#/definitions/controller.FeedVideoRespStruct'
+      summary: 视频流接口
       tags:
       - 基础接口
   /hello:
@@ -183,7 +222,9 @@ paths:
           description: status_msg为成功
           schema:
             $ref: '#/definitions/controller.GetPublishListResponse'
-      summary: 视频发布列表接口
+      summary: 发布列表
+      tags:
+      - 基础接口
   /relation/action/:
     post:
       parameters:
@@ -273,4 +314,67 @@ paths:
       summary: 好友列表
       tags:
       - 社交接口
+  /user/:
+    get:
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.UserInfoRespStruct'
+      summary: 用户信息
+      tags:
+      - 基础接口
+  /user/login/:
+    post:
+      parameters:
+      - description: username
+        in: query
+        name: username
+        required: true
+        type: string
+      - description: password
+        in: query
+        name: password
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.UserLoginRespStruct'
+      summary: 用户登录
+      tags:
+      - 基础接口
+  /user/register/:
+    post:
+      parameters:
+      - description: username
+        in: query
+        name: username
+        required: true
+        type: string
+      - description: password
+        in: query
+        name: password
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 用户注册
+      tags:
+      - 基础接口
 swagger: "2.0"

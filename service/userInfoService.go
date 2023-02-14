@@ -1,12 +1,10 @@
 package service
 
 import (
-	"encoding/json"
-	"fmt"
+	"errors"
 	"simple_tiktok/dao/mysql"
 	myRedis "simple_tiktok/dao/redis"
 	"simple_tiktok/logger"
-	"simple_tiktok/models"
 	"simple_tiktok/utils"
 	"strconv"
 
@@ -19,7 +17,7 @@ import (
  * @Description 获取用户信息
  * @Date 14:00 2023/1/31
  **/
-func UserInfo(c *gin.Context, userId string) (map[string]interface{}, error) {
+func UserInfo(c *gin.Context, loginUser uint64, userId string) (Author, error) {
 	hashKey := viper.GetString("redis.KeyUserHashPrefix") + userId
 	// 判断是否有缓存
 	if utils.RDB1.Exists(c, hashKey).Val() == 0 {
@@ -28,69 +26,108 @@ func UserInfo(c *gin.Context, userId string) (map[string]interface{}, error) {
 		identityUint64 := uint64(idNum)
 		if err != nil {
 			logger.SugarLogger.Error(err)
-			return nil, err
+			return Author{}, err
 		}
 		user, err := mysql.FindUserByIdentity(identityUint64)
 		if err != nil {
 			// 防止缓存击穿
-			redisErr := myRedis.RedisAddUserInfo(hashKey, map[string]interface{}{
+			redisErr := myRedis.RedisAddUserInfo(c, hashKey, map[string]interface{}{
 				"identity": viper.GetInt("redis.defaultErrorIdentity"),
 			})
 			if redisErr != nil {
 				logger.SugarLogger.Error(err)
-				return nil, redisErr
+				return Author{}, redisErr
 			}
-			return nil, err
+			return Author{}, err
 		}
 
-		// 使用时间队列新增缓存
-		var userInfo = models.UserBasic{
-			Identity: user.Identity,
-			Username: user.Username,
+		// 新增缓存
+		var newCathe = map[string]interface{}{
+			"identity": user.Identity,
+			"username": user.Username,
 		}
-		data, _ := json.Marshal(userInfo)
-		redisTopic := viper.GetString("rocketmq.redisTopic")
-		Producer := viper.GetString("rocketmq.redisProducer")
-		tag := viper.GetString("rocketmq.userInfoTag")
-		msg, err := utils.SendMsg(c, Producer, redisTopic, tag, data)
+
+		err = myRedis.RedisAddUserInfo(c, hashKey, newCathe)
 		if err != nil {
-			return nil, err
+			logger.SugarLogger.Error(err)
 		}
-		fmt.Println(msg)
-		fmt.Println("新增缓存：", userInfo)
-		//// 新增缓存
-		//var newCathe = map[string]interface{}{
-		//	"identity": user.Identity,
-		//	"username": user.Username,
-		//}
-		//
-		//err = myRedis.RedisAddUserInfo(hashKey, newCathe)
-		//if err != nil {
-		//	logger.SugarLogger.Error(err)
-		//	return nil, err
-		//}
+
+		// 获取关注数
+		followCount, err := GetFollowCount(c, strconv.Itoa(int(user.Identity)))
+		if err != nil {
+			logger.SugarLogger.Error("GetFollowCount Error：", err.Error())
+			return Author{}, err
+		}
+
+		// 获取粉丝数
+		followerCount, err := GetFollowerCount(c, strconv.Itoa(int(user.Identity)))
+		if err != nil {
+			logger.SugarLogger.Error("GetFollowerCount Error：", err.Error())
+			return Author{}, err
+		}
+
+		// 判断是否关注用户
+		flag := false
+		if user.Identity == loginUser {
+			flag = true
+		} else {
+			flag, err = IsFollow(c, strconv.Itoa(int(user.Identity)), strconv.Itoa(int(loginUser)))
+			if err != nil {
+				logger.SugarLogger.Error("IsFollow Error：", err.Error())
+				return Author{}, err
+			}
+		}
 
 		// 返回结果
-		var res = map[string]interface{}{
-			"identity":       user.Identity,
-			"username":       user.Username,
-			"follow_count":   0,
-			"follower_count": 0,
-			"is_follow":      false,
+		res := Author{
+			Id:            user.Identity,
+			Name:          user.Username,
+			FollowCount:   followCount,
+			FollowerCount: followerCount,
+			IsFollow:      flag,
 		}
 		return res, nil
 	}
 	// 使用缓存
 	cathe := utils.RDB1.HGetAll(c, hashKey).Val()
 	identity, _ := strconv.Atoi(cathe["identity"])
-	var res = map[string]interface{}{
-		"identity":       identity,
-		"username":       cathe["username"],
-		"follow_count":   0,
-		"follower_count": 0,
-		"is_follow":      false,
+	if identity == viper.GetInt("redis.defaultErrorIdentity") {
+		return Author{}, errors.New("用户不存在")
 	}
-	fmt.Println("已有缓存", cathe)
 
+	// 获取关注数
+	followCount, err := GetFollowCount(c, userId)
+	if err != nil {
+		logger.SugarLogger.Error("GetFollowCount Error：", err.Error())
+		return Author{}, err
+	}
+
+	// 获取粉丝数
+	followerCount, err := GetFollowerCount(c, userId)
+	if err != nil {
+		logger.SugarLogger.Error("GetFollowerCount Error：", err.Error())
+		return Author{}, err
+	}
+
+	// 判断是否关注该用户
+	flag := false
+	if uint64(identity) == loginUser {
+		flag = true
+	} else {
+		flag, err = IsFollow(c, userId, strconv.Itoa(int(loginUser)))
+		// fmt.Println(flag)
+		if err != nil {
+			logger.SugarLogger.Error("IsFollow Error：", err.Error())
+			return Author{}, err
+		}
+	}
+
+	res := Author{
+		Id:            uint64(identity),
+		Name:          cathe["username"],
+		FollowCount:   followCount,
+		FollowerCount: followerCount,
+		IsFollow:      flag,
+	}
 	return res, nil
 }

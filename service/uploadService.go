@@ -1,13 +1,13 @@
 package service
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"mime/multipart"
 	"os"
 	"path"
 	"simple_tiktok/dao/mysql"
+	"simple_tiktok/dao/redis"
 	"simple_tiktok/logger"
 	"simple_tiktok/models"
 	"simple_tiktok/utils"
@@ -42,19 +42,9 @@ func UploadCOS(c *gin.Context, srcFile multipart.File, head *multipart.FileHeade
 		return -1, "投稿失败"
 	}
 
-	// 将identity添加到布隆过滤器
-	err = utils.BloomFilterAdd(strconv.Itoa(int(identity)))
-	if err != nil {
-		logger.SugarLogger.Error("BloomFilterAdd Error:" + err.Error())
-		fmt.Println("BloomFilterAdd Error:" + err.Error())
-		return -1, "投稿失败"
-	}
-
 	// 视频保存名
 	filename := strconv.Itoa(int(time.Now().Unix())) + strconv.Itoa(int(identity))
 	key := filename + suffix
-	// fmt.Println(identity)
-	// fmt.Println(filename)
 
 	_, err = utils.COSClient.Object.Put(c, key, srcFile, nil)
 	if err != nil {
@@ -112,7 +102,6 @@ func UploadCOS(c *gin.Context, srcFile multipart.File, head *multipart.FileHeade
 		PublishTime:  time.Now().Unix(),
 	}
 
-	// fmt.Println(videoInfo)
 	err = mysql.CreateVideoBasic(videoInfo)
 	if err != nil {
 		logger.SugarLogger.Error("CreateVideoBasic Error：" + err.Error())
@@ -120,12 +109,30 @@ func UploadCOS(c *gin.Context, srcFile multipart.File, head *multipart.FileHeade
 		return -1, "投稿失败"
 	}
 
-	// 5、将数据发送到消息队列
-	redisTopic := viper.GetString("rocketmq.redisTopic")
-	Producer := viper.GetString("rocketmq.redisProducer")
-	tag := viper.GetString("rocketmq.publishActionTag")
-	data, _ := json.Marshal(videoInfo)
-	utils.SendMsg(c, Producer, redisTopic, tag, data)
-
+	// 5、将数据存入缓存
+	SaveVideoCache(c, videoInfo)
 	return 0, "投稿成功"
+}
+
+func SaveVideoCache(ctx *gin.Context, videoInfo models.VideoBasic) {
+	videoid := strconv.Itoa(int(videoInfo.Identity))
+	userid := strconv.Itoa(int(videoInfo.UserIdentity))
+	err := redis.RedisAddVideoList(ctx, videoInfo.PublishTime, videoid)
+	if err != nil {
+		logger.SugarLogger.Error("RedisAddVideoList Error：", err.Error())
+	}
+	err = redis.RedisAddVideoInfo(ctx, videoInfo)
+	if err != nil {
+		logger.SugarLogger.Error("RedisAddVideoInfo Error：", err.Error())
+	}
+
+	err = redis.RedisAddPublishList(ctx, userid, videoid)
+	if err != nil {
+		logger.SugarLogger.Error("RedisAddPublishList Error：", err.Error())
+	}
+
+	err = redis.RedisAddFavoriteUser(ctx, videoid, userid, 0)
+	if err != nil {
+		logger.SugarLogger.Error("RedisAddFavoriteUser Error：", err.Error())
+	}
 }

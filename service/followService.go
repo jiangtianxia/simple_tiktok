@@ -13,13 +13,6 @@ import (
 	"golang.org/x/net/context"
 )
 
-// 接收参数结构体
-type FollowReqStruct struct {
-	UserId     string
-	ToUserId   string
-	ActionType int
-}
-
 /**
  * @Author jiang
  * @Description 关注操作
@@ -64,7 +57,12 @@ func FollowService(msgid string, data []byte) {
 	// 2、发送延迟消息，删除缓存
 	RetryTopic := viper.GetString("rocketmq.RetryTopic")
 	DeleteFollowRedisTag := viper.GetString("rocketmq.DeleteFollowRedisTag")
-	utils.SendDelayMsg(RetryTopic, DeleteFollowRedisTag, data)
+	err = utils.SendDelayMsg(RetryTopic, DeleteFollowRedisTag, data)
+	if err != nil {
+		logger.SugarLogger.Error("SendDelayMsg Error：", err.Error())
+		// SaveRedisResp(msgid, -1, "操作失败")
+		return
+	}
 	SaveRedisResp(msgid, 0, "操作成功")
 }
 

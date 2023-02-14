@@ -42,7 +42,7 @@ type FollowReqStruct struct {
 	ActionType int
 }
 
-// Follow
+// UserFollow
 // @Summary 关注操作
 // @Tags 社交接口
 // @Param token query string true "token"
@@ -50,7 +50,7 @@ type FollowReqStruct struct {
 // @Param action_type query string true "关注操作"
 // @Success 200 {object} FollowRespStruct
 // @Router /relation/action/ [post]
-func Follow(c *gin.Context) {
+func UserFollow(c *gin.Context) {
 	// 1、获取参数
 	token := c.DefaultQuery("token", "")
 	to_user_id := c.DefaultQuery("to_user_id", "")
@@ -81,10 +81,15 @@ func Follow(c *gin.Context) {
 	}
 
 	// 3、验证token
-	t, _ := utils.GenerateToken(1, "test")
-	UserClaims, err := middlewares.AuthUserCheck(t)
+	// t, _ := utils.GenerateToken(1, "test")
+	UserClaims, err := middlewares.AuthUserCheck(token)
 	if err != nil {
 		FollowResp(c, -1, "无效token")
+		return
+	}
+
+	if UserClaims.Identity == uint64(user_id) {
+		FollowResp(c, -1, "您无法关注或取消关注自己")
 		return
 	}
 

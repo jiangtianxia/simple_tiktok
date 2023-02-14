@@ -21,7 +21,7 @@ const docTemplate = `{
                 "tags": [
                     "基础接口"
                 ],
-                "summary": "视频流",
+                "summary": "视频流接口",
                 "parameters": [
                     {
                         "type": "string",
@@ -40,7 +40,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/controller.FeedVideoRespStruct"
                         }
                     }
                 }
@@ -106,7 +106,10 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "视频发布列表接口",
+                "tags": [
+                    "基础接口"
+                ],
+                "summary": "发布列表",
                 "parameters": [
                     {
                         "type": "string",
@@ -267,9 +270,125 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/user/": {
+            "get": {
+                "tags": [
+                    "基础接口"
+                ],
+                "summary": "用户信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.UserInfoRespStruct"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/login/": {
+            "post": {
+                "tags": [
+                    "基础接口"
+                ],
+                "summary": "用户登录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "username",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "password",
+                        "name": "password",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.UserLoginRespStruct"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/register/": {
+            "post": {
+                "tags": [
+                    "基础接口"
+                ],
+                "summary": "用户注册",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "username",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "password",
+                        "name": "password",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "controller.FeedVideoRespStruct": {
+            "type": "object",
+            "properties": {
+                "next_time": {
+                    "type": "integer"
+                },
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                },
+                "video_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/service.VideoInfo"
+                    }
+                }
+            }
+        },
         "controller.FirendListRespStruct": {
             "type": "object",
             "properties": {
@@ -344,7 +463,7 @@ const docTemplate = `{
                 "video_list": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/service.Video"
+                        "$ref": "#/definitions/service.VideoInfo"
                     }
                 }
             }
@@ -360,22 +479,50 @@ const docTemplate = `{
                 }
             }
         },
+        "controller.UserInfoRespStruct": {
+            "type": "object",
+            "properties": {
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/service.Author"
+                }
+            }
+        },
+        "controller.UserLoginRespStruct": {
+            "type": "object",
+            "properties": {
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "service.Author": {
             "type": "object",
             "properties": {
                 "follow_count": {
-                    "description": "default",
                     "type": "integer"
                 },
                 "follower_count": {
-                    "description": "default",
                     "type": "integer"
                 },
                 "id": {
                     "type": "integer"
                 },
                 "is_follow": {
-                    "description": "defalut",
                     "type": "boolean"
                 },
                 "name": {
@@ -403,31 +550,43 @@ const docTemplate = `{
                 }
             }
         },
-        "service.Video": {
+        "service.VideoInfo": {
             "type": "object",
             "properties": {
                 "author": {
-                    "$ref": "#/definitions/service.Author"
+                    "description": "作者信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/service.Author"
+                        }
+                    ]
                 },
                 "comment_count": {
+                    "description": "评论数",
                     "type": "integer"
                 },
                 "cover_url": {
+                    "description": "封面路径",
                     "type": "string"
                 },
                 "favorite_count": {
+                    "description": "点赞数",
                     "type": "integer"
                 },
                 "id": {
+                    "description": "视频唯一标识",
                     "type": "integer"
                 },
                 "is_favorite": {
+                    "description": "是否点赞",
                     "type": "boolean"
                 },
                 "play_url": {
+                    "description": "视频路径",
                     "type": "string"
                 },
                 "title": {
+                    "description": "视频标题",
                     "type": "string"
                 }
             }

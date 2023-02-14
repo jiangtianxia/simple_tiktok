@@ -17,20 +17,14 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
-//请求体
-type RegisterRequire struct {
-	Username string
-	Password string
-}
-
-type RegisterResponse struct {
-	Identity uint64 `json:"identity"`
-	Token    string `json:"token"`
-}
-
-// 注册得到token和id
+/**
+ * @Author: liuxin
+ * @Description: 用户注册接口
+ * @Date: 2023-01-28 09:33:15
+ **/
 func PostUserRegister(c *gin.Context, req *RegisterRequire) (*RegisterResponse, error) {
 	//验证合法性
 	if req.Username == "" {
@@ -41,57 +35,29 @@ func PostUserRegister(c *gin.Context, req *RegisterRequire) (*RegisterResponse, 
 	}
 
 	//判断用户名
-	if mysql.IsExist(req.Username) {
+	if mysql.UserIsExist(req.Username) {
 		return nil, errors.New("用户名已存在")
-	}
-
-	redisErr := myRedis.RedisUserRegister(c, req.Username, map[string]interface{}{
-		"identity": -1,
-	})
-	if redisErr != nil {
-		logger.SugarLogger.Error()
-		return nil, redisErr
 	}
 
 	//雪花算法生成id
 	getid, err := utils.GetID()
 	getpsw := utils.MakePassword(req.Password)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("注册失败")
 	}
 
 	ur := models.UserBasic{Identity: getid, Username: req.Username, Password: getpsw}
-	var res1 = map[string]interface{}{
-		"identity": getid,
-		"username": ur.Username,
-		"password": getpsw,
-	}
-
-	// 新增缓存
-	err = myRedis.RedisUserRegister(c, req.Username, res1)
-
-	if err != nil {
-		logger.SugarLogger.Error(err)
-		return nil, err
-	}
-
-	// 使用缓存
-	cathe := utils.RDB1.HGetAll(c, req.Username).Val()
-	identity, _ := strconv.Atoi(cathe["identity"])
-
-	res2 := models.UserBasic{Identity: (uint64)(identity), Username: cathe["username"], Password: cathe["password"]}
-
 	// 更新数据
-	err = mysql.AddUserBasic(&res2)
+	err = mysql.AddUserBasic(ur)
 	if err != nil {
 		return nil, err
 	}
 
 	//给token
-	token, err3 := utils.GenerateToken(ur.Identity, ur.Username)
-	if err3 != nil {
+	token, err := utils.GenerateToken(ur.Identity, ur.Username)
+	if err != nil {
 		logger.SugarLogger.Error("Generate Token Error:" + err.Error())
-		return nil, err3
+		return nil, errors.New("注册失败")
 	}
 
 	//response
@@ -99,5 +65,15 @@ func PostUserRegister(c *gin.Context, req *RegisterRequire) (*RegisterResponse, 
 	resp.Token = token
 	resp.Identity = ur.Identity
 
+	// 添加缓存
+	var newCathe = map[string]interface{}{
+		"identity": ur.Identity,
+		"username": ur.Username,
+	}
+	hashKey := viper.GetString("redis.KeyUserHashPrefix") + strconv.Itoa(int(ur.Identity))
+	err = myRedis.RedisAddUserInfo(c, hashKey, newCathe)
+	if err != nil {
+		logger.SugarLogger.Error(err)
+	}
 	return &resp, nil
 }
