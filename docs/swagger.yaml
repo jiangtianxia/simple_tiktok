@@ -161,6 +161,36 @@ definitions:
 info:
   contact: {}
 paths:
+  /comment/action/:
+    post:
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 视频id
+        in: query
+        name: video_id
+        required: true
+        type: string
+      - description: 评论操作
+        in: query
+        name: action_type
+        required: true
+        type: string
+      - description: 评论内容
+        in: query
+        name: comment_text
+        type: string
+      - description: 评论id
+        in: query
+        name: comment_id
+        type: string
+      responses: {}
+      summary: 评论操作
+      tags:
+      - 互动接口
   /feed:
     get:
       parameters:

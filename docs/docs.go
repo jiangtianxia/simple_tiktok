@@ -16,6 +16,50 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/comment/action/": {
+            "post": {
+                "tags": [
+                    "互动接口"
+                ],
+                "summary": "评论操作",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "视频id",
+                        "name": "video_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "评论操作",
+                        "name": "action_type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "评论内容",
+                        "name": "comment_text",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "评论id",
+                        "name": "comment_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/feed": {
             "get": {
                 "tags": [

@@ -30,7 +30,7 @@ func RedisAddZSetRDB5(ctx *gin.Context, key string, value string, status float64
 		Score:  status,
 		Member: value,
 	})
-	pipeline.Expire(ctx, key, time.Hour*24*5)
+	pipeline.Expire(ctx, key, time.Hour*time.Duration(viper.GetInt("redis.RedisExpireTime")))
 
 	_, err := pipeline.Exec(ctx)
 	return err
@@ -40,7 +40,7 @@ func RedisAddZSetRDB5(ctx *gin.Context, key string, value string, status float64
 func RedisAddListRDB6(ctx *gin.Context, key string, value string) error {
 	pipeline := utils.RDB6.TxPipeline()
 	pipeline.LPush(ctx, key, value)
-	pipeline.Expire(ctx, key, time.Hour*24*5)
+	pipeline.Expire(ctx, key, time.Hour*time.Duration(viper.GetInt("redis.RedisExpireTime")))
 
 	_, err := pipeline.Exec(ctx)
 	return err

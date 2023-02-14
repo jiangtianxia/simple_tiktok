@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"simple_tiktok/dao/redis"
 	"simple_tiktok/logger"
+	"simple_tiktok/models"
 	"simple_tiktok/utils"
 	"strconv"
 	"time"
@@ -103,6 +104,17 @@ func ReceiveDelayMsg(newPushConsumer rocketmq.PushConsumer, topic string, tags s
 						logger.SugarLogger.Error("DeleteMessage Error：", err.Error())
 						return consumer.ConsumeRetryLater, nil
 					}
+				case "DeleteCommentRedis":
+					CommentInfo := &CommentActionRequire{}
+					json.Unmarshal(msg.Body, CommentInfo)
+
+					var c = context.Background()
+					key := viper.GetString("redis.KeyCommentListPrefix") + strconv.Itoa(int(CommentInfo.Model.VideoIdentity))
+					err := utils.RDB8.Del(c, key).Err()
+					if err != nil {
+						logger.SugarLogger.Error("DeleteCommentList Error：", err.Error())
+						return consumer.ConsumeRetryLater, nil
+					}
 				}
 			}
 			return consumer.ConsumeSuccess, nil
@@ -135,4 +147,10 @@ type SendMessageReqStruct struct {
 	ToUserId   string
 	ActionType string
 	Content    string
+}
+
+// 请求体
+type CommentActionRequire struct {
+	Model      models.CommentVideo
+	ActionType int
 }

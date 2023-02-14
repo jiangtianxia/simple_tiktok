@@ -30,6 +30,15 @@ type CommentActionResponse struct {
 }
 
 // 发表，删除评论 /comment/action
+// CommentAction
+// @Summary 评论操作
+// @Tags 互动接口
+// @Param token query string true "token"
+// @Param video_id query string true "视频id"
+// @Param action_type query string true "评论操作"
+// @Param comment_text query string false "评论内容"
+// @Param comment_id query string false "评论id"
+// @Router /comment/action/ [post]
 func CommentAction(c *gin.Context) {
 	//参数获取
 	token := c.Query("token")
@@ -94,9 +103,9 @@ func CommentAction(c *gin.Context) {
 
 	producer := viper.GetString("rocketmq.serverProducer")
 	topic := viper.GetString("rocketmq.ServerTopic")
-	tag := viper.GetString("rocketmq.serverCommentTag")
+	tag := viper.GetString("rocketmq.serverSendCommentTag")
 	// 发送消息
-	res, err := xx.SendMsg(c, producer, topic, tag, data)
+	res, err := utils.SendMsg(c, producer, topic, tag, data)
 	if err != nil {
 		logger.SugarLogger.Error("发送消息失败， error:", err.Error())
 		if err != nil {
@@ -115,9 +124,9 @@ func CommentAction(c *gin.Context) {
 			// 根据msgid，查询redis缓存中是否存在数据，如果存在则将结果返回
 			key := res.MsgID
 			// 判断当前key，是否存在
-			if utils.RDB7.Exists(c, key).Val() == 1 {
+			if utils.RDB0.Exists(c, key).Val() == 1 {
 				// 存在，则获取结果返回
-				info, _ := utils.RDB7.HGetAll(c, key).Result()
+				info, _ := utils.RDB0.HGetAll(c, key).Result()
 				code, _ := strconv.Atoi(info["status_code"])
 				c.JSON(http.StatusOK, CommentActionResponse{
 					StatusCode: (int32)(code),

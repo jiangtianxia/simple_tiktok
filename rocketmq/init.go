@@ -17,6 +17,12 @@ func InitRocketmq() {
 	// 打开通道协程，一个通道接收一个接口的数据
 	go ReceiveChan()
 
+	// 发表评论的消费者组
+	CommentTopic := viper.GetString("rocketmq.ServerTopic")
+	CommentTag := viper.GetString("rocketmq.serverSendCommentTag")
+	CommentGroupName := viper.GetString("rocketmq.SendCommentGroupName")
+	go CreateConsumer(CommentGroupName, CommentTopic, CommentTag)
+
 	// 关注操作的消费者组
 	followTopic := viper.GetString("rocketmq.ServerTopic")
 	followTag := viper.GetString("rocketmq.serverFollowTag")
@@ -51,10 +57,14 @@ type ChanMsg struct {
 
 var FollowChan chan ChanMsg = make(chan ChanMsg, 100)
 var sendMessageChan chan ChanMsg = make(chan ChanMsg, 100)
+var commentActionChan chan ChanMsg = make(chan ChanMsg, 100)
 
 func ReceiveChan() {
 	for {
 		select {
+		case data := <-commentActionChan:
+			// 发表评论
+			go service.PostCommentVideoAction(data.Msgid, data.Data)
 		case data := <-FollowChan:
 			// 关注操作
 			go service.FollowService(data.Msgid, data.Data)
