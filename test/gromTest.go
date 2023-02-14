@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func main() {
+func main1() {
 	db, err := gorm.Open(mysql.Open("test:674092@tcp(101.43.157.116:3306)/tiktok?charset=utf8mb4&parseTime=True&loc=Local"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")

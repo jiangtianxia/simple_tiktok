@@ -31,19 +31,57 @@ func Router() *gin.Engine {
 		* 公共接口
 		 */
 		v1.GET("/hello", controller.Hello)
-
 		/*
 		* 基础接口
 		 */
-		v1.GET("/user", controller.UserInfo)
-		//用户操作
-		v1.POST("/user/login", controller.Userlogin)
+
+
+		// 视频流接口
+		v1.GET("/feed", controller.FeedVideo)
+
+		// 用户注册接口
+		v1.POST("/user/register/", controller.UserRegister)
+
+		// 用户登录接口
+		v1.POST("/user/login/", controller.Userlogin)
+
+		// 用户信息接口
+		v1.GET("/user/", controller.GetUserInfo)
 
 		// 视频投稿
 		v1.POST("/publish/action/", controller.Publish)
+		//赞操作
+		v1.POST("/favorite/action/", controller.Favourite)
+
+		// 发布列表
+		v1.GET("/publish/list/", controller.GetPublishList)
+
+		/*
+		* 互动接口
+		 */
+		// 评论操作
+		v1.POST("/comment/action/", controller.CommentAction)
+
+		/*
+		* 社交接口
+		 */
+		// 关注操作
+		v1.POST("/relation/action/", controller.UserFollow)
+
+		// 关注列表
+		v1.GET("/relation/follow/list/", controller.GetFollowList)
+
+		// 粉丝列表
+		v1.GET("/relation/follower/list/", controller.GetFollowerList)
+
+		// 好友列表
+		v1.GET("/relation/friend/list/", controller.GetFriendList)
+
+		// 发送消息
+		v1.POST("/message/action/", controller.SendMessage)
+
+		// 聊天记录
+		v1.GET("/message/chat/", controller.MessageRecord)
 	}
-
-	r.GET("/test", controller.Test)
-
 	return r
 }

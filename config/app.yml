@@ -1,8 +1,11 @@
 
 uplaodBase: "./upload/"
-uploadAddr: "http://101.43.157.116"
+# uploadAddr: "http://101.43.157.116"
+uploadAddr: "http://192.168.1.69:8080"
 
-logger: 
+feedVideoCnt: 30
+
+logger:
   path: "/log"
 
 
@@ -20,13 +23,19 @@ redis:
     poolSize: 1000
     minIdleConn: 100
     RedisExpireTime: 120 # 单位h
-    KeyVideoList: "list:video"
+    KeyVideoList: "zset:video"
+    defaultErrorIdentity: -1
     KeyUserHashPrefix: "userinfo:"
     KeyPublishListPrefix: "list:publish:"
     KeyVideoInfoHashPrefix: "videoinfo:"
+    KeyCommentInfoHashPrefix: "commentinfo:"
+    # KeyFavoriteUserSortSetPrefix: "favorite:"
+    KeyCommentListPrefix: "list:comment:"
+    KeyFollowListPrefix: "list:follow:"
+    KeyFollowerSortSetPrefix: "follower:"
     KetFavoriteSetPrefix: "favorite:"
-
-
+    KeyUserMessageHashPrefix: "message:"
+    KeyUserMessageListPrefix: ":message:"
 
 
 md5:
@@ -47,29 +56,40 @@ currentLimit:
 
 rocketmq:
     addr:  "101.43.157.116:9876"
+    # 服务的消息队列信息
     serverProducer: "ServerProducer"
     serverTopic:  "ServerTopic"
-    serverTags: "test||login"
-
-    redisProducer: "RedisProducer"
-    redisTopic:  "RedisTopic"
-    redisGroupName:  "RedisGroup"
-    redisTags: "publishAction||userInfo"
-    publishActionTag: "publishAction"
-    userInfoTag: "userInfo"
     retrySize:   2
 
-#问题出在 9999 接口连接不上
-    addr1:  "101.43.157.116:9999"
-    redisTopic1:  "LoginTopic"
-    redisGroupName1:  "login"
-    redisTags1: "userLogin"
-    userLoginTag: "userLogin"
+    # 评论服务的消费者信息
+    SendCommentGroupName: "CommentGroup"
+    serverSendCommentTag: "SendComment"
+
+    # 关注服务的消费者信息
+    followGroupName: "FollowGroup"
+    serverFollowTag: "ServerFollow"
+
+    # 发送消息服务的消费者信息
+    sendMessageGroupName: "SendMessageGroup"
+    serverSendMessageTags: "SendMessage"
+
+    # 重试机制的消息队列信息
+    RetryTopic: "RetryTopic"
+    RetryGroupName: "RetryGroup"
+    RetryQueueRetrySize: 5
+    RetryTags: "DeleteFollowRedis||DeleteMessageRedis||DeleteCommentRedis"
+    DeleteFollowRedisTag: "DeleteFollowRedis"
+    DeleteMessageRedisTag: "DeleteMessageRedis"
+    DeleteCommentRedisTag: "DeleteCommentRedis"
+    
+
 
 cos:
     addr: "https://tiktok-1310814941.cos.ap-guangzhou.myqcloud.com"
-    SecretId: "AKID2vc5LM9h03sZ0Nn3cO6rcATXNzNXSDjx"
-    SecretKey: "NZcS5WgaFivrVuNbYjzANfrra4KXZNG1"
+    # SecretId: "AKID2vc5LM9h03sZ0Nn3cO6rcATXNzNXSDjx"
+    # SecretKey: "NZcS5WgaFivrVuNbYjzANfrra4KXZNG1"
+    SecretId: "AKIDBEaorhLlwrWynzxkKjwunX9Xp02CAwZ3"
+    SecretKey: "O62oMhw9C2e7OTKepmV6UgjlmeMtOjtr"
 
 
 CircuitBreaker:
