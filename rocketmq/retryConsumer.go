@@ -53,6 +53,34 @@ func CreateDelayConsumer(groupName string, topic string, tags string) {
 	}
 }
 
+// 接收参数结构体
+type FollowReqStruct struct {
+	UserId     string
+	ToUserId   string
+	ActionType int
+}
+
+// 发送消息接收参数结构体
+type SendMessageReqStruct struct {
+	FromUserId uint64
+	ToUserId   string
+	ActionType string
+	Content    string
+}
+
+// 请求体
+type CommentActionRequire struct {
+	Model      models.CommentVideo
+	ActionType int
+}
+
+// 接收参数结构体
+type FavouriteReqStruct struct {
+	UserId     uint64
+	VideoId    string
+	ActionType string
+}
+
 func ReceiveDelayMsg(newPushConsumer rocketmq.PushConsumer, topic string, tags string) {
 	// 过滤器，只接收主题为topic，标签为tag的数据
 	selector := consumer.MessageSelector{
@@ -115,6 +143,26 @@ func ReceiveDelayMsg(newPushConsumer rocketmq.PushConsumer, topic string, tags s
 						logger.SugarLogger.Error("DeleteCommentList Error：", err.Error())
 						return consumer.ConsumeRetryLater, nil
 					}
+				case "DeleteFavouriteRedis":
+					FavouriteInfo := &FavouriteReqStruct{}
+					json.Unmarshal(msg.Body, FavouriteInfo)
+
+					//删除缓存
+					var c = context.Background()
+					setkey := viper.GetString("redis.KetFavoriteSetPrefix") + FavouriteInfo.VideoId
+					listkey := viper.GetString("redis.KeyFollowListPrefix") + strconv.Itoa(int(FavouriteInfo.UserId))
+
+					err := utils.RDB5.Del(c, setkey).Err()
+					if err != nil {
+						logger.SugarLogger.Error("DeleteFavouriteSet Error：", err.Error())
+						return consumer.ConsumeRetryLater, nil
+					}
+
+					err = utils.RDB6.Del(c, listkey).Err()
+					if err != nil {
+						logger.SugarLogger.Error("DeleteFavouriteList Error：", err.Error())
+						return consumer.ConsumeRetryLater, nil
+					}
 				}
 			}
 			return consumer.ConsumeSuccess, nil
@@ -132,25 +180,4 @@ func ReceiveDelayMsg(newPushConsumer rocketmq.PushConsumer, topic string, tags s
 
 	// 不能让主goroutine退出
 	time.Sleep(time.Hour * 24)
-}
-
-// 接收参数结构体
-type FollowReqStruct struct {
-	UserId     string
-	ToUserId   string
-	ActionType int
-}
-
-// 发送消息接收参数结构体
-type SendMessageReqStruct struct {
-	FromUserId uint64
-	ToUserId   string
-	ActionType string
-	Content    string
-}
-
-// 请求体
-type CommentActionRequire struct {
-	Model      models.CommentVideo
-	ActionType int
 }

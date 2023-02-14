@@ -59,6 +59,9 @@ func Router() *gin.Engine {
 		/*
 		* 互动接口
 		 */
+		// 赞操作
+		v1.POST("/favorite/action/", controller.Favourite)
+
 		// 评论操作
 		v1.POST("/comment/action/", controller.CommentAction)
 

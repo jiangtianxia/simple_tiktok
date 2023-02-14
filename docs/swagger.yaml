@@ -1,4 +1,11 @@
 definitions:
+  controller.FavouriteRespStruct:
+    properties:
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+    type: object
   controller.FeedVideoRespStruct:
     properties:
       next_time:
@@ -20,7 +27,7 @@ definitions:
         type: string
       user_list:
         items:
-          $ref: '#/definitions/service.Author'
+          $ref: '#/definitions/service.Friend'
         type: array
     type: object
   controller.FollowListRespStruct:
@@ -121,12 +128,31 @@ definitions:
       name:
         type: string
     type: object
+  service.Friend:
+    properties:
+      avatar:
+        type: string
+      follow_count:
+        type: integer
+      follower_count:
+        type: integer
+      id:
+        type: integer
+      is_follow:
+        type: boolean
+      message:
+        type: string
+      msgType:
+        type: integer
+      name:
+        type: string
+    type: object
   service.Message:
     properties:
       content:
         type: string
       create_time:
-        type: string
+        type: integer
       id:
         type: integer
     type: object
@@ -189,6 +215,32 @@ paths:
         type: string
       responses: {}
       summary: 评论操作
+      tags:
+      - 互动接口
+  /favorite/action/:
+    post:
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 视频id
+        in: query
+        name: video_id
+        required: true
+        type: string
+      - description: 赞操作
+        in: query
+        name: action_type
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.FavouriteRespStruct'
+      summary: 赞操作
       tags:
       - 互动接口
   /feed:

@@ -29,7 +29,7 @@ redis:
     KeyPublishListPrefix: "list:publish:"
     KeyVideoInfoHashPrefix: "videoinfo:"
     KeyCommentInfoHashPrefix: "commentinfo:"
-    # KeyFavoriteUserSortSetPrefix: "favorite:"
+    KeyFavoriteUserSortSetPrefix: "favorite:"
     KeyCommentListPrefix: "list:comment:"
     KeyFollowListPrefix: "list:follow:"
     KeyFollowerSortSetPrefix: "follower:"
@@ -61,6 +61,10 @@ rocketmq:
     serverTopic:  "ServerTopic"
     retrySize:   2
 
+    # 赞服务的消费者信息
+    FavouriteGroupName: "FavouriteGroup"
+    serverFavouriteTag: "Favourite"
+
     # 评论服务的消费者信息
     SendCommentGroupName: "CommentGroup"
     serverSendCommentTag: "SendComment"
@@ -77,10 +81,11 @@ rocketmq:
     RetryTopic: "RetryTopic"
     RetryGroupName: "RetryGroup"
     RetryQueueRetrySize: 5
-    RetryTags: "DeleteFollowRedis||DeleteMessageRedis||DeleteCommentRedis"
+    RetryTags: "DeleteFollowRedis||DeleteMessageRedis||DeleteCommentRedis||DeleteFavouriteRedis"
     DeleteFollowRedisTag: "DeleteFollowRedis"
     DeleteMessageRedisTag: "DeleteMessageRedis"
     DeleteCommentRedisTag: "DeleteCommentRedis"
+    DeleteFavouriteRedisTag: "DeleteFavouriteRedis"
     
 
 
