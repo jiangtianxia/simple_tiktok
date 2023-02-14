@@ -7,6 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+/**
+ * Creator: lx
+ * Last Editor: lx
+ * Description: 用户注册缓存
+ **/
+
 func RedisUserRegister(c *gin.Context, key string, value map[string]interface{}) error {
 	// 开启事务
 	pipeline := utils.RDB1.TxPipeline()

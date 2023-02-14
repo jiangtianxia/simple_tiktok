@@ -42,6 +42,7 @@ type ChanMsg struct {
 var publishChan chan ChanMsg = make(chan ChanMsg, 100)
 var LoginChan chan ChanMsg = make(chan ChanMsg, 100)
 var userInfoChan chan ChanMsg = make(chan ChanMsg, 100)
+var commentActionChan chan ChanMsg = make(chan ChanMsg, 100)
 
 func ReceiveChan() {
 	for {
@@ -59,6 +60,13 @@ func ReceiveChan() {
 				logger.SugarLogger.Error(err)
 			}
 			UserInfoAction(*userInfo)
+		case data := <-commentActionChan:
+			CommentInfo := &models.CommentVideo{}
+			err := json.Unmarshal(data.Data, CommentInfo)
+			if err != nil {
+				logger.SugarLogger.Error(err)
+			}
+			CommentAction(*CommentInfo)
 		}
 	}
 }
