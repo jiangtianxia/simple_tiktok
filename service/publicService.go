@@ -95,7 +95,7 @@ func getVideoFavoriteCount(ctx *gin.Context, videoId uint64) (*int64, error) {
 // 获取视频评论数的函数
 func getVideoCommentCount(ctx *gin.Context, videoId uint64) (*int64, error) {
 	commentCount := new(int64)
-	key := fmt.Sprintf("%s%d", viper.GetString("KeyCommentListPrefix"), videoId)
+	key := fmt.Sprintf("%s%d", viper.GetString("redis.KeyCommentListPrefix"), videoId)
 	// 先从RDB8中查看键值对是否存在
 	n, err := utils.RDB8.Exists(ctx, key).Result()
 	if err != nil {
@@ -121,7 +121,7 @@ func getVideoCommentCount(ctx *gin.Context, videoId uint64) (*int64, error) {
 			return nil, err
 		}
 		// 缓存评论信息
-		commentKey := fmt.Sprintf("%s%d", viper.GetString("KeyCommentInfoHashPrefix"), (*commentList)[i].Identity)
+		commentKey := fmt.Sprintf("%s%d", viper.GetString("redis.KeyCommentInfoHashPrefix"), (*commentList)[i].Identity)
 		err = Myredis.RedisSetHashRDB7(ctx, commentKey, map[string]interface{}{
 			"video_identity": (*commentList)[i].VideoIdentity,
 			"user_identity":  (*commentList)[i].UserIdentity,
