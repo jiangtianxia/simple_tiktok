@@ -68,6 +68,9 @@ func Router() *gin.Engine {
 		// 评论操作
 		v1.POST("/comment/action/", controller.CommentAction)
 
+		// 喜欢列表
+		v1.GET("/favorite/list/", controller.GetFavoriteList)
+
 		/*
 		* 社交接口
 		 */
