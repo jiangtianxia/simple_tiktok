@@ -1,7 +1,6 @@
 
 uplaodBase: "./upload/"
 uploadAddr: "http://101.43.157.116"
-# uploadAddr: "http://192.168.1.69:8080"
 
 feedVideoCnt: 30
 

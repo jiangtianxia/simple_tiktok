@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
+	"fmt"
 )
 
 func GetFavoriteListByUserId(ctx *gin.Context, userId *uint64, loginUserId *uint64) (*[]VideoInfo, error) {
@@ -37,6 +38,10 @@ func GetFavoriteListByUserId(ctx *gin.Context, userId *uint64, loginUserId *uint
 		}
 		// 获取视频作者信息
 		authorId, err := getAuthorIdByVideoId(ctx, &videoId)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Println(authorId)
 		authorName, err := getAuthorName(ctx, authorId)
 		if err != nil {
 			return nil, err

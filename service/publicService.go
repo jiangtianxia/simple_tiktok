@@ -462,7 +462,7 @@ func getAuthorIdByVideoId(ctx *gin.Context, videoId *uint64) (*uint64, error) {
 		}
 		return &videoBasic.UserIdentity, nil
 	}
-	sId, err := utils.RDB3.HGet(ctx, key, "user_identity").Result()
+	sId, err := utils.RDB3.HGet(ctx, key, "author_id").Result()
 	if err != nil {
 		return nil, err
 	}
