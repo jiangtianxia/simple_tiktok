@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"simple_tiktok/dao/mysql"
@@ -116,6 +117,7 @@ func CommentAction(c *gin.Context) {
 		})
 		return
 	}
+
 	actiontype, err := strconv.Atoi(action_type)
 	if err != nil {
 		c.JSON(http.StatusOK, CommentActionResponse{
@@ -125,6 +127,21 @@ func CommentAction(c *gin.Context) {
 		})
 		return
 	}
+
+	if actiontype == 1 {
+		identity, err := utils.GetID()
+		if err != nil {
+			logger.SugarLogger.Error(err.Error())
+			c.JSON(http.StatusOK, CommentActionResponse{
+				StatusCode: -1,
+				StatusMsg:  "操作失败",
+				Comment:    failresp.Comment,
+			})
+			return
+		}
+		commentidentity = int(identity)
+	}
+
 	// 处理时间格式
 	month := time.Now().Format("01")
 	day := time.Now().Format("02")
@@ -183,10 +200,10 @@ func CommentAction(c *gin.Context) {
 				}
 
 				//给返回题赋值
-				authorid, _ := mysql.SearchAuthorIdByVideoId((uint64)(commentidentity))
-				followcount, _ := service.GetFollowCount(c, (string)(authorid))
-				followercount, _ := service.GetFollowerCount(c, (string)(authorid))
-				isfollow, _ := service.IsFollow(c, (string)(authorid), (string)(user.Identity))
+				authorid, _ := mysql.SearchAuthorIdByVideoId((uint64)(videoidentity))
+				followcount, _ := service.GetFollowCount(c, fmt.Sprintf("%d", authorid))
+				followercount, _ := service.GetFollowerCount(c, fmt.Sprintf("%d", authorid))
+				isfollow, _ := service.IsFollow(c, fmt.Sprintf("%d", authorid), fmt.Sprintf("%d", user.Identity))
 
 				resp := CommentActionResponse{}
 				resp.Comment.Id = (uint64)(commentidentity)

@@ -27,14 +27,14 @@ func PostCommentVideoAction(msgid string, data []byte) {
 	json.Unmarshal(data, req)
 	// 更新数据库
 	if req.ActionType == 1 {
-		identity, err := utils.GetID()
-		if err != nil {
-			logger.SugarLogger.Error(err.Error())
-			SaveRedisResp(msgid, -1, "操作失败")
-		}
-		// 发表评论
-		req.Model.Identity = identity
-		err = mysql.AddComment(req.Model)
+		// identity, err := utils.GetID()
+		// if err != nil {
+		// 	logger.SugarLogger.Error(err.Error())
+		// 	SaveRedisResp(msgid, -1, "操作失败")
+		// }
+		// // 发表评论
+		// req.Model.Identity = identity
+		err := mysql.AddComment(req.Model)
 		if err != nil {
 			logger.SugarLogger.Error(err.Error())
 			SaveRedisResp(msgid, -1, "操作失败")

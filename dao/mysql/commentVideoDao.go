@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"errors"
+	"simple_tiktok/logger"
 	"simple_tiktok/models"
 	"simple_tiktok/utils"
 )
@@ -54,4 +55,15 @@ func SearchAuthorIdByVideoId(identity uint64) (uint64, error) {
 		return 0, errors.New("该视频作者不存在")
 	}
 	return commentInfo.UserIdentity, nil
+}
+
+// 根据identity查询评论信息
+func QueryCommentInfoByID(identity uint64) (*models.CommentVideo, error) {
+	comment := models.CommentVideo{}
+	if err := utils.DB.Table("comment_video").Where("identity = ?", identity).First(&comment).Error; err != nil {
+		logger.SugarLogger.Error(err)
+		return nil, err
+	} else {
+		return &comment, nil
+	}
 }
