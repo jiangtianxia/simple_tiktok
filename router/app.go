@@ -57,6 +57,12 @@ func Router() *gin.Engine {
 		v1.GET("/publish/list/", controller.GetPublishList)
 
 		/*
+		* 互动接口
+		 */
+		// 评论列表
+		v1.GET("/comment/list/", controller.CommentList)
+
+		/*
 		* 社交接口
 		 */
 		// 关注操作

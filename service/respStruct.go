@@ -18,6 +18,18 @@ type VideoInfo struct {
 
 /**
  * @Author
+ * @Description 评论参数结构体
+ * @Date 21:00 2023/2/11
+ **/
+type CommentInfo struct {
+	Id         uint64 `json:"id"`          // 评论唯一标识
+	User       Author `json:"user"`        // 用户信息
+	Content    string `json:"play_url"`    // 用户评论内容
+	CreateDate string `json:"create_date"` // 评论发布日期
+}
+
+/**
+ * @Author
  * @Description 作者参数结构体
  * @Date 21:00 2023/2/11
  **/
