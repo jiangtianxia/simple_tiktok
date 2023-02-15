@@ -1,10 +1,8 @@
 package rocket
 
 import (
-	"encoding/json"
 	"fmt"
-	"simple_tiktok/logger"
-	"simple_tiktok/models"
+	"simple_tiktok/service"
 
 	"github.com/spf13/viper"
 )
@@ -19,12 +17,36 @@ func InitRocketmq() {
 	// 打开通道协程，一个通道接收一个接口的数据
 	go ReceiveChan()
 
-	// 创建消费者组
-	redisTopic := viper.GetString("rocketmq.redisTopic")
-	redisGroupName := viper.GetString("rocketmq.redisGroupName")
-	redisTags := viper.GetString("rocketmq.redisTags")
+	// 赞操作的消费者组
+	FavouritTopic := viper.GetString("rocketmq.ServerTopic")
+	FavouritTag := viper.GetString("rocketmq.serverFavouriteTag")
+	FavouriteGroupName := viper.GetString("rocketmq.FavouriteGroupName")
+	go CreateConsumer(FavouriteGroupName, FavouritTopic, FavouritTag)
 
-	go CreateConsumer(redisGroupName, redisTopic, redisTags)
+	// 发表评论的消费者组
+	CommentTopic := viper.GetString("rocketmq.ServerTopic")
+	CommentTag := viper.GetString("rocketmq.serverSendCommentTag")
+	CommentGroupName := viper.GetString("rocketmq.SendCommentGroupName")
+	go CreateConsumer(CommentGroupName, CommentTopic, CommentTag)
+
+	// 关注操作的消费者组
+	followTopic := viper.GetString("rocketmq.ServerTopic")
+	followTag := viper.GetString("rocketmq.serverFollowTag")
+	followGroupName := viper.GetString("rocketmq.followGroupName")
+	go CreateConsumer(followGroupName, followTopic, followTag)
+
+	// 发送消息的消费者组
+	messageTopic := viper.GetString("rocketmq.serverTopic")
+	sendMessageGroupName := viper.GetString("rocketmq.sendMessageGroupName")
+	sendMessageTags := viper.GetString("rocketmq.serverSendMessageTags")
+	go CreateConsumer(sendMessageGroupName, messageTopic, sendMessageTags)
+
+	// 重试机制
+	RetryTopic := viper.GetString("rocketmq.RetryTopic")
+	RetryTags := viper.GetString("rocketmq.RetryTags")
+	RetryGroupName := viper.GetString("rocketmq.RetryGroupName")
+	go CreateDelayConsumer(RetryGroupName, RetryTopic, RetryTags)
+
 	fmt.Println("rocketmq inited ...... ")
 }
 
@@ -39,26 +61,26 @@ type ChanMsg struct {
 	Data  []byte
 }
 
-var publishChan chan ChanMsg = make(chan ChanMsg, 100)
-var LoginChan chan ChanMsg = make(chan ChanMsg, 100)
-var userInfoChan chan ChanMsg = make(chan ChanMsg, 100)
+var FollowChan chan ChanMsg = make(chan ChanMsg, 100)
+var sendMessageChan chan ChanMsg = make(chan ChanMsg, 100)
+var commentActionChan chan ChanMsg = make(chan ChanMsg, 100)
+var favouriteChan chan ChanMsg = make(chan ChanMsg, 100)
 
 func ReceiveChan() {
 	for {
 		select {
-		case data := <-publishChan:
-			// 用户上传视频时，发送videobasic到消息队列，将信息缓存到redis
-			videoinfo := &models.VideoBasic{}
-			json.Unmarshal(data.Data, videoinfo)
-			// fmt.Println(videoinfo)
-			PublishAction(*videoinfo)
-		case data := <-userInfoChan:
-			userInfo := &models.UserBasic{}
-			err := json.Unmarshal(data.Data, userInfo)
-			if err != nil {
-				logger.SugarLogger.Error(err)
-			}
-			UserInfoAction(*userInfo)
+		case data := <-favouriteChan:
+			// 赞操作
+			go service.DealFavourite(data.Msgid, data.Data)
+		case data := <-commentActionChan:
+			// 发表评论
+			go service.PostCommentVideoAction(data.Msgid, data.Data)
+		case data := <-FollowChan:
+			// 关注操作
+			go service.FollowService(data.Msgid, data.Data)
+		case data := <-sendMessageChan:
+			// 发送消息
+			go service.SendMessage(data.Msgid, data.Data)
 		}
 	}
 }

@@ -1,3 +1,5 @@
-upload/*
+*.sum
+*.mod
 log/*
 simple_tiktok
+.vscode/*
