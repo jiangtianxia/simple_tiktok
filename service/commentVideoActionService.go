@@ -42,7 +42,7 @@ func PostCommentVideoAction(msgid string, data []byte) {
 		}
 	}
 
-	//2发送延迟消息，删除缓存
+	//发送延迟消息，删除缓存
 	RetryTopic := viper.GetString("rocketmq.RetryTopic")
 	DeleteFollowRedisTag := viper.GetString("rocketmq.DeleteCommentRedisTag")
 	err := utils.SendDelayMsg(RetryTopic, DeleteFollowRedisTag, data)

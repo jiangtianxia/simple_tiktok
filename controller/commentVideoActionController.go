@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"simple_tiktok/dao/mysql"
 	"simple_tiktok/logger"
 	"simple_tiktok/middlewares"
 	"simple_tiktok/models"
@@ -23,10 +24,25 @@ import (
  **/
 
 // 返回体
+type RespUser struct {
+	id             uint64 `json:"id"`
+	name           string `json:"name"`
+	follow_count   uint64 `json:"follow_count"`
+	follower_count uint64 `json:"follower_count"`
+	is_follow      bool   `json:"is_follow"`
+}
+
+type RespComment struct {
+	id          uint64   `json:"id"`
+	user        RespUser `json:"user"`
+	content     string   `json:"content"`
+	create_date string   `json:"create_date"`
+}
+
 type CommentActionResponse struct {
-	StatusCode int32               `json:"status_code"`
-	StatusMsg  string              `json:"status_msg,omitempty"`
-	Comment    models.CommentVideo `json:"comment"`
+	StatusCode int32       `json:"status_code"`
+	StatusMsg  string      `json:"status_msg,omitempty"`
+	Comment    RespComment `json:"comment"`
 }
 
 // 发表，删除评论 /comment/action
@@ -48,6 +64,16 @@ func CommentAction(c *gin.Context) {
 	comment_id := c.Query("comment_id")
 
 	// 参数处理
+	// 错误返回空用户
+	failresp := CommentActionResponse{}
+	failresp.Comment.id = (uint64)(0)
+	failresp.Comment.content = comment_text
+	failresp.Comment.create_date = ""
+	failresp.Comment.user.id = 0
+	failresp.Comment.user.name = ""
+	failresp.Comment.user.follow_count = (uint64)(0)
+	failresp.Comment.user.follower_count = (uint64)(0)
+	failresp.Comment.user.is_follow = false
 	// 验证用户token
 	user, err := middlewares.AuthUserCheck(token)
 	if user == nil || user.Identity == 0 || user.Issuer != "simple_tiktok" || user.Username == "" || err != nil {
@@ -55,6 +81,7 @@ func CommentAction(c *gin.Context) {
 		c.JSON(http.StatusOK, CommentActionResponse{
 			StatusCode: -1,
 			StatusMsg:  "用户错误",
+			Comment:    failresp.Comment,
 		})
 		return
 	}
@@ -64,6 +91,7 @@ func CommentAction(c *gin.Context) {
 		c.JSON(http.StatusOK, CommentActionResponse{
 			StatusCode: -1,
 			StatusMsg:  "评论id格式错误",
+			Comment:    failresp.Comment,
 		})
 		return
 	}
@@ -72,6 +100,7 @@ func CommentAction(c *gin.Context) {
 		c.JSON(http.StatusOK, CommentActionResponse{
 			StatusCode: -1,
 			StatusMsg:  "视频id格式错误",
+			Comment:    failresp.Comment,
 		})
 		return
 	}
@@ -80,6 +109,7 @@ func CommentAction(c *gin.Context) {
 		c.JSON(http.StatusOK, CommentActionResponse{
 			StatusCode: -1,
 			StatusMsg:  "操作类型错误",
+			Comment:    failresp.Comment,
 		})
 		return
 	}
@@ -112,6 +142,7 @@ func CommentAction(c *gin.Context) {
 			c.JSON(http.StatusOK, CommentActionResponse{
 				StatusCode: -1,
 				StatusMsg:  "操作失败",
+				Comment:    failresp.Comment,
 			})
 			return
 		}
@@ -128,9 +159,26 @@ func CommentAction(c *gin.Context) {
 				// 存在，则获取结果返回
 				info, _ := utils.RDB0.HGetAll(c, key).Result()
 				code, _ := strconv.Atoi(info["status_code"])
+				//给返回题赋值
+				followcount, _ := service.GetFollowCount(c, (string)(user.Identity))
+				followercount, _ := service.GetFollowerCount(c, (string)(user.Identity))
+				authorid, _ := mysql.SearchAuthorIdByVideoId((uint64)(commentidentity))
+				isfollow, _ := service.IsFollow(c, (string)(user.Identity), (string)(authorid))
+
+				resp := CommentActionResponse{}
+				resp.Comment.id = (uint64)(commentidentity)
+				resp.Comment.content = comment_text
+				resp.Comment.create_date = timeNow
+				resp.Comment.user.id = user.Identity
+				resp.Comment.user.name = user.Username
+				resp.Comment.user.follow_count = (uint64)(followcount)
+				resp.Comment.user.follower_count = (uint64)(followercount)
+				resp.Comment.user.is_follow = isfollow
+
 				c.JSON(http.StatusOK, CommentActionResponse{
 					StatusCode: (int32)(code),
 					StatusMsg:  info["status_msg"],
+					Comment:    resp.Comment,
 				})
 				return
 			}
@@ -143,7 +191,27 @@ func CommentAction(c *gin.Context) {
 		c.JSON(http.StatusOK, CommentActionResponse{
 			StatusCode: -1,
 			StatusMsg:  "请求超时",
+			Comment:    failresp.Comment,
 		})
 		return
 	}
 }
+
+/*
+{
+    "status_code": 0,
+    "status_msg": "string",
+    "comment": {
+        "id": 0,
+        "user": {
+            "id": 0,
+            "name": "string",
+            "follow_count": 0,
+            "follower_count": 0,
+            "is_follow": true
+        },
+        "content": "string",
+        "create_date": "string"
+    }
+}
+*/
