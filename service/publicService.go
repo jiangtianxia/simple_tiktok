@@ -373,6 +373,10 @@ func GetFollowerCount(c *gin.Context, identity string) (int64, error) {
  * @Date 13:00 2023/2/13
  **/
 func IsFollow(c *gin.Context, identity string, follower string) (bool, error) {
+	if identity == follower {
+		return true, nil
+	}
+
 	// 先查询缓存
 	key := viper.GetString("redis.KeyFollowerSortSetPrefix") + identity
 
