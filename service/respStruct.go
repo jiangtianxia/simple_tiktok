@@ -24,7 +24,7 @@ type VideoInfo struct {
 type CommentInfo struct {
 	Id         uint64 `json:"id"`          // 评论唯一标识
 	User       Author `json:"user"`        // 用户信息
-	Content    string `json:"play_url"`    // 用户评论内容
+	Content    string `json:"content"`     // 用户评论内容
 	CreateDate string `json:"create_date"` // 评论发布日期
 }
 

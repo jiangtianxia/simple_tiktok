@@ -39,14 +39,16 @@ func CommentList(c *gin.Context) {
 		CommentListResp(c, -1, "获取评论失败", []service.CommentInfo{})
 		return
 	}
-
+	var userId uint64
+	userId = 0
 	// 验证token
 	userClaim, err := middlewares.AuthUserCheck(token)
-	userId := userClaim.Identity
+	userId = userClaim.Identity
 	if err != nil {
 		CommentListResp(c, -1, "获取评论失败", []service.CommentInfo{})
 		return
 	}
+
 	intNum, _ := strconv.Atoi(videoIdStr)
 	videoId := uint64(intNum)
 
