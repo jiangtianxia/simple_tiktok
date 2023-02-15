@@ -3,10 +3,14 @@ package router
 import (
 	"net/http"
 	"simple_tiktok/controller"
-	"simple_tiktok/docs"
+
+	docs "simple_tiktok/docs"
 	"simple_tiktok/middlewares"
 
 	"github.com/gin-gonic/gin"
+
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func Router() *gin.Engine {
