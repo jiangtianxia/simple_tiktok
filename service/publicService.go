@@ -403,3 +403,73 @@ func SaveRedisResp(msgid string, code int, msg string) {
 	pipeline.Expire(ctx, msgid, time.Second*70)
 	pipeline.Exec(ctx)
 }
+
+// 从缓存里取指定用户喜欢的视频id，如果没有就缓存进去
+func getFavoriteVideoList(ctx *gin.Context, userId *uint64) (*[]uint64, error){
+	key := fmt.Sprintf("%s%d", viper.GetString("redis.KeyFollowListPrefix"), *userId)
+	n, err := utils.RDB6.Exists(ctx, key).Result()
+	if err != nil {
+		return nil, err
+	}
+	var videoList []uint64
+	if n == 0 {
+		// 缓存中没有，需要在RDB6中缓存用户的信息
+		// 先从数据库中拿到数据
+		favoriteList, err := mysql.QueryFavoriteHistoryByUserId(userId)
+		if err != nil {
+			return nil, err
+		}
+		// 缓存的同时构造返回值
+		for i := range *favoriteList {
+			if (*favoriteList)[i].Status == 0 {
+				continue
+			}
+			videoList = append(videoList, (*favoriteList)[i].VideoIdentity)
+			err := Myredis.RedisAddListRDB6(ctx, key, fmt.Sprintf("%d", (*favoriteList)[i].VideoIdentity))
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &videoList, nil
+	}
+	res, err := utils.RDB6.LRange(ctx, key, 0, -1).Result()
+	for i := range res {
+		id, err := strconv.Atoi(res[i])
+		if err != nil {
+			return nil, err
+		}
+		videoList = append(videoList, uint64(id))
+	}
+	return &videoList, nil
+}
+
+// 根据视频id找作者id，先从视频信息的缓存中找，没有就把视频信息加到缓存中去
+func getAuthorIdByVideoId(ctx *gin.Context, videoId *uint64) (*uint64, error) {
+	key := fmt.Sprintf("%s%d", viper.GetString("redis.KeyVideoInfoHashPrefix"), *videoId)
+	n, err := utils.RDB3.Exists(ctx, key).Result()
+	if err != nil {
+		return nil, err
+	}
+	if n == 0 {
+		videoBasic, err := mysql.QueryVideoInfoByVideoId(videoId)
+		if err != nil {
+			return nil, err
+		}
+		// 缓存
+		err = Myredis.RedisAddVideoInfo(ctx, *videoBasic)
+		if err != nil {
+			return nil, err
+		}
+		return &videoBasic.UserIdentity, nil
+	}
+	sId, err := utils.RDB3.HGet(ctx, key, "author_id").Result()
+	if err != nil {
+		return nil, err
+	}
+	iId, err := strconv.Atoi(sId)
+	if err != nil {
+		return nil, err
+	}
+	authorId := uint64(iId)
+	return &authorId, nil
+}
