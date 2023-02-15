@@ -2,18 +2,19 @@ package service
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"simple_tiktok/dao/mysql"
 	myredis "simple_tiktok/dao/redis"
 	"simple_tiktok/logger"
 	"simple_tiktok/utils"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 /**
  * @Author
- * @Description 视频流接口
+ * @Description 评论列表接口
  * @Date 21:00 2023/2/11
  **/
 func CommentList(c *gin.Context, user_id uint64, video_id uint64) ([]CommentInfo, error) {
@@ -29,11 +30,11 @@ func CommentList(c *gin.Context, user_id uint64, video_id uint64) ([]CommentInfo
 		}
 		for i := range *comments {
 			// 缓存评论id
-			err = myredis.RedisAddListRBD8(c, listKey, fmt.Sprintf("%d", (*comments)[i].Identity))
+			myredis.RedisAddListRBD8(c, listKey, fmt.Sprintf("%d", (*comments)[i].Identity))
 		}
 	}
 
-	// 使用缓存 查询出发布时间小于latestTime的30条记录  记录中包含视频的identity
+	// 使用缓存
 	identityList := utils.RDB8.LRange(c, listKey, 0, -1).Val()
 
 	commentInfos := make([]CommentInfo, len(identityList))
