@@ -22,13 +22,13 @@ func QueryMessageByToUserIdentity(fromUserIdentity, toUserIdentity uint64) ([]mo
 }
 
 // 根据消息Identity查询聊天信息
-func QueryMessageByIdentity(identity uint64) ([]models.UserMessage, error) {
-	var messageList []models.UserMessage
-	if err := utils.DB.Table("user_message").Where("identity = ?", identity).Find(&messageList).Error; err != nil {
+func QueryMessageByIdentity(identity uint64) (models.UserMessage, error) {
+	var message models.UserMessage
+	if err := utils.DB.Table("user_message").Where("identity = ?", identity).First(&message).Error; err != nil {
 		logger.SugarLogger.Error(err)
-		return messageList, err
+		return message, err
 	}
-	return messageList, nil
+	return message, nil
 }
 
 // 查询最新一条消息
