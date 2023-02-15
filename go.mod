@@ -10,8 +10,6 @@ require (
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/sony/sonyflake v1.1.0
 	github.com/spf13/viper v1.15.0
-	github.com/swaggo/files v1.0.0
-	github.com/swaggo/gin-swagger v1.5.3
 	github.com/swaggo/swag v1.8.9
 	go.uber.org/zap v1.24.0
 	gorm.io/driver/mysql v1.4.5
