@@ -13,7 +13,7 @@ func IsFavourite(userId uint64, videoId string) bool {
 
 func UpdateFavourite(videoId string, userId uint64, change int) error {
 	favourite := models.FavouriteVideo{}
-	err := utils.DB.Model(&favourite).Where("user_identity=? and video_identity=?", userId, videoId).Updates(models.FavouriteVideo{Status: change}).Error
+	err := utils.DB.Model(&favourite).Where("user_identity=? and video_identity=?", userId, videoId).Update("status", change).Error
 	return err
 }
 

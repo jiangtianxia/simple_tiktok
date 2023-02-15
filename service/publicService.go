@@ -81,13 +81,9 @@ func getVideoFavoriteCount(ctx *gin.Context, videoId uint64) (*int64, error) {
 	*favoriteCount = 0
 	for i := range *videoFavoriteList {
 		if (*videoFavoriteList)[i].Status == 0 {
-			err = Myredis.RedisAddZSetRDB5(ctx, key, fmt.Sprintf("%d", (*videoFavoriteList)[i].UserIdentity), 0)
-			if err != nil {
-				return nil, err
-			}
 			continue
 		}
-		err = Myredis.RedisAddZSetRDB5(ctx, key, fmt.Sprintf("%d", (*videoFavoriteList)[i].UserIdentity), 0)
+		err = Myredis.RedisAddZSetRDB5(ctx, key, fmt.Sprintf("%d", (*videoFavoriteList)[i].UserIdentity), 1)
 		if err != nil {
 			return nil, err
 		}
@@ -174,13 +170,9 @@ func judgeLoginUserLoveVideo(ctx *gin.Context, videoId uint64, loginUserId uint6
 	// 缓存RDB5
 	for i := range *videoFavoriteList {
 		if (*videoFavoriteList)[i].Status == 0 {
-			err = Myredis.RedisAddZSetRDB5(ctx, key, fmt.Sprintf("%d", (*videoFavoriteList)[i].UserIdentity), float64((*videoFavoriteList)[i].Status))
-			if err != nil {
-				return nil, err
-			}
 			continue
 		}
-		err = Myredis.RedisAddZSetRDB5(ctx, key, fmt.Sprintf("%d", (*videoFavoriteList)[i].UserIdentity), float64((*videoFavoriteList)[i].Status))
+		err = Myredis.RedisAddZSetRDB5(ctx, key, fmt.Sprintf("%d", (*videoFavoriteList)[i].UserIdentity), 1)
 		if err != nil {
 			return nil, err
 		}
