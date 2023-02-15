@@ -132,17 +132,6 @@ func ReceiveDelayMsg(newPushConsumer rocketmq.PushConsumer, topic string, tags s
 						logger.SugarLogger.Error("DeleteMessage Error：", err.Error())
 						return consumer.ConsumeRetryLater, nil
 					}
-				case "DeleteCommentRedis":
-					CommentInfo := &CommentActionRequire{}
-					json.Unmarshal(msg.Body, CommentInfo)
-
-					var c = context.Background()
-					key := viper.GetString("redis.KeyCommentListPrefix") + strconv.Itoa(int(CommentInfo.Model.VideoIdentity))
-					err := utils.RDB8.Del(c, key).Err()
-					if err != nil {
-						logger.SugarLogger.Error("DeleteCommentList Error：", err.Error())
-						return consumer.ConsumeRetryLater, nil
-					}
 				case "DeleteFavouriteRedis":
 					FavouriteInfo := &FavouriteReqStruct{}
 					json.Unmarshal(msg.Body, FavouriteInfo)

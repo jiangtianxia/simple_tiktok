@@ -63,6 +63,8 @@ func SendMessage(msgid string, data []byte) {
 			CreateTime:       time.Now().Unix(),
 		}
 
+		// 先存缓存
+
 		// 存入数据库
 		err = mysql.CreateUserMessage(userMessage)
 		if err != nil {
@@ -71,11 +73,8 @@ func SendMessage(msgid string, data []byte) {
 			return
 		}
 
-		// 发送延迟消息，删除缓存
-		RetryTopic := viper.GetString("rocketmq.RetryTopic")
-		DeleteMssageRedisTag := viper.GetString("rocketmq.DeleteMessageRedisTag")
-		utils.SendDelayMsg(RetryTopic, DeleteMssageRedisTag, data)
 		SaveRedisResp(msgid, 0, "发送成功")
+
 		return
 	}
 	SaveRedisResp(msgid, -1, "发送失败")
