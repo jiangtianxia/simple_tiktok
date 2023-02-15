@@ -1,8 +1,12 @@
 package service
 
 import (
-	"github.com/gin-gonic/gin"
 	"fmt"
+	"simple_tiktok/logger"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 func GetFavoriteListByUserId(ctx *gin.Context, userId *uint64, loginUserId *uint64) (*[]VideoInfo, error) {
@@ -46,26 +50,53 @@ func GetFavoriteListByUserId(ctx *gin.Context, userId *uint64, loginUserId *uint
 		if err != nil {
 			return nil, err
 		}
+
+		// 获取关注数
+		followCount, err := GetFollowCount(ctx, strconv.Itoa(int(*authorId)))
+		if err != nil {
+			logger.SugarLogger.Error("GetFollowCount Error：", err.Error())
+			return nil, err
+		}
+
+		// 获取粉丝数
+		followerCount, err := GetFollowerCount(ctx, strconv.Itoa(int(*authorId)))
+		if err != nil {
+			logger.SugarLogger.Error("GetFollowerCount Error：", err.Error())
+			return nil, err
+		}
+
+		// 判断是否关注该用户
+		flag := false
+		if *authorId == *loginUserId {
+			flag = true
+		} else {
+			flag, err = IsFollow(ctx, strconv.Itoa(int(*authorId)), strconv.Itoa(int(*loginUserId)))
+			if err != nil {
+				logger.SugarLogger.Error("IsFollow Error：", err.Error())
+				return nil, err
+			}
+		}
+
 		author := Author{
-			FollowCount: 0,
-			FollowerCount: 0,
-			IsFollow: false,
-			Name: *authorName,
-			Id: *authorId,
+			FollowCount:   followCount,
+			FollowerCount: followerCount,
+			IsFollow:      flag,
+			Name:          *authorName,
+			Id:            *authorId,
 		}
 		// 添加进视频列表
 		*videoList = append(*videoList, VideoInfo{
-			Id: videoId,
-			Author: author,
-			PlayUrl: *playUrl,
-			CoverUrl: *coverUrl,
+			Id:            videoId,
+			Author:        author,
+			PlayUrl:       viper.GetString("cos.addr") + *playUrl,
+			CoverUrl:      viper.GetString("uploadAddr") + *coverUrl,
 			FavoriteCount: *favoriteCount,
-			CommentCount: *commentCount,
-			IsFavorite: *isFavorite,
-			Title: *title,
+			CommentCount:  *commentCount,
+			IsFavorite:    *isFavorite,
+			Title:         *title,
 		})
 	}
-	
+
 	// 返回给controller层
 	return videoList, nil
 }

@@ -150,7 +150,7 @@ func ReceiveDelayMsg(newPushConsumer rocketmq.PushConsumer, topic string, tags s
 					//删除缓存
 					var c = context.Background()
 					setkey := viper.GetString("redis.KetFavoriteSetPrefix") + FavouriteInfo.VideoId
-					listkey := viper.GetString("redis.KeyFollowListPrefix") + strconv.Itoa(int(FavouriteInfo.UserId))
+					listkey := viper.GetString("redis.KeyUserFavoriteListPrefix") + strconv.Itoa(int(FavouriteInfo.UserId))
 
 					err := utils.RDB5.Del(c, setkey).Err()
 					if err != nil {
