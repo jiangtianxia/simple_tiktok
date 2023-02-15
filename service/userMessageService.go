@@ -145,7 +145,7 @@ func MessageRecord(c *gin.Context, fromUserId uint64, toUserId string) ([]Messag
 		return []Message{}, nil
 	}
 	// 使用缓存
-	cathe := utils.RDB12.ZRange(c, setKey, 0, utils.RDB12.ZCard(c, setKey).Val()).Val()
+	cathe := utils.RDB12.LRange(c, setKey, 0, utils.RDB12.LLen(c, setKey).Val()).Val()
 	messageList := make([]Message, len(cathe))
 
 	hashKey := viper.GetString("redis.KeyUserMessageHashPrefix")

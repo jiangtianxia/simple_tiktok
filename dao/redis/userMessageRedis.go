@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-redis/redis/v9"
 	"github.com/spf13/viper"
 )
 
@@ -44,10 +43,11 @@ func RedisAddUserMessageSet(key string, list []models.UserMessage) error {
 		// 	logger.SugarLogger.Error(err)
 		// 	return err
 		// }
-		pipeline.ZAdd(c, key, redis.Z{
-			Score:  float64(list[i].CreateTime),
-			Member: strconv.FormatUint(list[i].Identity, 10),
-		})
+		//pipeline.ZAdd(c, key, redis.Z{
+		//	Score:  float64(list[i].CreateTime),
+		//	Member: strconv.FormatUint(list[i].Identity, 10),
+		//})
+		pipeline.LPush(c, key, list[i])
 		pipeline.Expire(c, key, time.Hour*time.Duration(viper.GetInt("redis.RedisExpireTime")))
 	}
 
