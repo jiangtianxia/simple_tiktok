@@ -406,7 +406,7 @@ func SaveRedisResp(msgid string, code int, msg string) {
 
 // 从缓存里取指定用户喜欢的视频id，如果没有就缓存进去
 func getFavoriteVideoList(ctx *gin.Context, userId *uint64) (*[]uint64, error){
-	key := fmt.Sprintf("%s%d", viper.GetString("redis.KeyUserFavoriteListPrefix"), *userId)
+	key := fmt.Sprintf("%s%d", viper.GetString("redis.KeyFollowListPrefix"), *userId)
 	n, err := utils.RDB6.Exists(ctx, key).Result()
 	if err != nil {
 		return nil, err
