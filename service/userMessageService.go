@@ -2,7 +2,6 @@ package service
 
 import (
 	"encoding/json"
-
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 
@@ -64,6 +63,27 @@ func SendMessage(msgid string, data []byte) {
 		}
 
 		// 先存缓存
+		setKey1 := strconv.FormatUint(fromUserId, 10) + viper.GetString("redis.KeyUserMessageListPrefix") + toUserId
+		setKey2 := toUserId + viper.GetString("redis.KeyUserMessageListPrefix") + strconv.FormatUint(fromUserId, 10)
+		messageList := make([]models.UserMessage, 1)
+		messageList[0].Identity = identity
+		err = myRedis.RedisAddUserMessageSet(setKey1, messageList)
+		if err != nil {
+			logger.SugarLogger.Error(err)
+			SaveRedisResp(msgid, -1, "发送失败")
+			return
+		}
+		err = myRedis.RedisAddUserMessageSet(setKey2, messageList)
+		if err != nil {
+			logger.SugarLogger.Error(err)
+			SaveRedisResp(msgid, -1, "发送失败")
+			return
+		}
+		err = myRedis.RedisAddUserMessageHash(messageList)
+		if err != nil {
+			logger.SugarLogger.Error(err)
+			return
+		}
 
 		// 存入数据库
 		err = mysql.CreateUserMessage(userMessage)
@@ -89,40 +109,40 @@ func MessageRecord(c *gin.Context, fromUserId uint64, toUserId string) ([]Messag
 	setKey := strconv.FormatUint(fromUserId, 10) + viper.GetString("redis.KeyUserMessageListPrefix") + toUserId
 
 	if utils.RDB12.Exists(c, setKey).Val() == 0 {
-		// 类型转化
-		toIdInt64, err := strconv.ParseInt(toUserId, 10, 64)
-		if err != nil {
-			logger.SugarLogger.Error(err)
-			return []Message{}, err
-		}
-		toIdUint64 := uint64(toIdInt64)
+		//// 类型转化
+		//toIdInt64, err := strconv.ParseInt(toUserId, 10, 64)
+		//if err != nil {
+		//	logger.SugarLogger.Error(err)
+		//	return []Message{}, err
+		//}
+		//toIdUint64 := uint64(toIdInt64)
+		//
+		//// 查询数据库
+		//res, err := mysql.QueryMessageByToUserIdentity(fromUserId, toIdUint64)
+		//if err != nil {
+		//	logger.SugarLogger.Error(err)
+		//	return []Message{}, err
+		//}
+		//messageList := make([]Message, len(res))
+		//for i := 0; i < len(res); i++ {
+		//	messageList[i].Identity = res[i].Identity
+		//	messageList[i].Content = res[i].Content
+		//	messageList[i].CreateTime = res[i].CreateTime
+		//}
+		//
+		//// 新增缓存
+		//err = myRedis.RedisAddUserMessageSet(setKey, res)
+		//if err != nil {
+		//	logger.SugarLogger.Error(err)
+		//	return []Message{}, err
+		//}
+		//err = myRedis.RedisAddUserMessageHash(res)
+		//if err != nil {
+		//	logger.SugarLogger.Error(err)
+		//	return []Message{}, err
+		//}
 
-		// 查询数据库
-		res, err := mysql.QueryMessageByToUserIdentity(fromUserId, toIdUint64)
-		if err != nil {
-			logger.SugarLogger.Error(err)
-			return []Message{}, err
-		}
-		messageList := make([]Message, len(res))
-		for i := 0; i < len(res); i++ {
-			messageList[i].Identity = res[i].Identity
-			messageList[i].Content = res[i].Content
-			messageList[i].CreateTime = res[i].CreateTime
-		}
-
-		// 新增缓存
-		err = myRedis.RedisAddUserMessageSet(c, setKey, res)
-		if err != nil {
-			logger.SugarLogger.Error(err)
-			return []Message{}, err
-		}
-		err = myRedis.RedisAddUserMessageHash(c, res)
-		if err != nil {
-			logger.SugarLogger.Error(err)
-			return []Message{}, err
-		}
-
-		return messageList, nil
+		return []Message{}, nil
 	}
 	// 使用缓存
 	cathe := utils.RDB12.ZRange(c, setKey, 0, utils.RDB12.ZCard(c, setKey).Val()).Val()
@@ -132,24 +152,24 @@ func MessageRecord(c *gin.Context, fromUserId uint64, toUserId string) ([]Messag
 	for i := 0; i < len(cathe); i++ {
 		// 判断缓存哈希表中是否有记录
 		if utils.RDB13.Exists(c, hashKey+cathe[i]).Val() == 0 {
-			// 累心转换
-			idInt64, err := strconv.ParseInt(cathe[i], 10, 64)
-			if err != nil {
-				logger.SugarLogger.Error(err)
-				return []Message{}, err
-			}
-			idUint64 := uint64(idInt64)
-
-			// 查询数据库
-			res, err := mysql.QueryMessageByIdentity(idUint64)
-			if err != nil {
-				logger.SugarLogger.Error(err)
-				return []Message{}, err
-			}
-
-			// 新增缓存
-			myRedis.RedisAddUserMessageHash(c, res)
-			// fmt.Println("补漏")
+			//// 类型转换
+			//idInt64, err := strconv.ParseInt(cathe[i], 10, 64)
+			//if err != nil {
+			//	logger.SugarLogger.Error(err)
+			//	return []Message{}, err
+			//}
+			//idUint64 := uint64(idInt64)
+			//
+			//// 查询数据库
+			//res, err := mysql.QueryMessageByIdentity(idUint64)
+			//if err != nil {
+			//	logger.SugarLogger.Error(err)
+			//	return []Message{}, err
+			//}
+			//
+			//// 新增缓存
+			//myRedis.RedisAddUserMessageHash(res)
+			continue
 		}
 		message := utils.RDB13.HGetAll(c, hashKey+cathe[i]).Val()
 		idInt64, err := strconv.ParseInt(message["id"], 10, 64)
@@ -163,7 +183,7 @@ func MessageRecord(c *gin.Context, fromUserId uint64, toUserId string) ([]Messag
 		creareTime, _ := strconv.Atoi(message["create_time"])
 		messageList[i].CreateTime = int64(creareTime)
 	}
+	utils.RDB12.Del(c, setKey)
 
-	// fmt.Println("缓存")
 	return messageList, nil
 }
