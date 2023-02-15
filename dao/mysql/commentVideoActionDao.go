@@ -51,4 +51,12 @@ func DelComment(identity uint64) error {
 	return nil
 }
 
-
+// 根据视频id查询视频作者id
+func SearchAuthorIdByVideoId(identity uint64) (uint64, error) {
+	var commentInfo models.VideoBasic
+	result := utils.DB.Model(models.VideoBasic{}).Where("identity = ?", identity).First(&commentInfo)
+	if result.RowsAffected == 0 {
+		return 0, errors.New("该视频作者不存在")
+	}
+	return commentInfo.UserIdentity, nil
+}
