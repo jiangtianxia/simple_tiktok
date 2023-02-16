@@ -72,15 +72,10 @@ func FeedVideo(c *gin.Context, user_id uint64, latestTime int64) ([]VideoInfo, i
 		// 判断是否关注该用户
 		flag := false
 		if user_id != 0 {
-			if user.Identity == user_id {
-				flag = true
-			} else {
-				flag, err = IsFollow(c, strconv.Itoa(int(user.Identity)), strconv.Itoa(int(user_id)))
-				// fmt.Println(flag)
-				if err != nil {
-					logger.SugarLogger.Error("IsFollow Error：", err.Error())
-					return nil, 0, err
-				}
+			flag, err = IsFollow(c, strconv.Itoa(int(user.Identity)), strconv.Itoa(int(user_id)))
+			if err != nil {
+				logger.SugarLogger.Error("IsFollow Error：", err.Error())
+				return nil, 0, err
 			}
 		}
 
