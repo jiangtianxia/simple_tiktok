@@ -27,7 +27,6 @@ func InitConfig() {
 	// viper.SetConfigName("app")
 
 	// // // 配置文件所在的文件夹
-	// // viper.AddConfigPath(work + "/config")
 	// viper.AddConfigPath("/build/config")
 
 	// 获取当前工作目录
