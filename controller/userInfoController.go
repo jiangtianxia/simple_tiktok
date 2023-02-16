@@ -1,22 +1,21 @@
 package controller
 
 import (
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"simple_tiktok/middlewares"
 	"simple_tiktok/service"
-
-	"github.com/gin-gonic/gin"
 )
 
 // 返回结构体
 type UserInfoRespStruct struct {
-	Code int            `json:"status_code"`
-	Msg  string         `json:"status_msg"`
-	User service.Author `json:"user"`
+	Code int          `json:"status_code"`
+	Msg  string       `json:"status_msg"`
+	User service.User `json:"user"`
 }
 
 // 传入参数返回
-func UserInfoResp(c *gin.Context, code int, msg string, user service.Author) {
+func UserInfoResp(c *gin.Context, code int, msg string, user service.User) {
 	h := &UserInfoRespStruct{
 		Code: code,
 		Msg:  msg,
@@ -46,14 +45,14 @@ func GetUserInfo(c *gin.Context) {
 	// 验证token
 	userClaim, err := middlewares.AuthUserCheck(token)
 	if err != nil {
-		UserInfoResp(c, -1, err.Error(), service.Author{})
+		UserInfoResp(c, -1, err.Error(), service.User{})
 		return
 	}
 
 	// 把参数传给service层
 	res, err := service.UserInfo(c, userClaim.Identity, userId)
 	if err != nil {
-		UserInfoResp(c, -1, "获取用户信息失败", service.Author{})
+		UserInfoResp(c, -1, "获取用户信息失败", service.User{})
 		return
 	}
 
