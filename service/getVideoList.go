@@ -41,15 +41,10 @@ func GetVideoListByUserId(ctx *gin.Context, authorId *uint64, loginUserId *uint6
 	}
 
 	// 判断是否关注该用户
-	isFollow := false
-	if *authorId == *loginUserId {
-		isFollow = true
-	} else {
-		isFollow, err = IsFollow(ctx, strconv.Itoa(int(*authorId)), strconv.Itoa(int(*loginUserId)))
-		if err != nil {
-			logger.SugarLogger.Error("IsFollow Error：", err.Error())
-			return nil, err
-		}
+	isFollow, err := IsFollow(ctx, strconv.Itoa(int(*authorId)), strconv.Itoa(int(*loginUserId)))
+	if err != nil {
+		logger.SugarLogger.Error("IsFollow Error：", err.Error())
+		return nil, err
 	}
 
 	// 2. 创建作者对象

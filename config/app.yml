@@ -82,9 +82,9 @@ rocketmq:
     RetryTopic: "RetryTopic"
     RetryGroupName: "RetryGroup"
     RetryQueueRetrySize: 5
-    RetryTags: "DeleteFollowRedis||DeleteMessageRedis||DeleteFavouriteRedis"
+    RetryTags: "DeleteFollowRedis||DeleteCommentRedis||DeleteFavouriteRedis"
     DeleteFollowRedisTag: "DeleteFollowRedis"
-    DeleteMessageRedisTag: "DeleteMessageRedis"
+    DeleteCommentRedisTag: "DeleteCommentRedis"
     DeleteFavouriteRedisTag: "DeleteFavouriteRedis"
     
 
