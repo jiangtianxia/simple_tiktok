@@ -43,21 +43,6 @@ type Author struct {
 
 /**
  * @Author
- * @Description 作者参数结构体
- * @Date 21:00 2023/2/11
- **/
-type User struct {
-	Id            uint64 `json:"id"`
-	Name          string `json:"name"`
-	FollowCount   int64  `json:"follow_count"`
-	FollowerCount int64  `json:"follower_count"`
-	IsFollow      bool   `json:"is_follow"`
-	WorkCount     int    `json:"work_count"`
-	FavoriteCount int    `json:"favorite_count"`
-}
-
-/**
- * @Author
  * @Description 注册返回参数结构体
  * @Date 21:00 2023/2/11
  **/
