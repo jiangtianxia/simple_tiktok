@@ -114,7 +114,11 @@ simple_tiktok
 
 #### 整体的架构图
 
-//图片文件
+<p align="center">
+  <a href="https://github.com/jiangtianxia/simple_tiktok.git/">
+    <img src="images/overall_structure_diagram.jpeg">
+  </a>
+<p>
 
 #### 数据库的设计
 
@@ -139,19 +143,22 @@ simple_tiktok
 #### 服务模块设计
 
 ###### 用户模块的设计
-用户模块包括xx。详情[用户模块设计说明](https://ozilj01ufe.feishu.cn/docx/P4Asd72jsoQTvQxcDAhcVmlEnJg) 。
-
-###### 视频模块的设计
-视频模块包括xx操作。详情[视频模块设计说明](https://ozilj01ufe.feishu.cn/docx/PwjidjFklopXYfxCblpcMLa9nud)。
+用户模块包括用户注册、用户登录和用户信息获取三个部分，详情：[用户模块设计说明](https://ozilj01ufe.feishu.cn/docx/P4Asd72jsoQTvQxcDAhcVmlEnJg) 。
 
 ###### 点赞模块的设计
-点赞模块包括xx。详情[点赞模块设计说明](https://ozilj01ufe.feishu.cn/docx/Y7Ejd0UyioCGYRxUKMAcoLvXnWf) 。
-
-###### 关注模块的设计
-关注模块包括xx。详情[关注模块设计说明](https://ozilj01ufe.feishu.cn/docx/TRald6KOJoJ9tHxaDNBclhSMnQg) 。
+点赞模块包括xx。详情：[点赞模块设计说明](https://ozilj01ufe.feishu.cn/docx/Y7Ejd0UyioCGYRxUKMAcoLvXnWf) 。
 
 ###### 评论模块的设计
-评论模块包括xx。详情[评论模块设计说明](https://ozilj01ufe.feishu.cn/docx/XMGxdbWYOoTpP3xKtp9cBdCmnCd) 。
+评论模块包括xx。详情：[评论模块设计说明](https://ozilj01ufe.feishu.cn/docx/XMGxdbWYOoTpP3xKtp9cBdCmnCd) 。
+
+###### 视频模块的设计
+视频模块包括xx。详情：[视频模块设计说明](https://ozilj01ufe.feishu.cn/docx/PwjidjFklopXYfxCblpcMLa9nud)。
+
+###### 消息模块的设计
+消息模块包括xx。详情：[消息模块设计说明](https://ozilj01ufe.feishu.cn/docx/V23UdBH5boF5Dwxjw9qcPMZbnfh) 。
+
+###### 关系模块的设计
+关注模块包括xx。详情：[关系模块设计说明](https://ozilj01ufe.feishu.cn/docx/TRald6KOJoJ9tHxaDNBclhSMnQg) 。
 
 ### **使用技术**
 框架相关：
