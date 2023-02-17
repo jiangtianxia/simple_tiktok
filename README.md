@@ -37,7 +37,7 @@
 
 #### 开发前的配置要求
 
-1. go 1.13（最低）
+1. go 1.13(最低)
 2. MySQL(数据库sql文件在config包中)
 3. Redis、RocketMQ环境
 4. [抖声客户端app](https://pan.baidu.com/s/194g4bi9ETFWiXEgPM5qDng?pwd=jtiu)
@@ -48,7 +48,7 @@
 1. 下载源码
 2. 配置SSH、FTP、Redis、静态服务器地址等相关参数
 3. 启动服务
-4. 在客户端配置相关地址服务端地址即可
+4. 在客户端配置相关地址服务端地址
 
 ```sh
 git clone https://github.com/jiangtianxia/simple_tiktok.git
@@ -111,11 +111,11 @@ simple_tiktok
 
 #### 数据库的设计
 
-//图片文件
+![sql.jpeg](sql.jpeg)
 
 #### Redis架构的设计
 
-//图片文件
+![redis.jpeg](redis.jpeg)
 
 #### RocketMQ架构的设计
 
@@ -125,7 +125,7 @@ simple_tiktok
 
 ### 性能测试
 
-
+//TODO
 
 ### 使用到的技术
 框架相关：
