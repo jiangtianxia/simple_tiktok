@@ -1,17 +1,14 @@
-<!-- PROJECT LOGO -->
-<br />
-
 <p align="center">
   <a href="https://github.com/jiangtianxia/simple_tiktok.git/">
-    <img src="title.png" alt="Logo" width="400" height="100">
+    <img src="title.jpeg" alt="Logo">
   </a>
   <p align="center">
     <br />
-    <a href="https://bytedance.feishu.cn/docs/doccnKrCsU5Iac6eftnFBdsXTof"><strong>查看项目说明 »</strong></a>
+    <a href="https://bytedance.feishu.cn/docs/doccnKrCsU5Iac6eftnFBdsXTof">查看项目说明 »</a>
     <br />
-    <a href="https://github.com/jiangtianxia/simple_tiktok.git"><strong>查看本项目文档 »</strong></a>
+    <a href="https://github.com/jiangtianxia/simple_tiktok.git">查看本项目文档 »</a>
     <br />
-    <a href="https://ozilj01ufe.feishu.cn/base/bascnXyGKEcJi7vOkiVQVlPvoWc?table=tblOc75EZYVXCah0&view=vewMnpNgGD"><strong>查看团队工作文档 »</strong></a>
+    <a href="https://ozilj01ufe.feishu.cn/base/bascnXyGKEcJi7vOkiVQVlPvoWc?table=tblOc75EZYVXCah0&view=vewMnpNgGD">查看团队工作文档 »</a>
     <br />
   </p>
   </p>
@@ -76,10 +73,38 @@ git clone https://github.com/jiangtianxia/simple_tiktok.git
 ### 文件目录说明
 
 ```
-
+simple_tiktok
+├── config
+├── controller
+├── dao
+│   ├── mysql
+│   └── redis
+├── docker
+│   ├── mysql
+│   ├── nginx
+│   ├── redis
+│   └── rocketmq
+├── docker
+├── docs
+├── logger
+├── middlewares
+├── models
+├── rocketmq
+├── router
+├── service
+├── sql
+├── test
+├── upload
+├── utils
+├── Dockerfile
+├── go.mod
+├── go.sum
+├── main.go
+└── README.md
 ```
 
 ### 开发的整体设计
+
 #### 整体的架构图
 
 //图片文件
@@ -120,6 +145,7 @@ git clone https://github.com/jiangtianxia/simple_tiktok.git
 ### 未来展望
 
 
+
 ### 如何参与开源项目
 
 贡献使开源社区成为一个学习、激励和创造的绝佳场所。你所作的任何贡献都是**非常令人感谢**的。
@@ -132,12 +158,20 @@ git clone https://github.com/jiangtianxia/simple_tiktok.git
 
 ### 版本控制
 
-该项目使用Git进行版本管理。您可以在repository参看当前可用版本。我们欢迎其他的贡献者参与此项目，在这之前，您需要遵循[Git 分支管理规范](https://ypbg9olvt2.feishu.cn/docs/doccnTMRmh7YgMwL2PgZ5moWUsd)和[注释规范](https://juejin.cn/post/7096881555246678046)。
+该项目使用Git进行版本管理。您可以在repository参看当前可用版本。
+
+我们欢迎其他的贡献者参与此项目，在这之前，您需要遵循[Git 分支管理规范](https://ypbg9olvt2.feishu.cn/docs/doccnTMRmh7YgMwL2PgZ5moWUsd)和[注释规范](https://juejin.cn/post/7096881555246678046)。
 
 ### 贡献者
 
+- 江泽彬 https://github.com/jiangtianxia
+- 裴君辉 https://github.com/paradoxskin
+- 刘昕 https://github.com/TomiokapEace
+- 张啸宇 https://github.com/TemplarX-boop
+- 段欣悦 https://github.com/CynthiaZzzzzzzzz
+- 徐龙 https://github.com/longxu0509
 
-*您也可以查阅仓库为该项目做出贡献的开发者。*
+您也可以查阅仓库为该项目做出贡献的开发者。
 
 ### 鸣谢
 
