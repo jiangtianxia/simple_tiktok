@@ -1,7 +1,8 @@
 <p align="center">
   <a href="https://github.com/jiangtianxia/simple_tiktok.git/">
-    <img src="title.jpeg" alt="Logo">
+    <img src="images/title.jpeg" alt="Logo">
   </a>
+<p>
   <p align="center">
     <br />
     <a href="https://bytedance.feishu.cn/docs/doccnKrCsU5Iac6eftnFBdsXTof">查看项目说明 »</a>
@@ -35,7 +36,7 @@
 
 ### 上手指南
 
-#### 开发前的配置要求
+#### 开发前配置要求
 
 1. go 1.13(最低)
 2. MySQL(数据库sql文件在config包中)
@@ -111,11 +112,19 @@ simple_tiktok
 
 #### 数据库的设计
 
-![sql.jpeg](sql.jpeg)
+<p align="center">
+  <a href="https://github.com/jiangtianxia/simple_tiktok.git/">
+    <img src="images/sql.jpeg" alt="Logo">
+  </a>
+<p>
 
 #### Redis架构的设计
 
-![redis.jpeg](redis.jpeg)
+<p align="center">
+  <a href="https://github.com/jiangtianxia/simple_tiktok.git/">
+    <img src="redis.jpeg" alt="Logo">
+  </a>
+<p>
 
 #### RocketMQ架构的设计
 
