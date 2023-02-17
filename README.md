@@ -5,8 +5,6 @@
 <p>
   <p align="center">
     <br />
-    <a href="https://bytedance.feishu.cn/docs/doccnKrCsU5Iac6eftnFBdsXTof">查看官方项目说明 »</a>
-    <br />
     <a href="https://github.com/jiangtianxia/simple_tiktok.git">查看本项目的文档 »</a>
     <br />
     <a href="https://ozilj01ufe.feishu.cn/base/bascnXyGKEcJi7vOkiVQVlPvoWc?table=tblOc75EZYVXCah0&view=vewMnpNgGD">查看团队工作文档 »</a>
@@ -24,6 +22,7 @@
     - [演示视频](#演示视频)
 - [文件目录说明](#文件目录说明)
 - [开发的整体设计](#开发的整体设计)
+   - [服务模块设计](#服务模块设计)
    - [整体的架构图](#整体的架构图)
    - [数据库的设计](#数据库的设计)
    - [Redis架构的设计](#Redis架构的设计)
@@ -37,7 +36,7 @@
 
 ### **上手指南**
 
-#### 开发前配置要求
+#### 配置要求
 
 1. go 1.13(最低)
 2. MySQL(配置文件位于config包中)
