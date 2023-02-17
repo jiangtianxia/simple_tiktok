@@ -5,9 +5,9 @@
 <p>
   <p align="center">
     <br />
-    <a href="https://bytedance.feishu.cn/docs/doccnKrCsU5Iac6eftnFBdsXTof">查看项目说明 »</a>
+    <a href="https://bytedance.feishu.cn/docs/doccnKrCsU5Iac6eftnFBdsXTof">查看官方项目说明 »</a>
     <br />
-    <a href="https://github.com/jiangtianxia/simple_tiktok.git">查看本项目文档 »</a>
+    <a href="https://github.com/jiangtianxia/simple_tiktok.git">查看本项目的文档 »</a>
     <br />
     <a href="https://ozilj01ufe.feishu.cn/base/bascnXyGKEcJi7vOkiVQVlPvoWc?table=tblOc75EZYVXCah0&view=vewMnpNgGD">查看团队工作文档 »</a>
     <br />
@@ -26,7 +26,6 @@
    - [数据库的设计](#数据库的设计)
    - [Redis架构的设计](#Redis架构的设计)
    - [RocketMQ架构的设计](#RocketMQ架构的设计)
-- [性能测试](#性能测试)
 - [使用到的技术](#使用到的技术)
 - [未来展望](#未来展望)
 - [如何参与开源项目](#如何参与开源项目)
@@ -39,17 +38,15 @@
 #### 开发前配置要求
 
 1. go 1.13(最低)
-2. MySQL(数据库sql文件在config包中)
+2. MySQL(配置文件位于config包中)
 3. Redis、RocketMQ环境
 4. [抖声客户端app](https://pan.baidu.com/s/194g4bi9ETFWiXEgPM5qDng?pwd=jtiu)
-
-
 
 #### 安装步骤
 1. 下载源码
 2. 配置SSH、FTP、Redis、静态服务器地址等相关参数
 3. 启动服务
-4. 在客户端配置相关地址服务端地址
+4. 在客户端app配置相关地址服务端地址
 
 ```sh
 git clone https://github.com/jiangtianxia/simple_tiktok.git
@@ -114,7 +111,7 @@ simple_tiktok
 
 <p align="center">
   <a href="https://github.com/jiangtianxia/simple_tiktok.git/">
-    <img src="images/sql.jpeg" alt="Logo">
+    <img src="images/sql.jpeg">
   </a>
 <p>
 
@@ -122,19 +119,32 @@ simple_tiktok
 
 <p align="center">
   <a href="https://github.com/jiangtianxia/simple_tiktok.git/">
-    <img src="redis.jpeg" alt="Logo">
+    <img src="images/redis.jpeg">
   </a>
 <p>
 
 #### RocketMQ架构的设计
 
-
 //图片文件
 
+#### 服务模块设计
 
-### 性能测试
+###### 用户模块的设计
+用户模块包括xx。详情[用户模块设计说明](https://ozilj01ufe.feishu.cn/docx/P4Asd72jsoQTvQxcDAhcVmlEnJg) 。
 
-//TODO
+###### 视频模块的设计
+包括视频xx操作。详情[视频模块设计说明](https://ozilj01ufe.feishu.cn/docx/PwjidjFklopXYfxCblpcMLa9nud)。
+
+###### 点赞模块的设计
+点赞模块包括xx。详情[点赞模块设计说明](https://ozilj01ufe.feishu.cn/docx/Y7Ejd0UyioCGYRxUKMAcoLvXnWf) 。
+
+###### 关注模块的设计
+关注模块包括xx。详情[关注模块设计说明](https://ozilj01ufe.feishu.cn/docx/TRald6KOJoJ9tHxaDNBclhSMnQg) 。
+
+###### 评论模块的设计
+评论模块包括xx。详情[评论模块设计说明](https://ozilj01ufe.feishu.cn/docx/XMGxdbWYOoTpP3xKtp9cBdCmnCd) 。
+
+
 
 ### 使用到的技术
 框架相关：
@@ -143,6 +153,7 @@ simple_tiktok
 
 服务器相关：
 
+//
 
 中间件相关：
 - [Redis](https://redis.io/docs/)
