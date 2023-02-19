@@ -17,7 +17,7 @@ func Router() *gin.Engine {
 	r := gin.Default()
 
 	// 设置成发布模式
-	// gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(gin.ReleaseMode)
 
 	// 全局使用熔断器，加入熔断保障
 	r.Use(middlewares.GinCircuitBreaker)
