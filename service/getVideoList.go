@@ -47,13 +47,26 @@ func GetVideoListByUserId(ctx *gin.Context, authorId *uint64, loginUserId *uint6
 		return nil, err
 	}
 
+	// 获取点赞数量，作品数和喜欢数
+	totalFavourited, workCount, FavouriteCount, err := GetTotalFavouritedANDWorkCountANDFavoriteCount(*authorId)
+	if err != nil {
+		logger.SugarLogger.Error("GetTotalFavouritedANDWorkCountANDFavoriteCount Error：", err.Error())
+		return nil, err
+	}
+
 	// 2. 创建作者对象
 	author := Author{
-		FollowCount:   followCount,
-		FollowerCount: followerCount,
-		IsFollow:      isFollow,
-		Name:          *authorName,
-		Id:            *authorId,
+		FollowCount:     followCount,
+		FollowerCount:   followerCount,
+		IsFollow:        isFollow,
+		Name:            *authorName,
+		Id:              *authorId,
+		Avatar:          viper.GetString("defaultAvatarUrl"),
+		BackGroundImage: viper.GetString("defaultBackGroudImage"),
+		Signature:       viper.GetString("defaultSignature"),
+		TotalFavorited:  totalFavourited,
+		WorkCount:       workCount,
+		FavoriteCount:   FavouriteCount,
 	}
 
 	// 3. 尝试从缓存中获取用户发表的视频id列表

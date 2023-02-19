@@ -70,15 +70,26 @@ func FriendListService(c *gin.Context, userId uint64) ([]Friend, error) {
 				return nil, err
 			}
 
+			totalFavourited, workCount, FavouriteCount, err := GetTotalFavouritedANDWorkCountANDFavoriteCount(follower.UserIdentity)
+			if err != nil {
+				logger.SugarLogger.Error("GetTotalFavouritedANDWorkCountANDFavoriteCount Error：", err.Error())
+				return nil, err
+			}
+
 			userInfo := Friend{
-				Id:            follower.UserIdentity,
-				Name:          username,
-				FollowCount:   followCount,
-				FollowerCount: followerCount,
-				IsFollow:      isFollow,
-				Avatar:        viper.GetString("uploadAddr") + "/upload/avatar.jpeg",
-				Message:       message,
-				MsgType:       msgType,
+				Id:              follower.UserIdentity,
+				Name:            username,
+				FollowCount:     followCount,
+				FollowerCount:   followerCount,
+				IsFollow:        isFollow,
+				Avatar:          viper.GetString("defaultAvatarUrl"),
+				BackGroundImage: viper.GetString("defaultBackGroudImage"),
+				Signature:       viper.GetString("defaultSignature"),
+				TotalFavorited:  totalFavourited,
+				WorkCount:       workCount,
+				FavoriteCount:   FavouriteCount,
+				Message:         message,
+				MsgType:         msgType,
 			}
 			pipeline.ZAdd(c, key, redis.Z{
 				Member: follower.UserIdentity,
@@ -134,22 +145,33 @@ func FriendListService(c *gin.Context, userId uint64) ([]Friend, error) {
 			logger.SugarLogger.Error("IsFollow Error：", err.Error())
 			return nil, err
 		}
+		id, _ := strconv.Atoi(followerIdentity)
+		totalFavourited, workCount, FavouriteCount, err := GetTotalFavouritedANDWorkCountANDFavoriteCount(uint64(id))
+		if err != nil {
+			logger.SugarLogger.Error("GetTotalFavouritedANDWorkCountANDFavoriteCount Error：", err.Error())
+			return nil, err
+		}
 
 		message, msgType, err := GetNewMessageInfo(c, strconv.Itoa(int(userId)), followerIdentity)
 		if err != nil {
 			logger.SugarLogger.Error("GetNewMessageInfo Error：", err.Error())
 			return nil, err
 		}
-		id, _ := strconv.Atoi(followerIdentity)
+
 		userInfo := Friend{
-			Id:            uint64(id),
-			Name:          username,
-			FollowCount:   followCount,
-			FollowerCount: followerCount,
-			IsFollow:      isFollow,
-			Avatar:        viper.GetString("uploadAddr") + "/upload/avatar.jpeg",
-			Message:       message,
-			MsgType:       msgType,
+			Id:              uint64(id),
+			Name:            username,
+			FollowCount:     followCount,
+			FollowerCount:   followerCount,
+			IsFollow:        isFollow,
+			Avatar:          viper.GetString("defaultAvatarUrl"),
+			BackGroundImage: viper.GetString("defaultBackGroudImage"),
+			Signature:       viper.GetString("defaultSignature"),
+			TotalFavorited:  totalFavourited,
+			WorkCount:       workCount,
+			FavoriteCount:   FavouriteCount,
+			Message:         message,
+			MsgType:         msgType,
 		}
 		data = append(data, userInfo)
 	}

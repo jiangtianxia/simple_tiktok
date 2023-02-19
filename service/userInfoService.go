@@ -73,13 +73,26 @@ func UserInfo(c *gin.Context, loginUser uint64, userId string) (Author, error) {
 			return Author{}, err
 		}
 
+		// 获取点赞数量，作品数和喜欢数
+		totalFavourited, workCount, FavouriteCount, err := GetTotalFavouritedANDWorkCountANDFavoriteCount(user.Identity)
+		if err != nil {
+			logger.SugarLogger.Error("GetTotalFavouritedANDWorkCountANDFavoriteCount Error：", err.Error())
+			return Author{}, err
+		}
+
 		// 返回结果
 		res := Author{
-			Id:            user.Identity,
-			Name:          user.Username,
-			FollowCount:   followCount,
-			FollowerCount: followerCount,
-			IsFollow:      flag,
+			Id:              user.Identity,
+			Name:            user.Username,
+			FollowCount:     followCount,
+			FollowerCount:   followerCount,
+			IsFollow:        flag,
+			Avatar:          viper.GetString("defaultAvatarUrl"),
+			BackGroundImage: viper.GetString("defaultBackGroudImage"),
+			Signature:       viper.GetString("defaultSignature"),
+			TotalFavorited:  totalFavourited,
+			WorkCount:       workCount,
+			FavoriteCount:   FavouriteCount,
 		}
 		return res, nil
 	}
@@ -112,12 +125,24 @@ func UserInfo(c *gin.Context, loginUser uint64, userId string) (Author, error) {
 		return Author{}, err
 	}
 
+	totalFavourited, workCount, FavouriteCount, err := GetTotalFavouritedANDWorkCountANDFavoriteCount(uint64(identity))
+	if err != nil {
+		logger.SugarLogger.Error("GetTotalFavouritedANDWorkCountANDFavoriteCount Error：", err.Error())
+		return Author{}, err
+	}
+
 	res := Author{
-		Id:            uint64(identity),
-		Name:          cathe["username"],
-		FollowCount:   followCount,
-		FollowerCount: followerCount,
-		IsFollow:      flag,
+		Id:              uint64(identity),
+		Name:            cathe["username"],
+		FollowCount:     followCount,
+		FollowerCount:   followerCount,
+		IsFollow:        flag,
+		Avatar:          viper.GetString("defaultAvatarUrl"),
+		BackGroundImage: viper.GetString("defaultBackGroudImage"),
+		Signature:       viper.GetString("defaultSignature"),
+		TotalFavorited:  totalFavourited,
+		WorkCount:       workCount,
+		FavoriteCount:   FavouriteCount,
 	}
 	return res, nil
 }
