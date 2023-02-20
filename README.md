@@ -5,8 +5,6 @@
 <p>
   <p align="center">
     <br />
-    <a href="https://bytedance.feishu.cn/docs/doccnKrCsU5Iac6eftnFBdsXTof">查看官方项目说明 »</a>
-    <br />
     <a href="https://github.com/jiangtianxia/simple_tiktok.git">查看本项目的文档 »</a>
     <br />
     <a href="https://ozilj01ufe.feishu.cn/base/bascnXyGKEcJi7vOkiVQVlPvoWc?table=tblOc75EZYVXCah0&view=vewMnpNgGD">查看团队工作文档 »</a>
@@ -16,6 +14,8 @@
 
 ## **项目介绍**
 
+实现极简版抖音服务端
+
 ## **目录**
 - [上手指南](#上手指南)
     - [开发前的配置要求](#开发前的配置要求)
@@ -24,12 +24,18 @@
     - [演示视频](#演示视频)
 - [文件目录说明](#文件目录说明)
 - [开发的整体设计](#开发的整体设计)
+   - [服务模块设计](#服务模块设计)
    - [整体的架构图](#整体的架构图)
    - [数据库的设计](#数据库的设计)
    - [Redis架构的设计](#Redis架构的设计)
    - [RocketMQ架构的设计](#RocketMQ架构的设计)
 - [使用技术](#使用技术)
-- [未来展望](#未来展望)
+- [性能测试](#性能测试)
+- [总结与反思](#总结与反思)
+   - [目前仍存在的问题](#目前仍存在的问题)
+   - [已识别出的优化项](#已识别出的优化项)
+   - [架构演进的可能性](#架构演进的可能性)
+   - [项目过程中的反思与总结](#项目过程中的反思与总结)
 - [参与开源项目](#如何参与开源项目)
 - [版本控制](#版本控制)
 - [贡献者](#贡献者)
@@ -37,7 +43,7 @@
 
 ### **上手指南**
 
-#### 开发前配置要求
+#### 配置要求
 
 1. go 1.13(最低)
 2. MySQL(配置文件位于config包中)
@@ -71,6 +77,7 @@ git clone https://github.com/jiangtianxia/simple_tiktok.git
 //视频文件
 
 ### **文件目录说明**
+//目录结构注释
 
 ```
 simple_tiktok
@@ -107,7 +114,11 @@ simple_tiktok
 
 #### 整体的架构图
 
-//图片文件
+<p align="center">
+  <a href="https://github.com/jiangtianxia/simple_tiktok.git/">
+    <img src="images/overall_structure_diagram.jpeg">
+  </a>
+<p>
 
 #### 数据库的设计
 
@@ -132,19 +143,22 @@ simple_tiktok
 #### 服务模块设计
 
 ###### 用户模块的设计
-用户模块包括xx。详情[用户模块设计说明](https://ozilj01ufe.feishu.cn/docx/P4Asd72jsoQTvQxcDAhcVmlEnJg) 。
-
-###### 视频模块的设计
-视频模块包括xx操作。详情[视频模块设计说明](https://ozilj01ufe.feishu.cn/docx/PwjidjFklopXYfxCblpcMLa9nud)。
+用户模块包括用户注册、用户登录和用户信息获取三个部分，详情：[用户模块设计说明](https://ozilj01ufe.feishu.cn/docx/P4Asd72jsoQTvQxcDAhcVmlEnJg) 。
 
 ###### 点赞模块的设计
-点赞模块包括xx。详情[点赞模块设计说明](https://ozilj01ufe.feishu.cn/docx/Y7Ejd0UyioCGYRxUKMAcoLvXnWf) 。
-
-###### 关注模块的设计
-关注模块包括xx。详情[关注模块设计说明](https://ozilj01ufe.feishu.cn/docx/TRald6KOJoJ9tHxaDNBclhSMnQg) 。
+点赞模块包括xx。详情：[点赞模块设计说明](https://ozilj01ufe.feishu.cn/docx/Y7Ejd0UyioCGYRxUKMAcoLvXnWf) 。
 
 ###### 评论模块的设计
-评论模块包括xx。详情[评论模块设计说明](https://ozilj01ufe.feishu.cn/docx/XMGxdbWYOoTpP3xKtp9cBdCmnCd) 。
+评论模块包括xx。详情：[评论模块设计说明](https://ozilj01ufe.feishu.cn/docx/XMGxdbWYOoTpP3xKtp9cBdCmnCd) 。
+
+###### 视频模块的设计
+视频模块包括xx。详情：[视频模块设计说明](https://ozilj01ufe.feishu.cn/docx/PwjidjFklopXYfxCblpcMLa9nud)。
+
+###### 消息模块的设计
+消息模块包括xx。详情：[消息模块设计说明](https://ozilj01ufe.feishu.cn/docx/V23UdBH5boF5Dwxjw9qcPMZbnfh) 。
+
+###### 关系模块的设计
+关注模块包括xx。详情：[关系模块设计说明](https://ozilj01ufe.feishu.cn/docx/TRald6KOJoJ9tHxaDNBclhSMnQg) 。
 
 ### **使用技术**
 框架相关：
@@ -162,9 +176,27 @@ simple_tiktok
 数据库：
 - [MySQL](https://dev.mysql.com/doc/)
 
-### **未来展望**
+### **性能测试**
 
+//
 
+### **总结与反思**
+
+#### 目前仍存在的问题
+
+//
+
+#### 已识别出的优化项
+
+//
+
+#### 架构演进的可能性
+
+//
+
+#### 项目过程中的反思与总结
+
+//
 
 ### **参与开源项目**
 
