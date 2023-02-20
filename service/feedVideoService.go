@@ -101,12 +101,25 @@ func FeedVideo(c *gin.Context, user_id uint64, latestTime int64) ([]VideoInfo, i
 			return nil, 0, err
 		}
 
+		// 获取点赞数量，作品数和喜欢数
+		totalFavourited, workCount, FavouriteCount, err := GetTotalFavouritedANDWorkCountANDFavoriteCount(user.Identity)
+		if err != nil {
+			logger.SugarLogger.Error("GetTotalFavouritedANDWorkCountANDFavoriteCount Error：", err.Error())
+			return nil, 0, err
+		}
+
 		videoInfos[i].Author = Author{
-			Id:            user.Identity,
-			Name:          user.Username,
-			FollowCount:   followCount,
-			FollowerCount: followerCount,
-			IsFollow:      flag,
+			Id:              user.Identity,
+			Name:            user.Username,
+			FollowCount:     followCount,
+			FollowerCount:   followerCount,
+			IsFollow:        flag,
+			Avatar:          viper.GetString("defaultAvatarUrl"),
+			BackGroundImage: viper.GetString("defaultBackGroudImage"),
+			Signature:       viper.GetString("defaultSignature"),
+			TotalFavorited:  totalFavourited,
+			WorkCount:       workCount,
+			FavoriteCount:   FavouriteCount,
 		}
 		videoInfos[i].PlayUrl = viper.GetString("cos.addr") + video["play_url"]
 		videoInfos[i].CoverUrl = viper.GetString("uploadAddr") + video["cover_url"]

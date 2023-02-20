@@ -480,3 +480,31 @@ func getAuthorIdByVideoId(ctx *gin.Context, videoId *uint64) (*uint64, error) {
 	authorId := uint64(iId)
 	return &authorId, nil
 }
+
+// 获取获赞数量，作品数和喜欢数
+func GetTotalFavouritedANDWorkCountANDFavoriteCount(identity uint64) (int64, int64, int64, error) {
+
+	// 获取作品数
+	videoList, err := mysql.GetWorkCount(identity)
+	if err != nil {
+		return 0, 0, 0, err
+	}
+	workCount := len(videoList)
+
+	// 获取获赞数量
+	var totalFavourited int64 = 0
+	for _, video := range videoList {
+		favourited, err := mysql.GetTotalFavourited(video.Identity)
+		if err != nil {
+			return 0, 0, 0, err
+		}
+		totalFavourited += favourited
+	}
+
+	// 获取喜欢数
+	favouriteCount, err := mysql.GetFavoriteCount(identity)
+	if err != nil {
+		return 0, 0, 0, err
+	}
+	return totalFavourited, int64(workCount), favouriteCount, nil
+}

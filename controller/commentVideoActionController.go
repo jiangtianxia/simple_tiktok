@@ -26,11 +26,17 @@ import (
 
 // 返回体
 type RespUser struct {
-	Id             uint64 `json:"id"`
-	Name           string `json:"name"`
-	Follow_count   uint64 `json:"follow_count"`
-	Follower_count uint64 `json:"follower_count"`
-	Is_follow      bool   `json:"is_follow"`
+	Id              uint64 `json:"id"`
+	Name            string `json:"name"`
+	Follow_count    uint64 `json:"follow_count"`
+	Follower_count  uint64 `json:"follower_count"`
+	Is_follow       bool   `json:"is_follow"`
+	Avatar          string `json:"avatar"`
+	BackGroundImage string `json:"background_image"`
+	Signature       string `json:"signature"`
+	TotalFavorited  int64  `json:"total_favorited"`
+	WorkCount       int64  `json:"work_count"`
+	FavoriteCount   int64  `json:"favorite_count"`
 }
 
 type RespComment struct {
@@ -204,6 +210,8 @@ func CommentAction(c *gin.Context) {
 				followcount, _ := service.GetFollowCount(c, fmt.Sprintf("%d", authorid))
 				followercount, _ := service.GetFollowerCount(c, fmt.Sprintf("%d", authorid))
 				isfollow, _ := service.IsFollow(c, fmt.Sprintf("%d", authorid), fmt.Sprintf("%d", user.Identity))
+				// 获取点赞数量，作品数和喜欢数
+				totalFavourited, workCount, FavouriteCount, _ := service.GetTotalFavouritedANDWorkCountANDFavoriteCount(authorid)
 
 				resp := CommentActionResponse{}
 				resp.Comment.Id = (uint64)(commentidentity)
@@ -214,6 +222,12 @@ func CommentAction(c *gin.Context) {
 				resp.Comment.User.Follow_count = (uint64)(followcount)
 				resp.Comment.User.Follower_count = (uint64)(followercount)
 				resp.Comment.User.Is_follow = isfollow
+				resp.Comment.User.Avatar = viper.GetString("defaultAvatarUrl")
+				resp.Comment.User.BackGroundImage = viper.GetString("defaultBackGroudImage")
+				resp.Comment.User.Signature = viper.GetString("defaultSignature")
+				resp.Comment.User.TotalFavorited = totalFavourited
+				resp.Comment.User.WorkCount = workCount
+				resp.Comment.User.FavoriteCount = FavouriteCount
 
 				c.JSON(http.StatusOK, CommentActionResponse{
 					StatusCode: (int32)(code),
