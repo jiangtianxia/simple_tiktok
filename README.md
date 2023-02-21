@@ -1,7 +1,5 @@
 <p align="center">
-  <a href="https://github.com/jiangtianxia/simple_tiktok.git/">
     <img src="images/title.jpeg" alt="Logo">
-  </a>
 <p>
   <p align="center">
     <br />
@@ -115,25 +113,19 @@ simple_tiktok
 #### 整体的架构图
 
 <p align="center">
-  <a href="https://github.com/jiangtianxia/simple_tiktok.git/">
     <img src="images/overall_structure_diagram.jpeg">
-  </a>
 <p>
 
 #### 数据库的设计
 
 <p align="center">
-  <a href="https://github.com/jiangtianxia/simple_tiktok.git/">
     <img src="images/sql.jpeg">
-  </a>
 <p>
 
 #### Redis架构的设计
 
 <p align="center">
-  <a href="https://github.com/jiangtianxia/simple_tiktok.git/">
     <img src="images/redis.jpeg">
-  </a>
 <p>
 
 #### RocketMQ架构的设计
