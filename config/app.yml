@@ -1,7 +1,10 @@
 
 uplaodBase: "./upload/"
-# uploadAddr: "http://101.43.157.116"
-uploadAddr: "http://192.168.3.109:8080"
+uploadAddr: "http://101.43.157.116"
+# uploadAddr: "http://192.168.1.69:8080"
+defaultAvatarUrl: "http://101.43.157.116/upload/avatar.jpeg"
+defaultBackGroudImage: "http://101.43.157.116/upload/backgroudImage.jpg"
+defaultSignature: "这个人很神秘，什么都没有写"
 
 feedVideoCnt: 30
 
@@ -82,9 +85,9 @@ rocketmq:
     RetryTopic: "RetryTopic"
     RetryGroupName: "RetryGroup"
     RetryQueueRetrySize: 5
-    RetryTags: "DeleteFollowRedis||DeleteMessageRedis||DeleteFavouriteRedis"
+    RetryTags: "DeleteFollowRedis||DeleteCommentRedis||DeleteFavouriteRedis"
     DeleteFollowRedisTag: "DeleteFollowRedis"
-    DeleteMessageRedisTag: "DeleteMessageRedis"
+    DeleteCommentRedisTag: "DeleteCommentRedis"
     DeleteFavouriteRedisTag: "DeleteFavouriteRedis"
     
 

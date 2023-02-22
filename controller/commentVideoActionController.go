@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"simple_tiktok/dao/mysql"
@@ -25,18 +26,24 @@ import (
 
 // 返回体
 type RespUser struct {
-	id             uint64 `json:"id"`
-	name           string `json:"name"`
-	follow_count   uint64 `json:"follow_count"`
-	follower_count uint64 `json:"follower_count"`
-	is_follow      bool   `json:"is_follow"`
+	Id              uint64 `json:"id"`
+	Name            string `json:"name"`
+	Follow_count    uint64 `json:"follow_count"`
+	Follower_count  uint64 `json:"follower_count"`
+	Is_follow       bool   `json:"is_follow"`
+	Avatar          string `json:"avatar"`
+	BackGroundImage string `json:"background_image"`
+	Signature       string `json:"signature"`
+	TotalFavorited  int64  `json:"total_favorited"`
+	WorkCount       int64  `json:"work_count"`
+	FavoriteCount   int64  `json:"favorite_count"`
 }
 
 type RespComment struct {
-	id          uint64   `json:"id"`
-	user        RespUser `json:"user"`
-	content     string   `json:"content"`
-	create_date string   `json:"create_date"`
+	Id          uint64   `json:"id"`
+	User        RespUser `json:"user"`
+	Content     string   `json:"content"`
+	Create_date string   `json:"create_date"`
 }
 
 type CommentActionResponse struct {
@@ -60,20 +67,31 @@ func CommentAction(c *gin.Context) {
 	token := c.Query("token")
 	video_id := c.Query("video_id")
 	action_type := c.Query("action_type")
-	comment_text := c.Query("comment_text")
-	comment_id := c.Query("comment_id")
+	comment_text := c.DefaultQuery("comment_text", "")
+	comment_id := c.DefaultQuery("comment_id", "0")
 
 	// 参数处理
 	// 错误返回空用户
 	failresp := CommentActionResponse{}
-	failresp.Comment.id = (uint64)(0)
-	failresp.Comment.content = comment_text
-	failresp.Comment.create_date = ""
-	failresp.Comment.user.id = 0
-	failresp.Comment.user.name = ""
-	failresp.Comment.user.follow_count = (uint64)(0)
-	failresp.Comment.user.follower_count = (uint64)(0)
-	failresp.Comment.user.is_follow = false
+	failresp.Comment.Id = 0
+	failresp.Comment.Content = comment_text
+	failresp.Comment.Create_date = ""
+	failresp.Comment.User.Id = 0
+	failresp.Comment.User.Name = ""
+	failresp.Comment.User.Follow_count = (uint64)(0)
+	failresp.Comment.User.Follower_count = (uint64)(0)
+	failresp.Comment.User.Is_follow = false
+
+	// 校验参数
+	if action_type != "1" && action_type != "2" {
+		c.JSON(http.StatusOK, CommentActionResponse{
+			StatusCode: -1,
+			StatusMsg:  "非法参数",
+			Comment:    failresp.Comment,
+		})
+		return
+	}
+
 	// 验证用户token
 	user, err := middlewares.AuthUserCheck(token)
 	if user == nil || user.Identity == 0 || user.Issuer != "simple_tiktok" || user.Username == "" || err != nil {
@@ -95,6 +113,7 @@ func CommentAction(c *gin.Context) {
 		})
 		return
 	}
+
 	commentidentity, err := strconv.Atoi(comment_id)
 	if err != nil {
 		c.JSON(http.StatusOK, CommentActionResponse{
@@ -104,6 +123,7 @@ func CommentAction(c *gin.Context) {
 		})
 		return
 	}
+
 	actiontype, err := strconv.Atoi(action_type)
 	if err != nil {
 		c.JSON(http.StatusOK, CommentActionResponse{
@@ -113,6 +133,21 @@ func CommentAction(c *gin.Context) {
 		})
 		return
 	}
+
+	if actiontype == 1 {
+		identity, err := utils.GetID()
+		if err != nil {
+			logger.SugarLogger.Error(err.Error())
+			c.JSON(http.StatusOK, CommentActionResponse{
+				StatusCode: -1,
+				StatusMsg:  "操作失败",
+				Comment:    failresp.Comment,
+			})
+			return
+		}
+		commentidentity = int(identity)
+	}
+
 	// 处理时间格式
 	month := time.Now().Format("01")
 	day := time.Now().Format("02")
@@ -120,8 +155,9 @@ func CommentAction(c *gin.Context) {
 
 	// 数据打包，将消息发送到消息队列
 	pack := models.CommentVideo{
+		Identity:      (uint64)(commentidentity),
 		VideoIdentity: (uint64)(videoidentity),
-		UserIdentity:  (uint64)(commentidentity),
+		UserIdentity:  user.Identity,
 		Text:          comment_text,
 		CommentTime:   timeNow,
 	}
@@ -159,21 +195,39 @@ func CommentAction(c *gin.Context) {
 				// 存在，则获取结果返回
 				info, _ := utils.RDB0.HGetAll(c, key).Result()
 				code, _ := strconv.Atoi(info["status_code"])
+
+				if code == -1 {
+					c.JSON(http.StatusOK, CommentActionResponse{
+						StatusCode: int32(code),
+						StatusMsg:  info["status_msg"],
+						Comment:    failresp.Comment,
+					})
+					return
+				}
+
 				//给返回题赋值
-				followcount, _ := service.GetFollowCount(c, (string)(user.Identity))
-				followercount, _ := service.GetFollowerCount(c, (string)(user.Identity))
-				authorid, _ := mysql.SearchAuthorIdByVideoId((uint64)(commentidentity))
-				isfollow, _ := service.IsFollow(c, (string)(user.Identity), (string)(authorid))
+				authorid, _ := mysql.SearchAuthorIdByVideoId((uint64)(videoidentity))
+				followcount, _ := service.GetFollowCount(c, fmt.Sprintf("%d", authorid))
+				followercount, _ := service.GetFollowerCount(c, fmt.Sprintf("%d", authorid))
+				isfollow, _ := service.IsFollow(c, fmt.Sprintf("%d", authorid), fmt.Sprintf("%d", user.Identity))
+				// 获取点赞数量，作品数和喜欢数
+				totalFavourited, workCount, FavouriteCount, _ := service.GetTotalFavouritedANDWorkCountANDFavoriteCount(authorid)
 
 				resp := CommentActionResponse{}
-				resp.Comment.id = (uint64)(commentidentity)
-				resp.Comment.content = comment_text
-				resp.Comment.create_date = timeNow
-				resp.Comment.user.id = user.Identity
-				resp.Comment.user.name = user.Username
-				resp.Comment.user.follow_count = (uint64)(followcount)
-				resp.Comment.user.follower_count = (uint64)(followercount)
-				resp.Comment.user.is_follow = isfollow
+				resp.Comment.Id = (uint64)(commentidentity)
+				resp.Comment.Content = comment_text
+				resp.Comment.Create_date = timeNow
+				resp.Comment.User.Id = user.Identity
+				resp.Comment.User.Name = user.Username
+				resp.Comment.User.Follow_count = (uint64)(followcount)
+				resp.Comment.User.Follower_count = (uint64)(followercount)
+				resp.Comment.User.Is_follow = isfollow
+				resp.Comment.User.Avatar = viper.GetString("defaultAvatarUrl")
+				resp.Comment.User.BackGroundImage = viper.GetString("defaultBackGroudImage")
+				resp.Comment.User.Signature = viper.GetString("defaultSignature")
+				resp.Comment.User.TotalFavorited = totalFavourited
+				resp.Comment.User.WorkCount = workCount
+				resp.Comment.User.FavoriteCount = FavouriteCount
 
 				c.JSON(http.StatusOK, CommentActionResponse{
 					StatusCode: (int32)(code),

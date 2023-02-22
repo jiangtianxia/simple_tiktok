@@ -63,12 +63,24 @@ func FollowerListService(c *gin.Context, userId uint64) ([]Author, error) {
 				return nil, err
 			}
 
+			totalFavourited, workCount, FavouriteCount, err := GetTotalFavouritedANDWorkCountANDFavoriteCount(follower.UserIdentity)
+			if err != nil {
+				logger.SugarLogger.Error("GetTotalFavouritedANDWorkCountANDFavoriteCount Error：", err.Error())
+				return nil, err
+			}
+
 			userInfo := Author{
-				Id:            follower.UserIdentity,
-				Name:          username,
-				FollowCount:   followCount,
-				FollowerCount: followerCount,
-				IsFollow:      isFollow,
+				Id:              follower.UserIdentity,
+				Name:            username,
+				FollowCount:     followCount,
+				FollowerCount:   followerCount,
+				IsFollow:        isFollow,
+				Avatar:          viper.GetString("defaultAvatarUrl"),
+				BackGroundImage: viper.GetString("defaultBackGroudImage"),
+				Signature:       viper.GetString("defaultSignature"),
+				TotalFavorited:  totalFavourited,
+				WorkCount:       workCount,
+				FavoriteCount:   FavouriteCount,
 			}
 			pipeline.ZAdd(c, key, redis.Z{
 				Member: follower.UserIdentity,
@@ -125,13 +137,26 @@ func FollowerListService(c *gin.Context, userId uint64) ([]Author, error) {
 			return nil, err
 		}
 
+		userIdentity64, _ := strconv.Atoi(followerIdentity)
+		totalFavourited, workCount, FavouriteCount, err := GetTotalFavouritedANDWorkCountANDFavoriteCount(uint64(userIdentity64))
+		if err != nil {
+			logger.SugarLogger.Error("GetTotalFavouritedANDWorkCountANDFavoriteCount Error：", err.Error())
+			return nil, err
+		}
+
 		id, _ := strconv.Atoi(followerIdentity)
 		userInfo := Author{
-			Id:            uint64(id),
-			Name:          username,
-			FollowCount:   followCount,
-			FollowerCount: followerCount,
-			IsFollow:      isFollow,
+			Id:              uint64(id),
+			Name:            username,
+			FollowCount:     followCount,
+			FollowerCount:   followerCount,
+			IsFollow:        isFollow,
+			Avatar:          viper.GetString("defaultAvatarUrl"),
+			BackGroundImage: viper.GetString("defaultBackGroudImage"),
+			Signature:       viper.GetString("defaultSignature"),
+			TotalFavorited:  totalFavourited,
+			WorkCount:       workCount,
+			FavoriteCount:   FavouriteCount,
 		}
 		data = append(data, userInfo)
 	}

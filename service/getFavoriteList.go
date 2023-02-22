@@ -66,23 +66,31 @@ func GetFavoriteListByUserId(ctx *gin.Context, userId *uint64, loginUserId *uint
 		}
 
 		// 判断是否关注该用户
-		flag := false
-		if *authorId == *loginUserId {
-			flag = true
-		} else {
-			flag, err = IsFollow(ctx, strconv.Itoa(int(*authorId)), strconv.Itoa(int(*loginUserId)))
-			if err != nil {
-				logger.SugarLogger.Error("IsFollow Error：", err.Error())
-				return nil, err
-			}
+		flag, err := IsFollow(ctx, strconv.Itoa(int(*authorId)), strconv.Itoa(int(*loginUserId)))
+		if err != nil {
+			logger.SugarLogger.Error("IsFollow Error：", err.Error())
+			return nil, err
+		}
+
+		// 获取点赞数量，作品数和喜欢数
+		totalFavourited, workCount, FavouriteCount, err := GetTotalFavouritedANDWorkCountANDFavoriteCount(*authorId)
+		if err != nil {
+			logger.SugarLogger.Error("GetTotalFavouritedANDWorkCountANDFavoriteCount Error：", err.Error())
+			return nil, err
 		}
 
 		author := Author{
-			FollowCount:   followCount,
-			FollowerCount: followerCount,
-			IsFollow:      flag,
-			Name:          *authorName,
-			Id:            *authorId,
+			FollowCount:     followCount,
+			FollowerCount:   followerCount,
+			IsFollow:        flag,
+			Name:            *authorName,
+			Id:              *authorId,
+			Avatar:          viper.GetString("defaultAvatarUrl"),
+			BackGroundImage: viper.GetString("defaultBackGroudImage"),
+			Signature:       viper.GetString("defaultSignature"),
+			TotalFavorited:  totalFavourited,
+			WorkCount:       workCount,
+			FavoriteCount:   FavouriteCount,
 		}
 		// 添加进视频列表
 		*videoList = append(*videoList, VideoInfo{

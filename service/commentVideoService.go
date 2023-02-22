@@ -86,26 +86,32 @@ func CommentList(c *gin.Context, user_id uint64, video_id uint64) ([]CommentInfo
 		}
 
 		// 判断是否关注该用户
-		flag := false
-		if user_id != 0 {
-			if user.Identity == user_id {
-				flag = true
-			} else {
-				flag, err = IsFollow(c, strconv.Itoa(int(user.Identity)), strconv.Itoa(int(user_id)))
-				// fmt.Println(flag)
-				if err != nil {
-					logger.SugarLogger.Error("IsFollow Error：", err.Error())
-					return nil, err
-				}
-			}
+		flag, err := IsFollow(c, strconv.Itoa(int(user.Identity)), strconv.Itoa(int(user_id)))
+		// fmt.Println(flag)
+		if err != nil {
+			logger.SugarLogger.Error("IsFollow Error：", err.Error())
+			return nil, err
+		}
+
+		// 获取点赞数量，作品数和喜欢数
+		totalFavourited, workCount, FavouriteCount, err := GetTotalFavouritedANDWorkCountANDFavoriteCount(user.Identity)
+		if err != nil {
+			logger.SugarLogger.Error("GetTotalFavouritedANDWorkCountANDFavoriteCount Error：", err.Error())
+			return nil, err
 		}
 
 		commentInfos[i].User = Author{
-			Id:            user.Identity,
-			Name:          user.Username,
-			FollowCount:   followCount,
-			FollowerCount: followerCount,
-			IsFollow:      flag,
+			Id:              user.Identity,
+			Name:            user.Username,
+			FollowCount:     followCount,
+			FollowerCount:   followerCount,
+			IsFollow:        flag,
+			Avatar:          viper.GetString("defaultAvatarUrl"),
+			BackGroundImage: viper.GetString("defaultBackGroudImage"),
+			Signature:       viper.GetString("defaultSignature"),
+			TotalFavorited:  totalFavourited,
+			WorkCount:       workCount,
+			FavoriteCount:   FavouriteCount,
 		}
 
 		commentInfos[i].Content = comment["text"]

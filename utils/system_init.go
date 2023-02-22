@@ -27,7 +27,6 @@ func InitConfig() {
 	// viper.SetConfigName("app")
 
 	// // // 配置文件所在的文件夹
-	// // viper.AddConfigPath(work + "/config")
 	// viper.AddConfigPath("/build/config")
 
 	// 获取当前工作目录
@@ -122,7 +121,6 @@ var RDB9 *redis.Client
 var RDB10 *redis.Client
 var RDB11 *redis.Client
 var RDB12 *redis.Client
-var RDB13 *redis.Client
 
 // 初始化Redis连接
 func InitRedis() {
@@ -234,20 +232,11 @@ func InitRedis() {
 		MinIdleConns: viper.GetInt("redis.minIdleConn"),
 	})
 
-	// RDB12存储发送信息sorted set
+	// RDB12存储最新消息的list和聊天信息hash集合
 	RDB12 = redis.NewClient(&redis.Options{
 		Addr:         viper.GetString("redis.addr"),
 		Password:     viper.GetString("redis.password"),
 		DB:           12,
-		PoolSize:     viper.GetInt("redis.poolSize"),
-		MinIdleConns: viper.GetInt("redis.minIdleConn"),
-	})
-
-	// RDB13存储聊天信息hash集合
-	RDB13 = redis.NewClient(&redis.Options{
-		Addr:         viper.GetString("redis.addr"),
-		Password:     viper.GetString("redis.password"),
-		DB:           13,
 		PoolSize:     viper.GetInt("redis.poolSize"),
 		MinIdleConns: viper.GetInt("redis.minIdleConn"),
 	})
@@ -269,7 +258,6 @@ func ReidsClose() {
 	RDB10.Close()
 	RDB11.Close()
 	RDB12.Close()
-	RDB13.Close()
 }
 
 /**

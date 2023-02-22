@@ -3,6 +3,7 @@ package router
 import (
 	"net/http"
 	"simple_tiktok/controller"
+
 	docs "simple_tiktok/docs"
 	"simple_tiktok/middlewares"
 
@@ -21,7 +22,7 @@ func Router() *gin.Engine {
 	// 全局使用熔断器，加入熔断保障
 	r.Use(middlewares.GinCircuitBreaker)
 
-	//加载静态资源，一般是上传的资源，例如用户上传的图片
+	// 加载静态资源，一般是上传的资源，例如用户上传的图片
 	r.StaticFS("/upload", http.Dir("upload"))
 	// swagger 配置
 	docs.SwaggerInfo.BasePath = "/douyin"
