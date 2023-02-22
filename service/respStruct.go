@@ -18,15 +18,33 @@ type VideoInfo struct {
 
 /**
  * @Author
+ * @Description 评论参数结构体
+ * @Date 21:00 2023/2/11
+ **/
+type CommentInfo struct {
+	Id         uint64 `json:"id"`          // 评论唯一标识
+	User       Author `json:"user"`        // 用户信息
+	Content    string `json:"content"`     // 用户评论内容
+	CreateDate string `json:"create_date"` // 评论发布日期
+}
+
+/**
+ * @Author
  * @Description 作者参数结构体
  * @Date 21:00 2023/2/11
  **/
 type Author struct {
-	Id            uint64 `json:"id"`
-	Name          string `json:"name"`
-	FollowCount   int64  `json:"follow_count"`
-	FollowerCount int64  `json:"follower_count"`
-	IsFollow      bool   `json:"is_follow"`
+	Id              uint64 `json:"id"`
+	Name            string `json:"name"`
+	FollowCount     int64  `json:"follow_count"`
+	FollowerCount   int64  `json:"follower_count"`
+	IsFollow        bool   `json:"is_follow"`
+	Avatar          string `json:"avatar"`
+	BackGroundImage string `json:"background_image"`
+	Signature       string `json:"signature"`
+	TotalFavorited  int64  `json:"total_favorited"`
+	WorkCount       int64  `json:"work_count"`
+	FavoriteCount   int64  `json:"favorite_count"`
 }
 
 /**
@@ -58,6 +76,8 @@ type Message struct {
 	Identity   uint64 `json:"id"`
 	Content    string `json:"content"`
 	CreateTime int64  `json:"create_time"`
+	FromUserId int64  `json:"from_user_id"`
+	ToUserId   int64  `json:"to_user_id"`
 }
 
 /**
@@ -66,12 +86,17 @@ type Message struct {
  * @Date 21:00 2023/2/11
  **/
 type Friend struct {
-	Id            uint64 `json:"id"`
-	Name          string `json:"name"`
-	FollowCount   int64  `json:"follow_count"`
-	FollowerCount int64  `json:"follower_count"`
-	IsFollow      bool   `json:"is_follow"`
-	Avatar        string `json:"avatar"`
-	Message       string `json:"message"`
-	MsgType       int64  `json:"msgType"`
+	Id              uint64 `json:"id"`
+	Name            string `json:"name"`
+	FollowCount     int64  `json:"follow_count"`
+	FollowerCount   int64  `json:"follower_count"`
+	IsFollow        bool   `json:"is_follow"`
+	Avatar          string `json:"avatar"`
+	BackGroundImage string `json:"background_image"`
+	Signature       string `json:"signature"`
+	TotalFavorited  int64  `json:"total_favorited"`
+	WorkCount       int64  `json:"work_count"`
+	FavoriteCount   int64  `json:"favorite_count"`
+	Message         string `json:"message"`
+	MsgType         int64  `json:"msgType"`
 }

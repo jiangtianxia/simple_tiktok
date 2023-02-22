@@ -66,3 +66,17 @@ func QueryVideoInfoByVideoId(videoId *uint64) (*models.VideoBasic, error) {
 	utils.DB.Table("video_basic").Where("identity = ?", *videoId).Find(&videoInfo)
 	return &videoInfo, nil
 }
+
+// 获取点赞信息
+func QueryFavoriteHistoryByUserId(userId *uint64) (*[]models.FavouriteVideo, error) {
+	var favoriteList []models.FavouriteVideo
+	utils.DB.Table("favourite_video").Where("user_identity = ?", *userId).Find(&favoriteList)
+	return &favoriteList, nil
+}
+
+// 获取作品数
+func GetWorkCount(identity uint64) ([]models.VideoBasic, error) {
+	var VideoList []models.VideoBasic
+	err := utils.DB.Model(new(models.VideoBasic)).Where("user_identity = ?", identity).Find(&VideoList).Error
+	return VideoList, err
+}

@@ -58,8 +58,6 @@ func FollowService(msgid string, data []byte) {
 	err = utils.SendDelayMsg(RetryTopic, DeleteFollowRedisTag, data)
 	if err != nil {
 		logger.SugarLogger.Error("SendDelayMsg Error：", err.Error())
-		// SaveRedisResp(msgid, -1, "操作失败")
-		return
 	}
 	SaveRedisResp(msgid, 0, "操作成功")
 }
