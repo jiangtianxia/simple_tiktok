@@ -200,10 +200,6 @@ simple_tiktok
 
 
 
-
-
-
-
 #### 服务模块设计
 
 ###### 用户模块的设计
@@ -217,7 +213,7 @@ simple_tiktok
 点赞模块包括点赞操作、取消赞操作和点赞列表。详情：[点赞模块设计说明](https://vyhsij84iy.feishu.cn/docx/KoX0dJlHnoNJP2xvXnfc1HbJn0f) 。
 
 ###### 评论模块的设计
-评论模块包括评论操作和评论列表。详情：[评论模块设计说明]() 。
+评论模块包括评论操作和评论列表。详情：[评论模块设计说明](https://ozilj01ufe.feishu.cn/docx/XMGxdbWYOoTpP3xKtp9cBdCmnCd) 。
 
 ###### 关注模块的设计
 
@@ -225,8 +221,6 @@ simple_tiktok
 
 ###### 消息模块的设计
 消息模块包括聊天记录和消息操作。详情：[消息模块设计说明](https://ozilj01ufe.feishu.cn/docx/V23UdBH5boF5Dwxjw9qcPMZbnfh) 。
-
-
 
 
 
@@ -249,8 +243,6 @@ simple_tiktok
 
 
 
-
-
 ### **性能测试**
 
 通过命令 go tool pprof -http=:6060 "http://localhost:8080/debug/pprof/profile?seconds=600" ，然后在600s内，将全部接口测试一遍，生成火焰图。
@@ -258,6 +250,8 @@ simple_tiktok
 <img src="images/火焰图.jpg" style="zoom:200%;" />
 
 同时包含各个接口的压力测试，详情请阅读[压测报告](https://vyhsij84iy.feishu.cn/docx/ACRXdM6YloiDmyxaXk8czxshnXq) 获得具体的压力数据。
+
+
 
 
 
