@@ -8,7 +8,7 @@ defaultSignature: "这个人很神秘，什么都没有写"
 
 feedVideoCnt: 30
 
-logger: 
+logger:
   path: "/log"
 
 
@@ -103,3 +103,4 @@ cos:
 CircuitBreaker:
     roundInterval:  15 # 熔断周期，单位s
     recoverInterval: 5 # 冷却周期，单位s
+        

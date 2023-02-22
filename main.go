@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
 	"simple_tiktok/logger"
 	rocket "simple_tiktok/rocketmq"
 	"simple_tiktok/router"
@@ -12,6 +14,9 @@ import (
 )
 
 func main() {
+	go func() {
+		log.Print(http.ListenAndServe(":6060", nil))
+	}()
 	/*
 	* 初始化
 	 */
