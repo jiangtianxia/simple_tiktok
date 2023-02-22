@@ -1,7 +1,10 @@
 
 uplaodBase: "./upload/"
-#uploadAddr: "http://101.43.157.116"
-uploadAddr: "http://192.168.0.106:8080"
+uploadAddr: "http://101.43.157.116"
+# uploadAddr: "http://192.168.1.69:8080"
+defaultAvatarUrl: "http://101.43.157.116/upload/avatar.jpeg"
+defaultBackGroudImage: "http://101.43.157.116/upload/backgroudImage.jpg"
+defaultSignature: "这个人很神秘，什么都没有写"
 
 feedVideoCnt: 30
 
@@ -27,13 +30,16 @@ redis:
     defaultErrorIdentity: -1
     KeyUserHashPrefix: "userinfo:"
     KeyPublishListPrefix: "list:publish:"
+    KeyUserFavoriteListPrefix: "list:favorite:"
     KeyVideoInfoHashPrefix: "videoinfo:"
     KeyCommentInfoHashPrefix: "commentinfo:"
     KeyFavoriteUserSortSetPrefix: "favorite:"
     KeyCommentListPrefix: "list:comment:"
     KeyFollowListPrefix: "list:follow:"
     KeyFollowerSortSetPrefix: "follower:"
-
+    KetFavoriteSetPrefix: "favorite:"
+    KeyUserMessageHashPrefix: "message:"
+    KeyUserMessageListPrefix: ":message:"
 
 
 md5:
@@ -58,16 +64,31 @@ rocketmq:
     serverProducer: "ServerProducer"
     serverTopic:  "ServerTopic"
     retrySize:   2
+
+    # 赞服务的消费者信息
+    FavouriteGroupName: "FavouriteGroup"
+    serverFavouriteTag: "Favourite"
+
+    # 评论服务的消费者信息
+    SendCommentGroupName: "CommentGroup"
+    serverSendCommentTag: "SendComment"
+
+    # 关注服务的消费者信息
     followGroupName: "FollowGroup"
     serverFollowTag: "ServerFollow"
 
+    # 发送消息服务的消费者信息
+    sendMessageGroupName: "SendMessageGroup"
+    serverSendMessageTags: "SendMessage"
 
     # 重试机制的消息队列信息
     RetryTopic: "RetryTopic"
     RetryGroupName: "RetryGroup"
     RetryQueueRetrySize: 5
-    RetryTags: "DeleteFollowRedis"
+    RetryTags: "DeleteFollowRedis||DeleteCommentRedis||DeleteFavouriteRedis"
     DeleteFollowRedisTag: "DeleteFollowRedis"
+    DeleteCommentRedisTag: "DeleteCommentRedis"
+    DeleteFavouriteRedisTag: "DeleteFavouriteRedis"
     
 
 

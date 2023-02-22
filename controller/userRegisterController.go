@@ -1,10 +1,3 @@
-/*
- * @Description:
- * @Author: liuxin
- * @Date: 2023-01-28 09:17:53
- * @LastEditTime: 2023-01-29 13:47:58
- * @LastEditors:
- */
 package controller
 
 import (
@@ -14,6 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+/**
+ * Creator: lx
+ * Last Editor: lx
+ * Description: controller层，解析参数，处理参数，并打包传给service层
+ **/
 // 返回结构体
 type UserRegisterRespStruct struct {
 	Code   int    `json:"status_code"`

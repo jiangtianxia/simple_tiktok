@@ -3,6 +3,7 @@ package router
 import (
 	"net/http"
 	"simple_tiktok/controller"
+
 	docs "simple_tiktok/docs"
 	"simple_tiktok/middlewares"
 
@@ -21,7 +22,7 @@ func Router() *gin.Engine {
 	// 全局使用熔断器，加入熔断保障
 	r.Use(middlewares.GinCircuitBreaker)
 
-	//加载静态资源，一般是上传的资源，例如用户上传的图片
+	// 加载静态资源，一般是上传的资源，例如用户上传的图片
 	r.StaticFS("/upload", http.Dir("upload"))
 	// swagger 配置
 	docs.SwaggerInfo.BasePath = "/douyin"
@@ -39,7 +40,7 @@ func Router() *gin.Engine {
 		* 基础接口
 		 */
 		// 视频流接口
-		v1.GET("/feed/", controller.FeedVideo)
+		v1.GET("/feed", controller.FeedVideo)
 
 		// 用户注册接口
 		v1.POST("/user/register/", controller.UserRegister)
@@ -59,6 +60,15 @@ func Router() *gin.Engine {
 		/*
 		* 互动接口
 		 */
+		// 赞操作
+		v1.POST("/favorite/action/", controller.Favourite)
+
+		// 喜欢列表
+		v1.GET("/favorite/list/", controller.GetFavoriteList)
+
+		// 评论操作
+		v1.POST("/comment/action/", controller.CommentAction)
+
 		// 评论列表
 		v1.GET("/comment/list/", controller.CommentList)
 
@@ -76,6 +86,12 @@ func Router() *gin.Engine {
 
 		// 好友列表
 		v1.GET("/relation/friend/list/", controller.GetFriendList)
+
+		// 发送消息
+		v1.POST("/message/action/", controller.SendMessage)
+
+		// 聊天记录
+		v1.GET("/message/chat/", controller.MessageRecord)
 	}
 	return r
 }

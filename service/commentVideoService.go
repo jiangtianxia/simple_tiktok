@@ -2,18 +2,19 @@ package service
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"simple_tiktok/dao/mysql"
 	myredis "simple_tiktok/dao/redis"
 	"simple_tiktok/logger"
 	"simple_tiktok/utils"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 /**
  * @Author
- * @Description 视频流接口
+ * @Description 评论列表接口
  * @Date 21:00 2023/2/11
  **/
 func CommentList(c *gin.Context, user_id uint64, video_id uint64) ([]CommentInfo, error) {
@@ -29,11 +30,11 @@ func CommentList(c *gin.Context, user_id uint64, video_id uint64) ([]CommentInfo
 		}
 		for i := range *comments {
 			// 缓存评论id
-			err = myredis.RedisAddListRBD8(c, listKey, fmt.Sprintf("%d", (*comments)[i].Identity))
+			myredis.RedisAddListRBD8(c, listKey, fmt.Sprintf("%d", (*comments)[i].Identity))
 		}
 	}
 
-	// 使用缓存 查询出发布时间小于latestTime的30条记录  记录中包含视频的identity
+	// 使用缓存
 	identityList := utils.RDB8.LRange(c, listKey, 0, -1).Val()
 
 	commentInfos := make([]CommentInfo, len(identityList))
@@ -85,26 +86,32 @@ func CommentList(c *gin.Context, user_id uint64, video_id uint64) ([]CommentInfo
 		}
 
 		// 判断是否关注该用户
-		flag := false
-		if user_id != 0 {
-			if user.Identity == user_id {
-				flag = true
-			} else {
-				flag, err = IsFollow(c, strconv.Itoa(int(user.Identity)), strconv.Itoa(int(user_id)))
-				// fmt.Println(flag)
-				if err != nil {
-					logger.SugarLogger.Error("IsFollow Error：", err.Error())
-					return nil, err
-				}
-			}
+		flag, err := IsFollow(c, strconv.Itoa(int(user.Identity)), strconv.Itoa(int(user_id)))
+		// fmt.Println(flag)
+		if err != nil {
+			logger.SugarLogger.Error("IsFollow Error：", err.Error())
+			return nil, err
+		}
+
+		// 获取点赞数量，作品数和喜欢数
+		totalFavourited, workCount, FavouriteCount, err := GetTotalFavouritedANDWorkCountANDFavoriteCount(user.Identity)
+		if err != nil {
+			logger.SugarLogger.Error("GetTotalFavouritedANDWorkCountANDFavoriteCount Error：", err.Error())
+			return nil, err
 		}
 
 		commentInfos[i].User = Author{
-			Id:            user.Identity,
-			Name:          user.Username,
-			FollowCount:   followCount,
-			FollowerCount: followerCount,
-			IsFollow:      flag,
+			Id:              user.Identity,
+			Name:            user.Username,
+			FollowCount:     followCount,
+			FollowerCount:   followerCount,
+			IsFollow:        flag,
+			Avatar:          viper.GetString("defaultAvatarUrl"),
+			BackGroundImage: viper.GetString("defaultBackGroudImage"),
+			Signature:       viper.GetString("defaultSignature"),
+			TotalFavorited:  totalFavourited,
+			WorkCount:       workCount,
+			FavoriteCount:   FavouriteCount,
 		}
 
 		commentInfos[i].Content = comment["text"]

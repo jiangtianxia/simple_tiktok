@@ -1,4 +1,11 @@
 definitions:
+  controller.FavouriteRespStruct:
+    properties:
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+    type: object
   controller.FeedVideoRespStruct:
     properties:
       next_time:
@@ -20,7 +27,7 @@ definitions:
         type: string
       user_list:
         items:
-          $ref: '#/definitions/service.User'
+          $ref: '#/definitions/service.Friend'
         type: array
     type: object
   controller.FollowListRespStruct:
@@ -31,7 +38,7 @@ definitions:
         type: string
       user_list:
         items:
-          $ref: '#/definitions/service.User'
+          $ref: '#/definitions/service.Author'
         type: array
     type: object
   controller.FollowRespStruct:
@@ -49,7 +56,7 @@ definitions:
         type: string
       user_list:
         items:
-          $ref: '#/definitions/service.User'
+          $ref: '#/definitions/service.Author'
         type: array
     type: object
   controller.GetPublishListResponse:
@@ -62,6 +69,24 @@ definitions:
         items:
           $ref: '#/definitions/service.VideoInfo'
         type: array
+    type: object
+  controller.MessageRecordRespStruct:
+    properties:
+      message_list:
+        items:
+          $ref: '#/definitions/service.Message'
+        type: array
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+    type: object
+  controller.SendMessageRespStruct:
+    properties:
+      status_code:
+        type: integer
+      status_msg:
+        type: string
     type: object
   controller.UploadRespStruct:
     properties:
@@ -103,8 +128,10 @@ definitions:
       name:
         type: string
     type: object
-  service.User:
+  service.Friend:
     properties:
+      avatar:
+        type: string
       follow_count:
         type: integer
       follower_count:
@@ -113,8 +140,21 @@ definitions:
         type: integer
       is_follow:
         type: boolean
+      message:
+        type: string
+      msgType:
+        type: integer
       name:
         type: string
+    type: object
+  service.Message:
+    properties:
+      content:
+        type: string
+      create_time:
+        type: integer
+      id:
+        type: integer
     type: object
   service.VideoInfo:
     properties:
@@ -147,6 +187,62 @@ definitions:
 info:
   contact: {}
 paths:
+  /comment/action/:
+    post:
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 视频id
+        in: query
+        name: video_id
+        required: true
+        type: string
+      - description: 评论操作
+        in: query
+        name: action_type
+        required: true
+        type: string
+      - description: 评论内容
+        in: query
+        name: comment_text
+        type: string
+      - description: 评论id
+        in: query
+        name: comment_id
+        type: string
+      responses: {}
+      summary: 评论操作
+      tags:
+      - 互动接口
+  /favorite/action/:
+    post:
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 视频id
+        in: query
+        name: video_id
+        required: true
+        type: string
+      - description: 赞操作
+        in: query
+        name: action_type
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.FavouriteRespStruct'
+      summary: 赞操作
+      tags:
+      - 互动接口
   /feed:
     get:
       parameters:
@@ -176,6 +272,58 @@ paths:
       summary: 首页
       tags:
       - 公共接口
+  /message/action/:
+    post:
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: to_user_id
+        required: true
+        type: string
+      - description: 1-发送消息
+        in: query
+        name: action_type
+        required: true
+        type: string
+      - description: 消息内容
+        in: query
+        name: content
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.SendMessageRespStruct'
+      summary: 发送消息
+      tags:
+      - 社交接口
+  /message/chat/:
+    get:
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: to_user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.MessageRecordRespStruct'
+      summary: 聊天记录
+      tags:
+      - 社交接口
   /publish/action/:
     post:
       parameters:

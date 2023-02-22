@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"simple_tiktok/dao/mysql"
 	Myredis "simple_tiktok/dao/redis"
@@ -57,7 +58,7 @@ func getAuthorName(ctx *gin.Context, authorId *uint64) (*string, error) {
 // 获取视频赞数的函数
 func getVideoFavoriteCount(ctx *gin.Context, videoId uint64) (*int64, error) {
 	favoriteCount := new(int64)
-	key := fmt.Sprintf("%s%d", viper.GetString("redis.KeyFavoriteUserSortSetPrefix"), videoId)
+	key := fmt.Sprintf("%s%d", viper.GetString("redis.KetFavoriteSetPrefix"), videoId)
 	// 先从RDB5中查看键值对是否存在
 	n, err := utils.RDB5.Exists(ctx, key).Result()
 	if err != nil {
@@ -79,14 +80,10 @@ func getVideoFavoriteCount(ctx *gin.Context, videoId uint64) (*int64, error) {
 	}
 	*favoriteCount = 0
 	for i := range *videoFavoriteList {
-		if (*videoFavoriteList)[i].Status == "0" {
-			err = Myredis.RedisAddZSetRDB5(ctx, key, fmt.Sprintf("%d", (*videoFavoriteList)[i].UserIdentity), 0)
-			if err != nil {
-				return nil, err
-			}
+		if (*videoFavoriteList)[i].Status == 0 {
 			continue
 		}
-		err = Myredis.RedisAddZSetRDB5(ctx, key, fmt.Sprintf("%d", (*videoFavoriteList)[i].UserIdentity), 0)
+		err = Myredis.RedisAddZSetRDB5(ctx, key, fmt.Sprintf("%d", (*videoFavoriteList)[i].UserIdentity), 1)
 		if err != nil {
 			return nil, err
 		}
@@ -98,7 +95,7 @@ func getVideoFavoriteCount(ctx *gin.Context, videoId uint64) (*int64, error) {
 // 获取视频评论数的函数
 func getVideoCommentCount(ctx *gin.Context, videoId uint64) (*int64, error) {
 	commentCount := new(int64)
-	key := fmt.Sprintf("%s%d", viper.GetString("KeyCommentListPrefix"), videoId)
+	key := fmt.Sprintf("%s%d", viper.GetString("redis.KeyCommentListPrefix"), videoId)
 	// 先从RDB8中查看键值对是否存在
 	n, err := utils.RDB8.Exists(ctx, key).Result()
 	if err != nil {
@@ -124,7 +121,7 @@ func getVideoCommentCount(ctx *gin.Context, videoId uint64) (*int64, error) {
 			return nil, err
 		}
 		// 缓存评论信息
-		commentKey := fmt.Sprintf("%s%d", viper.GetString("KeyCommentInfoHashPrefix"), (*commentList)[i].Identity)
+		commentKey := fmt.Sprintf("%s%d", viper.GetString("redis.KeyCommentInfoHashPrefix"), (*commentList)[i].Identity)
 		err = Myredis.RedisSetHashRDB7(ctx, commentKey, map[string]interface{}{
 			"video_identity": (*commentList)[i].VideoIdentity,
 			"user_identity":  (*commentList)[i].UserIdentity,
@@ -172,14 +169,10 @@ func judgeLoginUserLoveVideo(ctx *gin.Context, videoId uint64, loginUserId uint6
 	*isFavorite = false
 	// 缓存RDB5
 	for i := range *videoFavoriteList {
-		if (*videoFavoriteList)[i].Status == "0" {
-			err = Myredis.RedisAddZSetRDB5(ctx, key, fmt.Sprintf("%d", (*videoFavoriteList)[i].UserIdentity), 0)
-			if err != nil {
-				return nil, err
-			}
+		if (*videoFavoriteList)[i].Status == 0 {
 			continue
 		}
-		err = Myredis.RedisAddZSetRDB5(ctx, key, fmt.Sprintf("%d", (*videoFavoriteList)[i].UserIdentity), 0)
+		err = Myredis.RedisAddZSetRDB5(ctx, key, fmt.Sprintf("%d", (*videoFavoriteList)[i].UserIdentity), 1)
 		if err != nil {
 			return nil, err
 		}
@@ -372,6 +365,10 @@ func GetFollowerCount(c *gin.Context, identity string) (int64, error) {
  * @Date 13:00 2023/2/13
  **/
 func IsFollow(c *gin.Context, identity string, follower string) (bool, error) {
+	if identity == follower {
+		return true, nil
+	}
+
 	// 先查询缓存
 	key := viper.GetString("redis.KeyFollowerSortSetPrefix") + identity
 
@@ -395,4 +392,119 @@ func IsFollow(c *gin.Context, identity string, follower string) (bool, error) {
 		return false, nil
 	}
 	return true, nil
+}
+
+// 将结果存入redis缓存
+func SaveRedisResp(msgid string, code int, msg string) {
+	info := map[string]interface{}{
+		"status_code": code,
+		"status_msg":  msg,
+	}
+
+	var ctx = context.Background()
+	pipeline := utils.RDB0.Pipeline()
+	pipeline.HSet(ctx, msgid, info)
+	pipeline.Expire(ctx, msgid, time.Second*70)
+	pipeline.Exec(ctx)
+}
+
+// 从缓存里取指定用户喜欢的视频id，如果没有就缓存进去
+func getFavoriteVideoList(ctx *gin.Context, userId *uint64) (*[]uint64, error) {
+	key := fmt.Sprintf("%s%d", viper.GetString("redis.KeyUserFavoriteListPrefix"), *userId)
+	n, err := utils.RDB6.Exists(ctx, key).Result()
+	if err != nil {
+		return nil, err
+	}
+	var videoList []uint64
+	if n == 0 {
+		// 缓存中没有，需要在RDB6中缓存用户的信息
+		// 先从数据库中拿到数据
+		favoriteList, err := mysql.QueryFavoriteHistoryByUserId(userId)
+		if err != nil {
+			return nil, err
+		}
+		// 缓存的同时构造返回值
+		for i := range *favoriteList {
+			if (*favoriteList)[i].Status == 0 {
+				continue
+			}
+			videoList = append(videoList, (*favoriteList)[i].VideoIdentity)
+			err := Myredis.RedisAddListRDB6(ctx, key, fmt.Sprintf("%d", (*favoriteList)[i].VideoIdentity))
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &videoList, nil
+	}
+	res, err := utils.RDB6.LRange(ctx, key, 0, -1).Result()
+	if err != nil {
+		return nil, err
+	}
+	for i := range res {
+		id, err := strconv.Atoi(res[i])
+		if err != nil {
+			return nil, err
+		}
+		videoList = append(videoList, uint64(id))
+	}
+	return &videoList, nil
+}
+
+// 根据视频id找作者id，先从视频信息的缓存中找，没有就把视频信息加到缓存中去
+func getAuthorIdByVideoId(ctx *gin.Context, videoId *uint64) (*uint64, error) {
+	key := fmt.Sprintf("%s%d", viper.GetString("redis.KeyVideoInfoHashPrefix"), *videoId)
+	n, err := utils.RDB3.Exists(ctx, key).Result()
+	if err != nil {
+		return nil, err
+	}
+	if n == 0 {
+		videoBasic, err := mysql.QueryVideoInfoByVideoId(videoId)
+		if err != nil {
+			return nil, err
+		}
+		// 缓存
+		err = Myredis.RedisAddVideoInfo(ctx, *videoBasic)
+		if err != nil {
+			return nil, err
+		}
+		return &videoBasic.UserIdentity, nil
+	}
+	sId, err := utils.RDB3.HGet(ctx, key, "author_id").Result()
+	if err != nil {
+		return nil, err
+	}
+	iId, err := strconv.Atoi(sId)
+	if err != nil {
+		return nil, err
+	}
+	authorId := uint64(iId)
+	return &authorId, nil
+}
+
+// 获取获赞数量，作品数和喜欢数
+func GetTotalFavouritedANDWorkCountANDFavoriteCount(identity uint64) (int64, int64, int64, error) {
+
+	// 获取作品数
+	videoList, err := mysql.GetWorkCount(identity)
+	if err != nil {
+		return 0, 0, 0, err
+	}
+	workCount := len(videoList)
+
+	// 获取获赞数量
+	var totalFavourited int64 = 0
+	for _, video := range videoList {
+		favourited, err := mysql.GetTotalFavourited(video.Identity)
+		if err != nil {
+			return 0, 0, 0, err
+		}
+		totalFavourited += favourited
+	}
+
+	// 获取喜欢数
+	favouriteCount, err := mysql.GetFavoriteCount(identity)
+	if err != nil {
+		return 0, 0, 0, err
+	}
+	return totalFavourited, int64(workCount), favouriteCount, nil
 }

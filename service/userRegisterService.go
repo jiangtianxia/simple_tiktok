@@ -1,10 +1,3 @@
-/*
- * @Description:
- * @Author: liuxin
- * @Date: 2023-01-28 09:33:15
- * @LastEditTime: 2023-01-29 13:45:24
- * @LastEditors:
- */
 package service
 
 import (
@@ -25,39 +18,39 @@ import (
  * @Description: 用户注册接口
  * @Date: 2023-01-28 09:33:15
  **/
-func PostUserRegister(c *gin.Context, req *RegisterRequire) (*RegisterResponse, error) {
+func PostUserRegister(c *gin.Context, req *RegisterRequire) (RegisterResponse, error) {
 	//验证合法性
 	if req.Username == "" {
-		return nil, errors.New("用户名为空")
+		return RegisterResponse{}, errors.New("用户名为空")
 	}
 	if req.Password == "" {
-		return nil, errors.New("密码为空")
+		return RegisterResponse{}, errors.New("密码为空")
 	}
 
 	//判断用户名
 	if mysql.UserIsExist(req.Username) {
-		return nil, errors.New("用户名已存在")
+		return RegisterResponse{}, errors.New("用户名已存在")
 	}
 
 	//雪花算法生成id
 	getid, err := utils.GetID()
 	getpsw := utils.MakePassword(req.Password)
 	if err != nil {
-		return nil, errors.New("注册失败")
+		return RegisterResponse{}, errors.New("注册失败")
 	}
 
 	ur := models.UserBasic{Identity: getid, Username: req.Username, Password: getpsw}
 	// 更新数据
 	err = mysql.AddUserBasic(ur)
 	if err != nil {
-		return nil, err
+		return RegisterResponse{}, err
 	}
 
 	//给token
 	token, err := utils.GenerateToken(ur.Identity, ur.Username)
 	if err != nil {
 		logger.SugarLogger.Error("Generate Token Error:" + err.Error())
-		return nil, errors.New("注册失败")
+		return RegisterResponse{}, errors.New("注册失败")
 	}
 
 	//response
@@ -75,5 +68,5 @@ func PostUserRegister(c *gin.Context, req *RegisterRequire) (*RegisterResponse, 
 	if err != nil {
 		logger.SugarLogger.Error(err)
 	}
-	return &resp, nil
+	return resp, nil
 }

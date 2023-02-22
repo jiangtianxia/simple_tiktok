@@ -10,8 +10,6 @@ require (
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/sony/sonyflake v1.1.0
 	github.com/spf13/viper v1.15.0
-	github.com/swaggo/files v1.0.0
-	github.com/swaggo/gin-swagger v1.5.3
 	github.com/swaggo/swag v1.8.9
 	go.uber.org/zap v1.24.0
 	gorm.io/driver/mysql v1.4.5
@@ -33,7 +31,7 @@ require (
 	golang.org/x/tools v0.5.0 // indirect
 )
 
-require golang.org/x/net v0.5.0
+require golang.org/x/net v0.5.0 // indirect
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
@@ -73,6 +71,8 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stathat/consistent v1.0.0 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
+	github.com/swaggo/files v1.0.0
+	github.com/swaggo/gin-swagger v1.5.3
 	github.com/tidwall/gjson v1.13.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect

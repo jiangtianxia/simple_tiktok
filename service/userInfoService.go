@@ -67,24 +67,32 @@ func UserInfo(c *gin.Context, loginUser uint64, userId string) (Author, error) {
 		}
 
 		// 判断是否关注用户
-		flag := false
-		if user.Identity == loginUser {
-			flag = true
-		} else {
-			flag, err = IsFollow(c, strconv.Itoa(int(user.Identity)), strconv.Itoa(int(loginUser)))
-			if err != nil {
-				logger.SugarLogger.Error("IsFollow Error：", err.Error())
-				return Author{}, err
-			}
+		flag, err := IsFollow(c, strconv.Itoa(int(user.Identity)), strconv.Itoa(int(loginUser)))
+		if err != nil {
+			logger.SugarLogger.Error("IsFollow Error：", err.Error())
+			return Author{}, err
+		}
+
+		// 获取点赞数量，作品数和喜欢数
+		totalFavourited, workCount, FavouriteCount, err := GetTotalFavouritedANDWorkCountANDFavoriteCount(user.Identity)
+		if err != nil {
+			logger.SugarLogger.Error("GetTotalFavouritedANDWorkCountANDFavoriteCount Error：", err.Error())
+			return Author{}, err
 		}
 
 		// 返回结果
 		res := Author{
-			Id:            user.Identity,
-			Name:          user.Username,
-			FollowCount:   followCount,
-			FollowerCount: followerCount,
-			IsFollow:      flag,
+			Id:              user.Identity,
+			Name:            user.Username,
+			FollowCount:     followCount,
+			FollowerCount:   followerCount,
+			IsFollow:        flag,
+			Avatar:          viper.GetString("defaultAvatarUrl"),
+			BackGroundImage: viper.GetString("defaultBackGroudImage"),
+			Signature:       viper.GetString("defaultSignature"),
+			TotalFavorited:  totalFavourited,
+			WorkCount:       workCount,
+			FavoriteCount:   FavouriteCount,
 		}
 		return res, nil
 	}
@@ -110,24 +118,31 @@ func UserInfo(c *gin.Context, loginUser uint64, userId string) (Author, error) {
 	}
 
 	// 判断是否关注该用户
-	flag := false
-	if uint64(identity) == loginUser {
-		flag = true
-	} else {
-		flag, err = IsFollow(c, userId, strconv.Itoa(int(loginUser)))
-		// fmt.Println(flag)
-		if err != nil {
-			logger.SugarLogger.Error("IsFollow Error：", err.Error())
-			return Author{}, err
-		}
+	flag, err := IsFollow(c, userId, strconv.Itoa(int(loginUser)))
+	// fmt.Println(flag)
+	if err != nil {
+		logger.SugarLogger.Error("IsFollow Error：", err.Error())
+		return Author{}, err
+	}
+
+	totalFavourited, workCount, FavouriteCount, err := GetTotalFavouritedANDWorkCountANDFavoriteCount(uint64(identity))
+	if err != nil {
+		logger.SugarLogger.Error("GetTotalFavouritedANDWorkCountANDFavoriteCount Error：", err.Error())
+		return Author{}, err
 	}
 
 	res := Author{
-		Id:            uint64(identity),
-		Name:          cathe["username"],
-		FollowCount:   followCount,
-		FollowerCount: followerCount,
-		IsFollow:      flag,
+		Id:              uint64(identity),
+		Name:            cathe["username"],
+		FollowCount:     followCount,
+		FollowerCount:   followerCount,
+		IsFollow:        flag,
+		Avatar:          viper.GetString("defaultAvatarUrl"),
+		BackGroundImage: viper.GetString("defaultBackGroudImage"),
+		Signature:       viper.GetString("defaultSignature"),
+		TotalFavorited:  totalFavourited,
+		WorkCount:       workCount,
+		FavoriteCount:   FavouriteCount,
 	}
 	return res, nil
 }
