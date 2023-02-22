@@ -144,9 +144,10 @@ simple_tiktok
 评论模块包括xx。详情：[评论模块设计说明]() 。
 
 ###### 视频模块的设计
-视频模块包括xx。详情：[视频模块设计说明]()。
+视频模块包括视频流、视频投稿、获取发布视频列表三个部分，详情：[视频模块设计说明](https://nn2h7776xm.feishu.cn/docx/BL80d9z7Qo5sZzxPqYjca5VLntd?from=space_persnoal_filelist)。
 
 ###### 消息模块的设计
+
 消息模块包括xx。详情：[消息模块设计说明]() 。
 
 ###### 关系模块的设计
