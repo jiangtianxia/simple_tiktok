@@ -138,19 +138,19 @@ simple_tiktok
 用户模块包括用户注册、用户登录和用户信息获取三个部分，详情：[用户模块设计说明](https://ozilj01ufe.feishu.cn/docx/P4Asd72jsoQTvQxcDAhcVmlEnJg) 。
 
 ###### 点赞模块的设计
-点赞模块包括xx。详情：[点赞模块设计说明](https://ozilj01ufe.feishu.cn/docx/Y7Ejd0UyioCGYRxUKMAcoLvXnWf) 。
+点赞模块包括xx。详情：[点赞模块设计说明]() 。
 
 ###### 评论模块的设计
-评论模块包括xx。详情：[评论模块设计说明](https://ozilj01ufe.feishu.cn/docx/XMGxdbWYOoTpP3xKtp9cBdCmnCd) 。
+评论模块包括xx。详情：[评论模块设计说明]() 。
 
 ###### 视频模块的设计
-视频模块包括xx。详情：[视频模块设计说明](https://ozilj01ufe.feishu.cn/docx/PwjidjFklopXYfxCblpcMLa9nud)。
+视频模块包括xx。详情：[视频模块设计说明]()。
 
 ###### 消息模块的设计
-消息模块包括xx。详情：[消息模块设计说明](https://ozilj01ufe.feishu.cn/docx/V23UdBH5boF5Dwxjw9qcPMZbnfh) 。
+消息模块包括xx。详情：[消息模块设计说明]() 。
 
 ###### 关系模块的设计
-关注模块包括xx。详情：[关系模块设计说明](https://ozilj01ufe.feishu.cn/docx/TRald6KOJoJ9tHxaDNBclhSMnQg) 。
+关注模块包括xx。详情：[关系模块设计说明]() 。
 
 ### **使用技术**
 框架相关：
