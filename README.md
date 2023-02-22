@@ -8,7 +8,7 @@
     <a href="https://ozilj01ufe.feishu.cn/base/bascnXyGKEcJi7vOkiVQVlPvoWc?table=tblOc75EZYVXCah0&view=vewMnpNgGD">查看团队工作文档 »</a>
     <br />
   </p>
-  </p>
+</p>
 
 ## **项目介绍**
 
@@ -138,7 +138,7 @@ simple_tiktok
 用户模块包括用户注册、用户登录和用户信息获取三个部分，详情：[用户模块设计说明](https://ozilj01ufe.feishu.cn/docx/P4Asd72jsoQTvQxcDAhcVmlEnJg) 。
 
 ###### 点赞模块的设计
-点赞模块包括xx。详情：[点赞模块设计说明]() 。
+点赞模块包括xx。详情：[点赞模块设计说明](https://vyhsij84iy.feishu.cn/docx/KoX0dJlHnoNJP2xvXnfc1HbJn0f) 。
 
 ###### 评论模块的设计
 评论模块包括xx。详情：[评论模块设计说明]() 。
@@ -169,6 +169,9 @@ simple_tiktok
 - [MySQL](https://dev.mysql.com/doc/)
 
 ### **性能测试**
+    用浏览器打开http://localhost:8080/debug/pprof/，可以通过pprof提供的功能查看本项目的性能
+    ![](images/pprof.png)
+    也可以通过[各个接口的压力测试的压测报告](https://vyhsij84iy.feishu.cn/docx/ACRXdM6YloiDmyxaXk8czxshnXq)获得具体压力数据
 
 //
 
