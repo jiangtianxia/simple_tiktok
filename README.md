@@ -155,7 +155,7 @@ git clone https://github.com/jiangtianxia/simple_tiktok.git
 
 #### 演示视频
 
-[演示视频地址](https://www.bilibili.com/video/BV1954y1F73i)
+[演示视频地址](https://ozilj01ufe.feishu.cn/docx/Q1FBdZD8BoenYXxNZehcbI0QnVd)
 
 
 
