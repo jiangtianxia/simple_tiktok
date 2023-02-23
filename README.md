@@ -153,6 +153,7 @@ git clone https://github.com/jiangtianxia/simple_tiktok.git
 <img src="images/拓展功能演示7.jpg" alt="Logo" width="200" height="400">
 <img src="images/拓展功能演示8.jpg" alt="Logo" width="200" height="400">
 <img src="images/拓展功能演示9.jpg" alt="Logo" width="200" height="400">
+<img src="images/拓展功能演示10.jpg" alt="Logo" width="200" height="400">
 
 **设置服务端地址**
 
