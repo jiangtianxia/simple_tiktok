@@ -20,42 +20,29 @@
 
 
 ## **目录**
-- [**项目介绍**](#项目介绍)
-- [**目录**](#目录)
-  - [**上手指南**](#上手指南)
-    - [环境配置](#环境配置)
-      - [**开发版**](#开发版)
-      - [**上线版**](#上线版)
+- [上手指南](#上手指南)
+    - [开发前的配置要求](#开发前的配置要求)
     - [安装步骤](#安装步骤)
-      - [**分支说明**](#分支说明)
-      - [**开发版**](#开发版-1)
-      - [**上线版**](#上线版-1)
     - [演示界面](#演示界面)
     - [演示视频](#演示视频)
-  - [**文件目录说明**](#文件目录说明)
-  - [**开发的整体设计**](#开发的整体设计)
-    - [系统架构图](#系统架构图)
-    - [数据库设计](#数据库设计)
-    - [Redis架构设计](#redis架构设计)
-    - [RocketMQ架构设计](#rocketmq架构设计)
-    - [服务模块设计](#服务模块设计)
-        - [用户模块的设计](#用户模块的设计)
-        - [点赞模块的设计](#点赞模块的设计)
-        - [评论模块的设计](#评论模块的设计)
-        - [视频模块的设计](#视频模块的设计)
-        - [消息模块的设计](#消息模块的设计)
-        - [关注模块的设计](#关注模块的设计)
-  - [**使用技术**](#使用技术)
-  - [**性能测试**](#性能测试)
-  - [**总结与反思**](#总结与反思)
-    - [目前仍存在的问题](#目前仍存在的问题)
-    - [已识别出的优化项](#已识别出的优化项)
-    - [架构演进的可能性](#架构演进的可能性)
-    - [项目过程中的反思与总结](#项目过程中的反思与总结)
-  - [**参与开源项目**](#参与开源项目)
-  - [**版本控制**](#版本控制)
-  - [**贡献者**](#贡献者)
-  - [**鸣谢**](#鸣谢)
+- [文件目录说明](#文件目录说明)
+- [开发的整体设计](#开发的整体设计)
+   - [服务模块设计](#服务模块设计)
+   - [整体的架构图](#整体的架构图)
+   - [数据库的设计](#数据库的设计)
+   - [Redis架构的设计](#Redis架构的设计)
+   - [RocketMQ架构的设计](#RocketMQ架构的设计)
+- [使用技术](#使用技术)
+- [性能测试](#性能测试)
+- [总结与反思](#总结与反思)
+   - [目前仍存在的问题](#目前仍存在的问题)
+   - [已识别出的优化项](#已识别出的优化项)
+   - [架构演进的可能性](#架构演进的可能性)
+   - [项目过程中的反思与总结](#项目过程中的反思与总结)
+- [参与开源项目](#如何参与开源项目)
+- [版本控制](#版本控制)
+- [贡献者](#贡献者)
+- [鸣谢](#鸣谢)
 
 
 
@@ -156,30 +143,15 @@ git clone https://github.com/jiangtianxia/simple_tiktok.git
 #### 演示界面
 **基础功能演示**
 
-<img src="images/基础功能演示1.jpg" alt="Logo" width="200" height="400">
-<img src="images/基础功能演示2.jpg" alt="Logo" width="200" height="400">
-<img src="images/基础功能演示3.jpg" alt="Logo" width="200" height="400">
-<img src="images/基础功能演示4.jpg" alt="Logo" width="200" height="400">
-<img src="images/基础功能演示5.jpg" alt="Logo" width="200" height="400">
+<img src="images/基础功能演示1.jpg" alt="Logo" width="200" height="400"><img src="images/基础功能演示2.jpg" alt="Logo" width="200" height="400"><img src="images/基础功能演示3.jpg" alt="Logo" width="200" height="400"><img src="images/基础功能演示4.jpg" alt="Logo" width="200" height="400"><img src="images/基础功能演示5.jpg" alt="Logo" width="200" height="400">
 
 **拓展功能演示**
 
-<img src="images/拓展功能演示1.jpg" alt="Logo" width="200" height="400">
-<img src="images/拓展功能演示2.jpg" alt="Logo" width="200" height="400">
-<img src="images/拓展功能演示3.jpg" alt="Logo" width="200" height="400">
-<img src="images/拓展功能演示4.jpg" alt="Logo" width="200" height="400">
-<img src="images/拓展功能演示5.jpg" alt="Logo" width="200" height="400">
-<img src="images/拓展功能演示6.jpg" alt="Logo" width="200" height="400">
-<img src="images/拓展功能演示7.jpg" alt="Logo" width="200" height="400">
-<img src="images/拓展功能演示8.jpg" alt="Logo" width="200" height="400">
-<img src="images/拓展功能演示9.jpg" alt="Logo" width="200" height="400">
-<img src="images/拓展功能演示10.jpg" alt="Logo" width="200" height="400">
+<img src="images/拓展功能演示1.jpg" alt="Logo" width="200" height="400"><img src="images/拓展功能演示2.jpg" alt="Logo" width="200" height="400"><img src="images/拓展功能演示3.jpg" alt="Logo" width="200" height="400"><img src="images/拓展功能演示4.jpg" alt="Logo" width="200" height="400"><img src="images/拓展功能演示5.jpg" alt="Logo" width="200" height="400"><img src="images/拓展功能演示6.jpg" alt="Logo" width="200" height="400"><img src="images/拓展功能演示7.jpg" alt="Logo" width="200" height="400"><img src="images/拓展功能演示8.jpg" alt="Logo" width="200" height="400"><img src="images/拓展功能演示9.jpg" alt="Logo" width="200" height="400"><img src="images/拓展功能演示10.jpg" alt="Logo" width="200" height="400">
 
 **设置服务端地址**
 
-<img src="images/设置服务端地址1.jpg" alt="Logo" width="200" height="400">
-<img src="images/设置服务端地址2.jpg" alt="Logo" width="200" height="400">
-<img src="images/设置服务端地址3.jpg" alt="Logo" width="200" height="400">
+<img src="images/设置服务端地址1.jpg" alt="Logo" width="200" height="400"><img src="images/设置服务端地址2.jpg" alt="Logo" width="200" height="400"><img src="images/设置服务端地址3.jpg" alt="Logo" width="200" height="400">
 
 #### 演示视频
 
