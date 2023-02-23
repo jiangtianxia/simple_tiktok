@@ -129,11 +129,11 @@ git clone https://github.com/jiangtianxia/simple_tiktok.git
 
 **docker相关命令说明**
 
-**一键部署：**docker-compose up -d
+**一键部署**：docker-compose up -d
 
-**查看容器状态：**docker ps
+**查看容器状态**：docker ps
 
-**查看日志：**docker logs dockerName/ID
+**查看日志**：docker logs dockerName/ID
 
 
 
@@ -155,7 +155,7 @@ git clone https://github.com/jiangtianxia/simple_tiktok.git
 
 #### 演示视频
 
-[![Watch the video](images/演示视频.jpg)](upload/%E6%BC%94%E7%A4%BA%E8%A7%86%E9%A2%91480P.mp4)
+[![Watch the video](images/演示视频.jpg)](https://www.bilibili.com/video/BV1954y1F73i)
 
 
 
