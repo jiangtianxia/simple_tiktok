@@ -183,7 +183,7 @@ git clone https://github.com/jiangtianxia/simple_tiktok.git
 
 #### 演示视频
 
-//视频文件
+[![Watch the video](images/演示视频.jpg)](upload/%E6%BC%94%E7%A4%BA%E8%A7%86%E9%A2%91480P.mp4)
 
 
 
