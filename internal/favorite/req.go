@@ -11,5 +11,6 @@ type FavoriteActionReq struct {
 type FavoriteListReq struct {
 	UserId int64  `json:"user_id" form:"user_id" binding:"required"` // 用户id
 	Token  string `json:"token" form:"token" binding:"required"`     // 用户鉴权token
+	common.SearchReq
 	common.PaginateReq
 }

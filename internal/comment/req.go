@@ -13,5 +13,6 @@ type CommentActionReq struct {
 type CommentListReq struct {
 	Token   string `json:"token" form:"token" binding:"required"`       // 用户鉴权token
 	VideoId int64  `json:"video_id" form:"video_id" binding:"required"` // 视频id
+	common.SearchReq
 	common.PaginateReq
 }

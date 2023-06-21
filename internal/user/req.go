@@ -14,5 +14,6 @@ type UserInfoReq struct {
 
 type UserSearchReq struct {
 	Keyword string `json:"keyword" form:"keyword" binding:"required"` // 搜索关键词, 用户名/用户id
+	common.SearchReq
 	common.PaginateReq
 }

@@ -12,6 +12,9 @@ type IVideoService interface {
 	// 发布列表
 	GetVideoPublishList(req *VideoPublishListReq) (*common.VideoListResp, error)
 
+	// 视频信息
+	GetVideoInfo(req *VideoInfoReq) (*common.Video, error)
+
 	// 视频搜索
 	VideoSearch(req *VideoSearchReq) (*common.VideoListResp, error)
 }
