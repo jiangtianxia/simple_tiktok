@@ -4,13 +4,13 @@ import "simple_tiktok/internal/common"
 
 type UserRegisterResp struct {
 	common.NormalizeResp
-	UserId int64  `json:"user_id"`
+	UserId string `json:"user_id"`
 	Token  string `json:"token"`
 }
 
 type UserLoginResp struct {
 	common.NormalizeResp
-	UserId int64  `json:"user_id"`
+	UserId string `json:"user_id"`
 	Token  string `json:"token"`
 }
 

@@ -13,7 +13,7 @@ type PaginateResp struct {
 }
 
 type User struct {
-	Id             int64  `json:"id"`              // 用户id
+	Id             string `json:"id"`              // 用户id
 	Name           string `json:"name"`            // 用户名称
 	FollowCount    int64  `json"follow_count`      // 关注总数
 	FollowerCount  int64  `json:"follower_count"`  // 粉丝总数
@@ -24,7 +24,7 @@ type User struct {
 }
 
 type Video struct {
-	Id            int64  `json:"id"`            // 视频唯一标识
+	Id            string `json:"id"`            // 视频唯一标识
 	PlayUrl       string `json:"play_url"`      // 视频播放地址
 	CoverUrl      string `json:"cover_url"`     // 视频封面地址
 	Title         string `json:"title"`         // 视频标题
