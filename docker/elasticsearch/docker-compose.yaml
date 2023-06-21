@@ -2,7 +2,7 @@ version: '3'
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.0
-    container_name: titktok_elasticsearch
+    container_name: tiktok_elasticsearch
     restart: always
     ports:
       - 9200:9200
@@ -17,7 +17,7 @@ services:
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.15.0
-    container_name: titktok_kibana
+    container_name: tiktok_kibana
     restart: always
     ports:
       - 5601:5601
