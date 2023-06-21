@@ -1,0 +1,11 @@
+
+#内容如下：
+server.name: kibana
+# kibana的主机地址 0.0.0.0可表示监听所有IP
+server.host: "0.0.0.0"
+# kibana访问es的URL
+elasticsearch.hosts: [ "http://elasticsearch:9200" ]
+# 显示登陆页面
+xpack.monitoring.ui.container.elasticsearch.enabled: true
+# 语言
+i18n.locale: "zh-CN"

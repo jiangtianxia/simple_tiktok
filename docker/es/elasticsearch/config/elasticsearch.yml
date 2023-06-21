@@ -1,6 +1,6 @@
-cluster.name: my-cluster
-network.host: 0.0.0.0
-discovery.type: single-node
+#内容如下：
+http.port: 9200
+http.host: 0.0.0.0
 http.cors.enabled: true
 http.cors.allow-origin: "*"
 
