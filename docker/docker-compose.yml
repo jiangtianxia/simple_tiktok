@@ -1,0 +1,66 @@
+version: "3.7"
+
+# 自定义网络（默认桥接），不使用links通信
+networks: 
+  db_network:
+    driver: bridge
+  redis_network:
+    driver: bridge
+  nginx_network:
+    driver: bridge
+
+
+services:
+  tiktok_db:
+    container_name: tiktok_db   # 容器名字
+    image: mysql:latest         # 拉取mysql最新的容器
+    restart: always             # 设定docker运行时自动启动，发生错误时一直重启
+    networks:                   # 使用网络
+      - db_network  
+    volumes:                    # 文件挂载
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro  # 时区配置
+      - ./mysql/data/:/var/lib/mysql/                 # 映射mysql的数据目录到宿主机，保存数据
+      - ./mysql/conf.d/my.cnf:/etc/mysql/my.cnf       # 把mysql的配置文件映射到容器的相应目录
+      - ./mysql/mysql-files/:/var/lib/mysql-files/
+      - ./mysql/init:/docker-entrypoint-initdb.d/
+    ports:
+      - "3306:3306"             # 端口映射,宿主机使用3306端口
+    environment:                # 设定容器中的环境变量
+      MYSQL_ROOT_PASSWORD: "tiktokadmin"
+      MYSQL_USER: "test"
+      MYSQL_DATABASE: "tiktok"
+      MYSQL_PASSWORD: "674092"
+      LANG: C.UTF-8
+  
+  tiktok_redis:
+    container_name: tiktok_redis
+    image: redis:latest
+    command: redis-server /etc/redis/redis.conf              # 容器启动后启动redis服务器
+    privileged: true                                         # 让redis有root权限
+    networks:
+      - redis_network
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro  # 时区配置
+      - ./redis/data:/data
+      - ./redis/conf.d/redis.conf:/etc/redis/redis.conf
+      - ./redis/rebloom/rebloom.so:/etc/redis/rebloom.so:rw
+
+  tiktok_nginx:
+    build: ./nginx/
+    container_name: tiktok_nginx
+    restart: always
+    networks:
+      - nginx_network
+    ports:
+      - "80:80"
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+      - ./nginx/html/:/usr/share/nginx/html/
+      - ../upload/:/usr/share/nginx/html/upload
+      - ./nginx/tmp/logs:/tmp
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    environment:
+      - NGINX_PORT=80
