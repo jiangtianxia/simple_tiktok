@@ -1,0 +1,31 @@
+version: '3'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.0
+    container_name: titktok_elasticsearch
+    restart: always
+    ports:
+      - 9200:9200
+    volumes:
+      - ./config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./data:/usr/share/elasticsearch/data
+      - ./plugins:/usr/share/elasticsearch/plugins
+    environment:
+      - discovery.type=single-node
+      - ELASTICSEARCH_USERNAME=titktok
+      - ELASTICSEARCH_PASSWORD=titktok123
+    tty: true
+    command: >
+      bash -c "cd /usr/share/elasticsearch/bin && ./elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.15.0/elasticsearch-analysis-ik-7.15.0.zip && /usr/local/bin/docker-entrypoint.sh"
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.15.0
+    container_name: titktok_kibana
+    restart: always
+    ports:
+      - 5601:5601
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=titktok
+      - ELASTICSEARCH_PASSWORD=titktok123
+      - KIBANA_I18N_LOCALE=zh-CN
