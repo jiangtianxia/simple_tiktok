@@ -14,9 +14,6 @@ services:
       - discovery.type=single-node
       - ELASTICSEARCH_USERNAME=titktok
       - ELASTICSEARCH_PASSWORD=titktok123
-    tty: true
-    command: >
-      bash -c "cd /usr/share/elasticsearch/bin && ./elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.15.0/elasticsearch-analysis-ik-7.15.0.zip && /usr/local/bin/docker-entrypoint.sh"
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.15.0
