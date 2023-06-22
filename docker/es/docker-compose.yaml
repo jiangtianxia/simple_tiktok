@@ -37,7 +37,7 @@ services:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - KIBANA_I18N_LOCALE=zh-CN
     depends_on:
-      - tiktok_elasticsearch
+      - elasticsearch
     volumes:
       - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml
     networks:
