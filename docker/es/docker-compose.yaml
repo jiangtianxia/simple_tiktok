@@ -15,8 +15,6 @@ services:
       - ./elasticsearch/plugins:/usr/share/elasticsearch/plugins
     environment:
       - discovery.type=single-node
-      - ELASTICSEARCH_USERNAME=titktok
-      - ELASTICSEARCH_PASSWORD=titktok123
       - bootstrap.memory_lock=true
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
     ulimits:
@@ -37,11 +35,9 @@ services:
       - 5601:5601
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - ELASTICSEARCH_USERNAME=titktok
-      - ELASTICSEARCH_PASSWORD=titktok123
       - KIBANA_I18N_LOCALE=zh-CN
     depends_on:
-      - elasticsearch
+      - tiktok_elasticsearch
     volumes:
       - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml
     networks:
