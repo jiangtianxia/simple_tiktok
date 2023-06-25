@@ -11,5 +11,5 @@ type IUserService interface {
 	GetUserInfo(req *UserInfoReq) (*UserInfoResp, error)
 
 	// 用户搜索
-	UserSearch(req *UserSearchReq) (*UserSearchResp, error)
+	UserSearch(req *UserSearchReq) (*UserInfoResp, error)
 }

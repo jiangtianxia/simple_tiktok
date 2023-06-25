@@ -37,5 +37,5 @@ type Video struct {
 type VideoListResp struct {
 	NormalizeResp
 	PaginateResp
-	VideoList Video `json:"video_list"` // 视频列表
+	VideoList []Video `json:"video_list"` // 视频列表
 }

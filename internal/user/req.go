@@ -8,8 +8,9 @@ type NormalizeUserReq struct {
 }
 
 type UserInfoReq struct {
-	UserId string `json:"user_id" form:"user_id" binding:"required"` // 用户id
-	Token  string `json:"token" form:"token" binding:"required"`     // 用户鉴权token
+	UserIds []string `json:"user_ids" form:"user_ids" binding:"required"` // 用户id
+	Token   string   `json:"token" form:"token" binding:"required"`       // 用户鉴权token
+	common.PaginateReq
 }
 
 type UserSearchReq struct {

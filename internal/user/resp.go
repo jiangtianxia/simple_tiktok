@@ -16,11 +16,6 @@ type UserLoginResp struct {
 
 type UserInfoResp struct {
 	common.NormalizeResp
-	common.User
-}
-
-type UserSearchResp struct {
-	common.NormalizeResp
 	common.PaginateResp
-	Users []common.User `json:"users"`
+	UserList []common.User `json:"user_list"`
 }

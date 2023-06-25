@@ -21,8 +21,9 @@ type VideoPublishListReq struct {
 }
 
 type VideoInfoReq struct {
-	VideoId string `json:"video_id" form:"video_id" binding:"required"` // 视频id
-	Token   string `json:"token" form:"token" binding:"required"`       // 用户鉴权token
+	VideoIds []string `json:"video_ids" form:"video_ids" binding:"required"` // 视频id
+	Token    string   `json:"token" form:"token" binding:"required"`         // 用户鉴权token
+	common.PaginateReq
 }
 
 type VideoSearchReq struct {
