@@ -39,14 +39,14 @@ type SendMessageReqStruct struct {
 }
 
 // SendMessage
-// @Summary 发送消息
-// @Tags 社交接口
-// @Param token query string true "token"
-// @Param to_user_id query string true "用户id"
-// @Param action_type query string true "1-发送消息"
-// @Param content query string true "消息内容"
-// @Success 200 {object} SendMessageRespStruct
-// @Router /message/action/ [post]
+//	@Summary	发送消息
+//	@Tags		社交接口
+//	@Param		token		query		string	true	"token"
+//	@Param		to_user_id	query		string	true	"用户id"
+//	@Param		action_type	query		string	true	"1-发送消息"
+//	@Param		content		query		string	true	"消息内容"
+//	@Success	200			{object}	SendMessageRespStruct
+//	@Router		/message/action/ [post]
 func SendMessage(c *gin.Context) {
 	token := c.DefaultQuery("token", "")
 	// 验证token
@@ -125,12 +125,12 @@ func MessageRecordResp(c *gin.Context, code int, msg string, messageList []servi
 }
 
 // MessageRecord
-// @Summary 聊天记录
-// @Tags 社交接口
-// @Param token query string true "token"
-// @Param to_user_id query string true "用户id"
-// @Success 200 {object} MessageRecordRespStruct
-// @Router /message/chat/ [get]
+//	@Summary	聊天记录
+//	@Tags		社交接口
+//	@Param		token		query		string	true	"token"
+//	@Param		to_user_id	query		string	true	"用户id"
+//	@Success	200			{object}	MessageRecordRespStruct
+//	@Router		/message/chat/ [get]
 func MessageRecord(c *gin.Context) {
 	token := c.DefaultQuery("token", "")
 

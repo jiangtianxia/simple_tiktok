@@ -14,6 +14,12 @@ type TokenBucket struct {
 	lock sync.Mutex
 }
 
+var Bucket TokenBucket
+
+func InitCurrentLimit(rate int64, capacity int64) {
+	Bucket.Set(rate, capacity)
+}
+
 // 获取令牌
 func (l *TokenBucket) Allow() bool {
 	l.lock.Lock()

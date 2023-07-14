@@ -33,12 +33,12 @@ func UserRegisterResp(c *gin.Context, code int, msg string, userId uint64, token
 }
 
 // UserRegister
-// @Summary 用户注册
-// @Tags 基础接口
-// @Param username query string true "username"
-// @Param password query string true "password"
-// @Success 200 {string} status_code status_msg
-// @Router /user/register/ [post]
+//	@Summary	用户注册
+//	@Tags		基础接口
+//	@Param		username	query		string		true	"username"
+//	@Param		password	query		string		true	"password"
+//	@Success	200			{string}	status_code	status_msg
+//	@Router		/user/register/ [post]
 func UserRegister(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")

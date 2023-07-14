@@ -35,12 +35,12 @@ func FollowerListResp(c *gin.Context, code int, msg string, userList []service.A
 }
 
 // GetFollowerList
-// @Summary 粉丝列表
-// @Tags 社交接口
-// @Param token query string true "token"
-// @Param user_id query string true "用户id"
-// @Success 200 {object} FollowerListRespStruct
-// @Router /relation/follower/list/ [get]
+//	@Summary	粉丝列表
+//	@Tags		社交接口
+//	@Param		token	query		string	true	"token"
+//	@Param		user_id	query		string	true	"用户id"
+//	@Success	200		{object}	FollowerListRespStruct
+//	@Router		/relation/follower/list/ [get]
 func GetFollowerList(c *gin.Context) {
 	// 1、获取参数
 	token := c.DefaultQuery("token", "")

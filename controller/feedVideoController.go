@@ -31,12 +31,12 @@ func FeedVideoResp(c *gin.Context, code int, msg string, nextTime int64, videoLi
 }
 
 // FeedVideo
-// @Summary 视频流接口
-// @Tags 基础接口
-// @Param latest_time query string false "latest_time"
-// @Param token query string false "token"
-// @Success 200 {object} FeedVideoRespStruct
-// @Router /feed [get]
+//	@Summary	视频流接口
+//	@Tags		基础接口
+//	@Param		latest_time	query		string	false	"latest_time"
+//	@Param		token		query		string	false	"token"
+//	@Success	200			{object}	FeedVideoRespStruct
+//	@Router		/feed [get]
 func FeedVideo(c *gin.Context) {
 	// 接收参数
 	resTime := c.DefaultQuery("latest_time", "")

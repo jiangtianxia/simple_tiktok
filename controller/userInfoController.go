@@ -32,12 +32,12 @@ func UserInfoResp(c *gin.Context, code int, msg string, user service.Author) {
  * @Date 14:00 2023/1/31
  **/
 // GetUserInfo
-// @Summary 用户信息
-// @Tags 基础接口
-// @Param token query string true "token"
-// @Param user_id query string true "用户id"
-// @Success 200 {object} UserInfoRespStruct
-// @Router /user/ [get]
+//	@Summary	用户信息
+//	@Tags		基础接口
+//	@Param		token	query		string	true	"token"
+//	@Param		user_id	query		string	true	"用户id"
+//	@Success	200		{object}	UserInfoRespStruct
+//	@Router		/user/ [get]
 func GetUserInfo(c *gin.Context) {
 	// 接受参数
 	userId := c.DefaultQuery("user_id", "0")

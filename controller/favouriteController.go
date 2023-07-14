@@ -37,13 +37,13 @@ type FavouriteReqStruct struct {
 }
 
 // Favourite
-// @Summary 赞操作
-// @Tags 互动接口
-// @Param token query string true "token"
-// @Param video_id query string true "视频id"
-// @Param action_type query string true "赞操作"
-// @Success 200 {object} FavouriteRespStruct
-// @Router /favorite/action/ [post]
+//	@Summary	赞操作
+//	@Tags		互动接口
+//	@Param		token		query		string	true	"token"
+//	@Param		video_id	query		string	true	"视频id"
+//	@Param		action_type	query		string	true	"赞操作"
+//	@Success	200			{object}	FavouriteRespStruct
+//	@Router		/favorite/action/ [post]
 func Favourite(c *gin.Context) {
 	token := c.Query("token")
 	video_id := c.Query("video_id")

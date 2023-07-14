@@ -28,12 +28,12 @@ func UserLoginResp(c *gin.Context, code int, msg string, userId uint64, token st
 }
 
 // Userlogin
-// @Summary 用户登录
-// @Tags 基础接口
-// @Param username query string true "username"
-// @Param password query string true "password"
-// @Success 200 {object} UserLoginRespStruct
-// @Router /user/login/ [post]
+//	@Summary	用户登录
+//	@Tags		基础接口
+//	@Param		username	query		string	true	"username"
+//	@Param		password	query		string	true	"password"
+//	@Success	200			{object}	UserLoginRespStruct
+//	@Router		/user/login/ [post]
 func Userlogin(c *gin.Context) {
 	//获取参数
 	username := c.Query("username")

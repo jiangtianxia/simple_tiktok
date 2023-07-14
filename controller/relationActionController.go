@@ -43,13 +43,13 @@ type FollowReqStruct struct {
 }
 
 // UserFollow
-// @Summary 关注操作
-// @Tags 社交接口
-// @Param token query string true "token"
-// @Param to_user_id query string true "用户id"
-// @Param action_type query string true "关注操作"
-// @Success 200 {object} FollowRespStruct
-// @Router /relation/action/ [post]
+//	@Summary	关注操作
+//	@Tags		社交接口
+//	@Param		token		query		string	true	"token"
+//	@Param		to_user_id	query		string	true	"用户id"
+//	@Param		action_type	query		string	true	"关注操作"
+//	@Success	200			{object}	FollowRespStruct
+//	@Router		/relation/action/ [post]
 func UserFollow(c *gin.Context) {
 	// 1、获取参数
 	token := c.DefaultQuery("token", "")

@@ -32,13 +32,13 @@ func UploadResp(c *gin.Context, code int, msg string) {
 }
 
 // Publish
-// @Summary 视频投稿
-// @Tags 基础接口
-// @Param token formData string true "token"
-// @Param data formData file true "文件"
-// @Param title formData string true "标题"
-// @Success 200 {object} UploadRespStruct
-// @Router /publish/action/ [post]
+//	@Summary	视频投稿
+//	@Tags		基础接口
+//	@Param		token	formData	string	true	"token"
+//	@Param		data	formData	file	true	"文件"
+//	@Param		title	formData	string	true	"标题"
+//	@Success	200		{object}	UploadRespStruct
+//	@Router		/publish/action/ [post]
 func Publish(c *gin.Context) {
 	// 1、获取参数
 	token := c.DefaultPostForm("token", "")

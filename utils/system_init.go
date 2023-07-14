@@ -260,18 +260,18 @@ func ReidsClose() {
 	RDB12.Close()
 }
 
-/**
- * @Author jiang
- * @Description 令牌桶初始化
- * @Date 9:00 2023/1/15
- **/
-var Bucket TokenBucket
+// /**
+//  * @Author jiang
+//  * @Description 令牌桶初始化
+//  * @Date 9:00 2023/1/15
+//  **/
+// var Bucket TokenBucket
 
-func InitCurrentLimit() {
-	rate := viper.GetInt64("currentLimit.tokenBucket.rate")
-	capacity := viper.GetInt64("currentLimit.tokenBucket.capacity")
+// func InitCurrentLimit() {
+// 	rate := viper.GetInt64("currentLimit.tokenBucket.rate")
+// 	capacity := viper.GetInt64("currentLimit.tokenBucket.capacity")
 
-	Bucket.Set(rate, capacity)
+// 	Bucket.Set(rate, capacity)
 
-	fmt.Println("TokenBucket inited ...... ")
-}
+// 	fmt.Println("TokenBucket inited ...... ")
+// }

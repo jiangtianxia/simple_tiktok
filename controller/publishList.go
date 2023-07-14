@@ -11,14 +11,14 @@ import (
 )
 
 // GetPublishList
-// @Summary 发布列表
-// @Tags 基础接口
-// @Produce json
-// @Param token query string true "登录用户的token"
-// @Param user_id query string true "查找目标用户的id"
-// @Success 200 {object} controller.GetPublishListResponse "status_msg为成功"
-// @Failue 200 {object} controller.GetPublishListResponse "status_msg包含失败原因"
-// @Router /publish/list/ [get]
+//	@Summary	发布列表
+//	@Tags		基础接口
+//	@Produce	json
+//	@Param		token	query		string								true	"登录用户的token"
+//	@Param		user_id	query		string								true	"查找目标用户的id"
+//	@Success	200		{object}	controller.GetPublishListResponse	"status_msg为成功"
+//	@Failue		200 {object} controller.GetPublishListResponse "status_msg包含失败原因"
+//	@Router		/publish/list/ [get]
 func GetPublishList(c *gin.Context) {
 	userIdS := c.Query("user_id")
 	token := c.Query("token")

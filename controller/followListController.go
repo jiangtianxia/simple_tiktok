@@ -35,12 +35,12 @@ func FollowListResp(c *gin.Context, code int, msg string, userList []service.Aut
 }
 
 // GetFollowList
-// @Summary 关注列表
-// @Tags 社交接口
-// @Param token query string true "token"
-// @Param user_id query string true "用户id"
-// @Success 200 {object} FollowListRespStruct
-// @Router /relation/follow/list/ [get]
+//	@Summary	关注列表
+//	@Tags		社交接口
+//	@Param		token	query		string	true	"token"
+//	@Param		user_id	query		string	true	"用户id"
+//	@Success	200		{object}	FollowListRespStruct
+//	@Router		/relation/follow/list/ [get]
 func GetFollowList(c *gin.Context) {
 	// 1、获取参数
 	token := c.DefaultQuery("token", "")

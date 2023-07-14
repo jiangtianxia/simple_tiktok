@@ -10,8 +10,9 @@ var (
 	SugarLogger *zap.SugaredLogger
 )
 
-func InitLogger() {
-	writeSyncer := getLogWriter()
+func InitLogger(path string, file string) {
+	filename := path + "/" + file
+	writeSyncer := getLogWriter(filename)
 	encoder := getEncoder()
 	core := zapcore.NewCore(encoder, writeSyncer, zapcore.DebugLevel)
 	logger := zap.New(core, zap.AddCaller())
@@ -26,9 +27,9 @@ func getEncoder() zapcore.Encoder {
 }
 
 // 在zap中加入Lumberjack支持
-func getLogWriter() zapcore.WriteSyncer {
+func getLogWriter(filename string) zapcore.WriteSyncer {
 	lumberJackLogger := &lumberjack.Logger{
-		Filename:   "./log/all.log",
+		Filename:   filename,
 		MaxSize:    1,     // 以 MB 为单位
 		MaxBackups: 5,     // 在进行切割之前，日志文件的最大大小（以MB为单位）
 		MaxAge:     30,    // 保留旧文件的最大天数

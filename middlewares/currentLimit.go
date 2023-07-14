@@ -19,8 +19,8 @@ func CurrentLimit() gin.HandlerFunc {
 			// 不允许访问
 			ctx.Abort()
 			ctx.JSON(http.StatusOK, gin.H{
-				"code": -1,
-				"msg":  "服务器繁忙，请稍后重试",
+				"code":    -1,
+				"message": "服务器繁忙，请稍后重试",
 			})
 			return
 		}

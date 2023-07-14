@@ -54,14 +54,14 @@ type CommentActionResponse struct {
 
 // 发表，删除评论 /comment/action
 // CommentAction
-// @Summary 评论操作
-// @Tags 互动接口
-// @Param token query string true "token"
-// @Param video_id query string true "视频id"
-// @Param action_type query string true "评论操作"
-// @Param comment_text query string false "评论内容"
-// @Param comment_id query string false "评论id"
-// @Router /comment/action/ [post]
+//	@Summary	评论操作
+//	@Tags		互动接口
+//	@Param		token			query	string	true	"token"
+//	@Param		video_id		query	string	true	"视频id"
+//	@Param		action_type		query	string	true	"评论操作"
+//	@Param		comment_text	query	string	false	"评论内容"
+//	@Param		comment_id		query	string	false	"评论id"
+//	@Router		/comment/action/ [post]
 func CommentAction(c *gin.Context) {
 	//参数获取
 	token := c.Query("token")

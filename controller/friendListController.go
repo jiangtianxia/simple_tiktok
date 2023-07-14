@@ -35,12 +35,12 @@ func FirendListResp(c *gin.Context, code int, msg string, userList []service.Fri
 }
 
 // GetFriendList
-// @Summary 好友列表
-// @Tags 社交接口
-// @Param token query string true "token"
-// @Param user_id query string true "用户id"
-// @Success 200 {object} FirendListRespStruct
-// @Router /relation/friend/list/ [get]
+//	@Summary	好友列表
+//	@Tags		社交接口
+//	@Param		token	query		string	true	"token"
+//	@Param		user_id	query		string	true	"用户id"
+//	@Success	200		{object}	FirendListRespStruct
+//	@Router		/relation/friend/list/ [get]
 func GetFriendList(c *gin.Context) {
 	// 1、获取参数
 	token := c.DefaultQuery("token", "")

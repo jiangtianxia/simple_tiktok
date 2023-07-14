@@ -5,16 +5,17 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/spf13/viper"
 )
 
-/**
- * @Author jiang
- * @Description jwt生成token包
- * @Date 20:00 2023/1/15
- **/
+var (
+	myKey     []byte
+	jwtExpire int
+)
 
-var myKey = []byte(viper.GetString("jwt.key"))
+func InitJwt(s string, expire int) {
+	myKey = []byte(s)
+	jwtExpire = expire
+}
 
 type UserClaims struct {
 	Identity uint64 `json:"identity"`
@@ -29,7 +30,7 @@ func GenerateToken(identity uint64, username string) (string, error) {
 		Username: username,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(
-				time.Duration(viper.GetInt("jwt.expire")) * time.Hour).Unix(), // 过期时间
+				time.Duration(jwtExpire) * time.Hour).Unix(), // 过期时间
 			Issuer: "simple_tiktok", // 签发人
 		},
 	}
