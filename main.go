@@ -17,7 +17,6 @@ var (
 	SrvCnf          conf.ServerConf
 	TiktokDBConf    conf.DbConf
 	TiktokRedisConf conf.RedisConf
-	TiktokESConf    conf.ESConf
 )
 
 func init() {
@@ -33,13 +32,19 @@ func init() {
 		pflag.UintVar(&DefaultConf.MachineId, "machine_id", 2345576453432980, "snowflake machineID")
 
 		pflag.StringVar(&DefaultConf.COSAddr, "cos_addr", "https://tiktok-1310814941.cos.ap-guangzhou.myqcloud.com", "cos addr")
-		pflag.StringVar(&DefaultConf.COSSecretId, "cos_secret_id", "AKIDBEaorhLlwrWynzxkKjwunX9Xp02CAwZ3", "cos secret id")
-		pflag.StringVar(&DefaultConf.COSSecretKey, "cos_secret_key", "O62oMhw9C2e7OTKepmV6UgjlmeMtOjtr", "cos secret key")
+		pflag.StringVar(&DefaultConf.COSSecretId, "cos_secret_id", "AKIDXwQpCd4OchWXR9ZEsOk5IRYS9ds9KVkA", "cos secret id")
+		pflag.StringVar(&DefaultConf.COSSecretKey, "cos_secret_key", "UpyueCh2DVeieQErV2OaaM4bM5lGZuFl", "cos secret key")
+
+		pflag.Int64Var(&DefaultConf.BucketRate, "bucket_rate", 1000, "bucket rate")
+		pflag.Int64Var(&DefaultConf.BucketCapacity, "bucket_capacity", 5000, "bucket capacity")
 
 		pflag.StringVar(&DefaultConf.Md5Salt, "md5_salt", "tiktokGi0I0R1tC#%", "md5 salt")
 		pflag.StringVar(&DefaultConf.JwtKey, "jwt_key", "h2wnknlsd", "jwt key")
 		pflag.IntVar(&DefaultConf.JwtExpire, "jwt_expire", 1200, "jwt expire")
 		pflag.StringVar(&DefaultConf.HashSalt, "hash_salt", "tiktok123#%", "hash salt")
+
+		pflag.StringVar(&DefaultConf.UploadBase, "upload_base", "./upload/", "upload base")
+		pflag.StringVar(&DefaultConf.UploadAddr, "upload_addr", "http://127.0.0.1:8080", "upload addr")
 	}
 
 	// db
@@ -56,14 +61,6 @@ func init() {
 		pflag.StringVar(&TiktokRedisConf.RedisPassword, "tiktok_redis_pass", "579021", "tiktok redis password")
 		pflag.IntVar(&TiktokRedisConf.RedisPort, "tiktok_redis_port", 6379, "tiktok redis port")
 		pflag.IntVar(&TiktokRedisConf.RedisDB, "tiktok_redis_db", 0, "tiktok redis db")
-	}
-
-	// es
-	{
-		pflag.StringVar(&TiktokESConf.Name, "tiktok_es_name", "tiktok", "tiktok es name")
-		pflag.StringVar(&TiktokESConf.ESConn, "tiktok_es_conn", "http://159.75.164.227:9200", "tiktok es conn")
-		pflag.StringVar(&TiktokESConf.ESUser, "tiktok_es_user", "elastic", "tiktok es user")
-		pflag.StringVar(&TiktokESConf.ESPassword, "tiktok_es_password", "tiktok", "tiktok es password")
 	}
 
 	pflag.Parse()
@@ -93,9 +90,6 @@ func main() {
 	// 初始化redis
 	store.InitRedis(&TiktokRedisConf)
 	defer store.RedisClose()
-
-	// 初始化ES
-	store.InitES(TiktokESConf.ESConn, TiktokESConf.ESUser, TiktokESConf.ESPassword)
 
 	// 初始化令牌桶
 	utils.InitCurrentLimit(DefaultConf.BucketRate, DefaultConf.BucketCapacity)

@@ -1,5 +1,7 @@
 package user
 
+import "simple_tiktok/internal/common"
+
 type IUserService interface {
 	// 用户注册
 	UserRegister(req *NormalizeUserReq) (*UserRegisterResp, error)
@@ -8,8 +10,5 @@ type IUserService interface {
 	UserLogin(req *NormalizeUserReq) (*UserLoginResp, error)
 
 	// 用户信息
-	GetUserInfo(req *UserInfoReq) (*UserInfoResp, error)
-
-	// 用户搜索
-	UserSearch(req *UserSearchReq) (*UserInfoResp, error)
+	GetUserInfo(req *UserInfoReq) (map[string]common.User, error)
 }

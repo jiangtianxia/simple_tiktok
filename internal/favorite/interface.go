@@ -6,8 +6,8 @@ import (
 
 type IFavoriteService interface {
 	// 赞操作
-	FavoriteAction(req *FavoriteActionReq) (*common.NormalizeResp, error)
+	FavoriteAction(req *FavoriteActionReq) error
 
 	// 喜欢列表
-	FavoriteList(req *FavoriteListReq) (*common.VideoListResp, error)
+	FavoriteList(req *FavoriteListReq) (map[string]common.Video, error)
 }

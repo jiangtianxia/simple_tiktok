@@ -1,33 +1,32 @@
 package video
 
-import "simple_tiktok/internal/common"
+import (
+	"mime/multipart"
+	"simple_tiktok/internal/common"
+)
 
 type VideoFeedReq struct {
-	LatestTime int64  `json:"latest_time" form:"latest_time"` // 可选参数, 限制返回视频的最新投稿时间戳, 精确到秒, 不填表示当前时间
-	Token      string `json:"token" form:"token"`             // 用户鉴权token
+	LatestTime int64               `json:"latest_time" form:"latest_time"` // 可选参数, 限制返回视频的最新投稿时间戳, 精确到秒, 不填表示当前时间
+	TokenInfo  common.TokenInfoReq `json:"token_info" form:"token_info"`   // tokenInfo
 }
 
 type VideoPublishActionReq struct {
-	Token string `json:"token" form:"token" binding:"required"` // 用户鉴权token
-	Data  []byte `json:"data" form:"data" binding:"required"`   // 视频数据
-	Title string `json:"title" form:"title" binding:"required"` // 视频标题
+	TokenInfo common.TokenInfoReq   `json:"token_info" form:"token_info"`                  // tokenInfo
+	File      *multipart.File       `json:"file" form:"file" binding:"required"`           // 视频数据
+	FileHead  *multipart.FileHeader `json:"file_head" form:"file_head" binding:"required"` // 视频头
+	Title     string                `json:"title" form:"title" binding:"required"`         // 视频标题
 }
 
 type VideoPublishListReq struct {
-	UserId string `json:"user_id" form:"user_id" binding:"required"` // 用户id
-	Token  string `json:"token" form:"token"`                        // 用户鉴权token
+	HashId    string              `json:"hash_id" form:"hash_id" binding:"required"` // 用户hash_id
+	UserId    uint                `json:"user_id" form:"user_id"`                    // 用户id
+	TokenInfo common.TokenInfoReq `json:"token_info" form:"token_info"`              // tokenInfo
 	common.SearchReq
 	common.PaginateReq
 }
 
 type VideoInfoReq struct {
-	VideoIds []string `json:"video_ids" form:"video_ids" binding:"required"` // 视频id
-	Token    string   `json:"token" form:"token" binding:"required"`         // 用户鉴权token
-	common.PaginateReq
-}
-
-type VideoSearchReq struct {
-	Keyword string `json:"keyword" form:"keyword" binding:"required"` // 搜索关键词, 视频标题/作者/视频id
-	common.SearchReq
-	common.PaginateReq
+	HashIds   []string            `json:"hash_ids" form:"hash_ids" binding:"required"` // 视频hash_id
+	VideoIds  []uint              `json:"video_ids" form:"video_ids"`                  // 视频id
+	TokenInfo common.TokenInfoReq `json:"token_info" form:"token_info"`                // tokenInfo
 }

@@ -1,0 +1,816 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "简易版抖音 2.0 后台接口",
+        "title": "简易版抖音 2.0 后台接口",
+        "contact": {},
+        "version": "2.0"
+    },
+    "basePath": "/douyin/v2/",
+    "paths": {
+        "/comment/action": {
+            "post": {
+                "description": "评论操作",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "评论相关"
+                ],
+                "summary": "评论操作",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/comment.CommentActionReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/comment.Comment"
+                        }
+                    }
+                }
+            }
+        },
+        "/comment/list": {
+            "get": {
+                "description": "评论列表",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "评论相关"
+                ],
+                "summary": "评论列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "视频hashId",
+                        "name": "hash_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页记录数",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "视频id",
+                        "name": "video_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/comment.CommentListResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/favorite/action": {
+            "post": {
+                "description": "赞操作",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "赞相关"
+                ],
+                "summary": "赞操作",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/favorite.FavoriteActionReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/favorite/list": {
+            "get": {
+                "description": "点赞列表",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "赞相关"
+                ],
+                "summary": "点赞列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户hashId",
+                        "name": "hash_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "用户id",
+                        "name": "user_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/common.Video"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/feed": {
+            "get": {
+                "description": "视频流",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频相关"
+                ],
+                "summary": "视频流",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "可选参数, 限制返回视频的最新投稿时间戳, 精确到秒, 不填表示当前时间",
+                        "name": "latest_time",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/video.VideoFeedResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/publish/action/": {
+            "post": {
+                "description": "视频投稿",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频相关"
+                ],
+                "summary": "视频投稿",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "文件",
+                        "name": "data",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "标题",
+                        "name": "title",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/publish/list": {
+            "get": {
+                "description": "发布列表",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频相关"
+                ],
+                "summary": "发布列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户hash_id",
+                        "name": "hash_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序规则, order=规则1,规则2, ......",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页记录数",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "排序方式, -1: 倒序, 1: 正序 默认倒序",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "用户id",
+                        "name": "user_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "条件, where=条件1:值1,条件2:值2, ......",
+                        "name": "where",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.VideoListResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/user": {
+            "get": {
+                "description": "用户信息",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户相关"
+                ],
+                "summary": "用户信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "用户hashId",
+                        "name": "hash_ids",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "用户id",
+                        "name": "user_ids",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/common.User"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user/login": {
+            "post": {
+                "description": "用户登录",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户相关"
+                ],
+                "summary": "用户登录",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.NormalizeUserReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/user.UserLoginResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/register": {
+            "post": {
+                "description": "用户注册",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户相关"
+                ],
+                "summary": "用户注册",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.NormalizeUserReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/user.UserRegisterResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/video": {
+            "get": {
+                "description": "视频信息",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频相关"
+                ],
+                "summary": "视频信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "视频hash_id",
+                        "name": "hash_ids",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "视频id",
+                        "name": "video_ids",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/common.Video"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "comment.Comment": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "评论内容",
+                    "type": "string"
+                },
+                "create_date": {
+                    "description": "评论发布日期, 格式 mm-dd",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "视频评论id",
+                    "type": "string"
+                },
+                "user": {
+                    "description": "评论用户信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/common.User"
+                        }
+                    ]
+                }
+            }
+        },
+        "comment.CommentActionReq": {
+            "type": "object",
+            "required": [
+                "action_type",
+                "hash_id"
+            ],
+            "properties": {
+                "action_type": {
+                    "description": "1-发布评论, 2-删除评论",
+                    "type": "integer"
+                },
+                "comment_id": {
+                    "description": "要删除的评论id，在action_type=2的时候使用",
+                    "type": "string"
+                },
+                "comment_text": {
+                    "description": "optional string comment_text = 4; // 用户填写的评论内容，在action_type=1的时候使用",
+                    "type": "string"
+                },
+                "hash_id": {
+                    "description": "视频hashId",
+                    "type": "string"
+                },
+                "token_info": {
+                    "description": "tokenInfo",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/common.TokenInfoReq"
+                        }
+                    ]
+                },
+                "video_id": {
+                    "description": "视频id",
+                    "type": "integer"
+                }
+            }
+        },
+        "comment.CommentListResp": {
+            "type": "object",
+            "properties": {
+                "comment_list": {
+                    "description": "评论列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/comment.Comment"
+                    }
+                },
+                "page": {
+                    "description": "页数",
+                    "type": "integer"
+                },
+                "page_size": {
+                    "description": "每页记录数",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "总记录数",
+                    "type": "integer"
+                },
+                "total_page": {
+                    "description": "总页数",
+                    "type": "integer"
+                }
+            }
+        },
+        "common.TokenInfoReq": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "用户id",
+                    "type": "integer"
+                },
+                "username": {
+                    "description": "用户名",
+                    "type": "string"
+                }
+            }
+        },
+        "common.User": {
+            "type": "object",
+            "properties": {
+                "favorite_count": {
+                    "description": "点赞数量",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "用户id",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "用户名称",
+                    "type": "string"
+                },
+                "work_count": {
+                    "description": "作品数量",
+                    "type": "integer"
+                }
+            }
+        },
+        "common.Video": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "description": "视频作者信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/common.User"
+                        }
+                    ]
+                },
+                "comment_count": {
+                    "description": "视频的评论总数",
+                    "type": "integer"
+                },
+                "cover_url": {
+                    "description": "视频封面地址",
+                    "type": "string"
+                },
+                "favoriteCount": {
+                    "description": "视频的点赞总数",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "视频唯一标识",
+                    "type": "string"
+                },
+                "is_favorite": {
+                    "description": "true-已点赞, false-未点赞",
+                    "type": "boolean"
+                },
+                "play_url": {
+                    "description": "视频播放地址",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "视频标题",
+                    "type": "string"
+                }
+            }
+        },
+        "common.VideoListResp": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "description": "页数",
+                    "type": "integer"
+                },
+                "page_size": {
+                    "description": "每页记录数",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "总记录数",
+                    "type": "integer"
+                },
+                "total_page": {
+                    "description": "总页数",
+                    "type": "integer"
+                },
+                "video_list": {
+                    "description": "视频列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/common.Video"
+                    }
+                }
+            }
+        },
+        "favorite.FavoriteActionReq": {
+            "type": "object",
+            "required": [
+                "action_type",
+                "hash_id"
+            ],
+            "properties": {
+                "action_type": {
+                    "description": "1-点赞, 2-取消点赞",
+                    "type": "integer"
+                },
+                "hash_id": {
+                    "description": "视频hashId",
+                    "type": "string"
+                },
+                "token_info": {
+                    "description": "tokenInfo",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/common.TokenInfoReq"
+                        }
+                    ]
+                },
+                "video_id": {
+                    "description": "视频id",
+                    "type": "integer"
+                }
+            }
+        },
+        "user.NormalizeUserReq": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "description": "登录密码, 最长32个字符",
+                    "type": "string",
+                    "maxLength": 32
+                },
+                "username": {
+                    "description": "用户名, 最长32个字符",
+                    "type": "string",
+                    "maxLength": 32
+                }
+            }
+        },
+        "user.UserLoginResp": {
+            "type": "object",
+            "properties": {
+                "hash_id": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.UserRegisterResp": {
+            "type": "object",
+            "properties": {
+                "hash_id": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "video.VideoFeedResp": {
+            "type": "object",
+            "properties": {
+                "next_time": {
+                    "description": "本次返回的视频中，发布最早的时间，作为下次请求时的latest_time",
+                    "type": "integer"
+                },
+                "video_list": {
+                    "description": "视频列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/common.Video"
+                    }
+                }
+            }
+        }
+    }
+}

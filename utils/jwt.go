@@ -10,28 +10,34 @@ import (
 var (
 	myKey     []byte
 	jwtExpire int
+	issuer    string
 )
 
 func InitJwt(s string, expire int) {
 	myKey = []byte(s)
 	jwtExpire = expire
+	issuer = "simple_tiktok"
+}
+
+func GetIssuer() string {
+	return issuer
 }
 
 type UserClaims struct {
-	Identity uint64 `json:"identity"`
+	Id       uint   `json:"identity"`
 	Username string `json:"username"`
 	jwt.StandardClaims
 }
 
 // 生成token
-func GenerateToken(identity uint64, username string) (string, error) {
+func GenerateToken(id uint, username string) (string, error) {
 	userClaim := &UserClaims{
-		Identity: identity,
+		Id:       id,
 		Username: username,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(
 				time.Duration(jwtExpire) * time.Hour).Unix(), // 过期时间
-			Issuer: "simple_tiktok", // 签发人
+			Issuer: issuer, // 签发人
 		},
 	}
 
@@ -45,7 +51,7 @@ func GenerateToken(identity uint64, username string) (string, error) {
 }
 
 // 解析token
-func AnalyseToken(tokenString string) (*UserClaims, error) {
+func AnalyzeToken(tokenString string) (*UserClaims, error) {
 	UserClaims := new(UserClaims)
 
 	claims, err := jwt.ParseWithClaims(tokenString, UserClaims, func(token *jwt.Token) (interface{}, error) {
@@ -57,7 +63,7 @@ func AnalyseToken(tokenString string) (*UserClaims, error) {
 	}
 
 	if !claims.Valid {
-		return nil, fmt.Errorf("analyse Token Error:%v", err)
+		return nil, fmt.Errorf("analyze Token Error:%v", err)
 	}
 	return UserClaims, nil
 }

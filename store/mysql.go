@@ -63,9 +63,5 @@ func AutoMigrate() error {
 		return err
 	}
 
-	if err := db.AutoMigrate(&model.UserFollow{}); err != nil {
-		return err
-	}
-
 	return nil
 }

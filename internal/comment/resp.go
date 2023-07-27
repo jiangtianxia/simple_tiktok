@@ -2,13 +2,7 @@ package comment
 
 import "simple_tiktok/internal/common"
 
-type CommentActionResp struct {
-	common.NormalizeResp
-	Comment
-}
-
 type CommentListResp struct {
-	common.NormalizeResp
 	common.PaginateResp
 	CommentList []Comment `json:"comment_list"` // 评论列表
 }

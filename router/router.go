@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"simple_tiktok/conf"
-	"simple_tiktok/controller"
+	"simple_tiktok/handle"
 	"simple_tiktok/middlewares"
 	"strings"
 	"time"
@@ -51,46 +51,54 @@ func Start(cnf *conf.ServerConf) {
 	server.StaticFS("/upload", http.Dir("upload"))
 
 	// 路由配置
-	v2 := server.Group("/douyin", middlewares.CurrentLimit())
+	v2 := server.Group("/douyin/v2", middlewares.CurrentLimit())
 	{
-		v2.GET("/hello", controller.Hello)
+		// 用户相关
+		{
+			// 用户注册
+			v2.POST("/user/register", handle.UserHandle.UserRegister)
 
-		// 视频流接口
-		v2.GET("/feed", controller.FeedVideo)
-		// 用户注册接口
-		v2.POST("/user/register/", controller.UserRegister)
-		// 用户登录接口
-		v2.POST("/user/login/", controller.Userlogin)
-		// 用户信息接口
-		v2.GET("/user/", controller.GetUserInfo)
-		// 视频投稿
-		v2.POST("/publish/action/", controller.Publish)
-		// 发布列表
-		v2.GET("/publish/list/", controller.GetPublishList)
+			// 用户登录
+			v2.POST("/user/login", handle.UserHandle.UserLogin)
 
-		// 赞操作
-		v2.POST("/favorite/action/", controller.Favourite)
-		// 喜欢列表
-		v2.GET("/favorite/list/", controller.GetFavoriteList)
-		// 评论操作
-		v2.POST("/comment/action/", controller.CommentAction)
-		// 评论列表
-		v2.GET("/comment/list/", controller.CommentList)
+			// 用户信息
+			v2.GET("/user", middlewares.TokenValidator(), handle.UserHandle.GetUserInfo)
+		}
 
-		// 关注操作
-		v2.POST("/relation/action/", controller.UserFollow)
-		// 关注列表
-		v2.GET("/relation/follow/list/", controller.GetFollowList)
-		// 粉丝列表
-		v2.GET("/relation/follower/list/", controller.GetFollowerList)
-		// 好友列表
-		v2.GET("/relation/friend/list/", controller.GetFriendList)
-		// 发送消息
-		v2.POST("/message/action/", controller.SendMessage)
-		// 聊天记录
-		v2.GET("/message/chat/", controller.MessageRecord)
+		// 视频相关
+		{
+			// 视频流接口
+			v2.GET("/feed", middlewares.TokenValidator(), handle.VideoHandle.VideoFeed)
+
+			// 视频投稿
+			v2.POST("/publish/action", middlewares.TokenValidator(), handle.VideoHandle.VideoPublishAction)
+
+			// 发布列表
+			v2.GET("/publish/list", middlewares.TokenValidator(), handle.VideoHandle.GetVideoPublishList)
+
+			// 视频信息
+			v2.GET("/video", middlewares.TokenValidator(), handle.VideoHandle.GetVideoInfo)
+		}
+
+		// 赞相关
+		{
+			// 赞操作
+			v2.POST("/favorite/action", middlewares.TokenValidator(), handle.FavoriteHandle.FavoriteAction)
+
+			// 喜欢列表
+			v2.GET("/favorite/list", middlewares.TokenValidator(), handle.FavoriteHandle.FavoriteList)
+		}
+
+		// 评论相关
+		{
+			// 评论操作
+			v2.POST("/comment/action", middlewares.TokenValidator(), handle.CommentHandle.CommentAction)
+
+			// 评论列表
+			v2.GET("/comment/list", middlewares.TokenValidator(), handle.CommentHandle.CommentList)
+		}
 	}
 
-	fmt.Printf("http server on port: %d", cnf.HTTPPort)
+	fmt.Printf("http Server started Port:%d", cnf.HTTPPort)
 	server.Run(fmt.Sprintf(":%d", cnf.HTTPPort))
 }

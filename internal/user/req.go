@@ -8,13 +8,7 @@ type NormalizeUserReq struct {
 }
 
 type UserInfoReq struct {
-	UserIds []string `json:"user_ids" form:"user_ids" binding:"required"` // 用户id
-	Token   string   `json:"token" form:"token" binding:"required"`       // 用户鉴权token
-	common.PaginateReq
-}
-
-type UserSearchReq struct {
-	Keyword string `json:"keyword" form:"keyword" binding:"required"` // 搜索关键词, 用户名/用户id
-	common.SearchReq
-	common.PaginateReq
+	HashIds   []string            `json:"hash_ids" form:"hash_ids" binding:"required"` // 用户hashId
+	UserIds   []uint              `json:"user_ids" form:"user_ids"`                    // 用户id
+	TokenInfo common.TokenInfoReq `json:"token_info" form:"token_info"`                // tokenInfo
 }

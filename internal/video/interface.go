@@ -7,14 +7,11 @@ type IVideoService interface {
 	VideoFeed(req *VideoFeedReq) (*VideoFeedResp, error)
 
 	// 视频投稿
-	VideoPublishAction(req *VideoPublishActionReq) (*common.NormalizeResp, error)
+	VideoPublishAction(req *VideoPublishActionReq) error
 
 	// 发布列表
 	GetVideoPublishList(req *VideoPublishListReq) (*common.VideoListResp, error)
 
 	// 视频信息
-	GetVideoInfo(req *VideoInfoReq) (*common.VideoListResp, error)
-
-	// 视频搜索
-	VideoSearch(req *VideoSearchReq) (*common.VideoListResp, error)
+	GetVideoInfo(req *VideoInfoReq) (map[string]common.Video, error)
 }

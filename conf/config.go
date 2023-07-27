@@ -11,6 +11,8 @@ type DefaultConf struct {
 	JwtKey         string
 	JwtExpire      int
 	HashSalt       string
+	UploadBase     string
+	UploadAddr     string
 }
 
 type ServerConf struct {
@@ -39,13 +41,6 @@ type RedisConf struct {
 	RedisPassword string
 	RedisPort     int
 	RedisDB       int
-}
-
-type ESConf struct {
-	Name       string // default tiktok
-	ESConn     string
-	ESUser     string
-	ESPassword string
 }
 
 var (

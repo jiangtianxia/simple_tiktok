@@ -1,9 +1,0 @@
-#内容如下：
-http.port: 9200
-http.host: 0.0.0.0
-http.cors.enabled: true
-http.cors.allow-origin: "*"
-
-#设置权限
-xpack.security.enabled: true
-xpack.security.transport.ssl.enabled: true

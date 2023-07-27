@@ -10,3 +10,8 @@ type SearchReq struct {
 	Order string `json:"order" form:"order"` // 排序规则, order=规则1,规则2, ......
 	Sort  int    `json:"sort" form:"sort"`   // 排序方式, -1: 倒序, 1: 正序 默认倒序
 }
+
+type TokenInfoReq struct {
+	Id       uint   `json:"id" form:"id"`             // 用户id
+	Username string `json:"username" form:"username"` // 用户名
+}
