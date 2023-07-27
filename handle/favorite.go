@@ -93,7 +93,7 @@ func (*favoriteHandle) FavoriteList(ctx *gin.Context) {
 	}
 	req.UserId = id
 
-	resp, err := service.FavoriteService.FavoriteList(&req)
+	resp, err := service.FavoriteService.GetFavoriteList(&req)
 	if err != nil {
 		logger.SugarLogger.Error(err)
 		ctx.AbortWithStatusJSON(http.StatusOK, Result(err))

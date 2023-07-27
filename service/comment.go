@@ -107,8 +107,8 @@ func (*commentService) CommentAction(req *comment.CommentActionReq) (*comment.Co
 	return resp, nil
 }
 
-// CommentList implements comment.ICommentService.
-func (*commentService) CommentList(req *comment.CommentListReq) (*comment.CommentListResp, error) {
+// GetCommentList implements comment.ICommentService.
+func (*commentService) GetCommentList(req *comment.CommentListReq) (*comment.CommentListResp, error) {
 	var total int64
 	var commentList []model.CommentVideo
 	offset := (req.Page - 1) * req.PageSize

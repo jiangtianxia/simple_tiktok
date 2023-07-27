@@ -115,7 +115,7 @@ func (*commentHandle) CommentList(ctx *gin.Context) {
 		req.PageSize = 30
 	}
 
-	resp, err := service.CommentService.CommentList(&req)
+	resp, err := service.CommentService.GetCommentList(&req)
 	if err != nil {
 		logger.SugarLogger.Error(err)
 		ctx.AbortWithStatusJSON(http.StatusOK, Result(err))

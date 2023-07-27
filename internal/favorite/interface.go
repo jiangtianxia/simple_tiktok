@@ -9,5 +9,5 @@ type IFavoriteService interface {
 	FavoriteAction(req *FavoriteActionReq) error
 
 	// 喜欢列表
-	FavoriteList(req *FavoriteListReq) (map[string]common.Video, error)
+	GetFavoriteList(req *FavoriteListReq) (map[string]common.Video, error)
 }

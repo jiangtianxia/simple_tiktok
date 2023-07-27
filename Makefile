@@ -5,6 +5,7 @@ VERSION=git-$(subst /,-,$(BRANCH))-$(shell date +%Y%m%d%H)-$(shell git describe 
 IMAGE_TAG=$(VERSION)
 IMAGE_REPO=*
 LOCAL_REPO=*
+OutDir=proto
 
 
 linux:
@@ -25,6 +26,8 @@ m1_osx:
 dist:
 	env GOOS=linux GOARCH=amd64 go build -tags=jsoniter -v -o ./build/linux/simple_tiktok
 
+build: linux docs
+
 push: linux docs
 	docker build -t ${IMAGE_REPO}/simple_tiktok:${IMAGE_TAG} .
 # 	docker push ${IMAGE_REPO}/simple_tiktok:${IMAGE_TAG}
@@ -41,4 +44,8 @@ docs:
 	swag fmt
 	swag init --pd -g ./swagger.go -o ./apidocs/
 
-.PHONY: linux darwin m1_osx dist push push_aarch64 push_dev docs
+gen:
+	mkdir -p ./internal/${OutDir}
+	protoc --go_out=./internal/${OutDir} --go-grpc_out=./internal/${OutDir} ./proto/*.proto
+
+.PHONY: linux darwin m1_osx dist push push_aarch64 push_dev docs gen build

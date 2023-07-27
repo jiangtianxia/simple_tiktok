@@ -166,8 +166,8 @@ func NFavoriteVideo(req *favorite.FavoriteActionReq) error {
 	return nil
 }
 
-// FavoriteList implements favorite.IFavoriteService.
-func (*favoriteService) FavoriteList(req *favorite.FavoriteListReq) (map[string]common.Video, error) {
+// GetFavoriteList implements favorite.IFavoriteService.
+func (*favoriteService) GetFavoriteList(req *favorite.FavoriteListReq) (map[string]common.Video, error) {
 	// 查询redis
 	key := fmt.Sprintf("%s%d", store.FavoriteSetPrefix, req.UserId)
 	exists, err := store.GetRDB().Exists(context.Background(), key).Result()

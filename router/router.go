@@ -2,15 +2,19 @@ package router
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"simple_tiktok/conf"
+	"simple_tiktok/grpc_handle"
 	"simple_tiktok/handle"
+	"simple_tiktok/internal/proto"
 	"simple_tiktok/middlewares"
 	"strings"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc"
 )
 
 func Start(cnf *conf.ServerConf) {
@@ -99,6 +103,25 @@ func Start(cnf *conf.ServerConf) {
 		}
 	}
 
-	fmt.Printf("http Server started Port:%d", cnf.HTTPPort)
+	go GrpcStart(cnf.GRPCPort)
+	fmt.Printf("http Server started Port:%d \n", cnf.HTTPPort)
 	server.Run(fmt.Sprintf(":%d", cnf.HTTPPort))
+}
+
+func GrpcStart(prot uint) {
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", prot))
+	if err != nil {
+		panic(err)
+	}
+	s := grpc.NewServer()
+
+	proto.RegisterUserServiceServer(s, grpc_handle.UserGrpcService)
+	proto.RegisterVideoServiceServer(s, grpc_handle.VideoGrpcService)
+	proto.RegisterFavoriteServiceServer(s, grpc_handle.FavoriteGrpcService)
+	proto.RegisterCommentServiceServer(s, grpc_handle.CommentGrpcService)
+
+	fmt.Printf("grpc Server started Port:%d \n", prot)
+	if err := s.Serve(lis); err != nil {
+		panic(err)
+	}
 }

@@ -5,5 +5,5 @@ type ICommentService interface {
 	CommentAction(req *CommentActionReq) (*Comment, error)
 
 	// 视频评论列表
-	CommentList(req *CommentListReq) (*CommentListResp, error)
+	GetCommentList(req *CommentListReq) (*CommentListResp, error)
 }
